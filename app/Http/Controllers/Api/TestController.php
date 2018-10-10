@@ -14,6 +14,6 @@ class TestController extends Controller
      */
     public function index()
     {
-        return 3;
+        return 233223;
     }
 }
