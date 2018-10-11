@@ -24,6 +24,7 @@ class CreateManagerRolesTable extends Migration
                     ->references('id')->on('managers')
                     ->onDelete('no action');
             $table->timestamps();
+            $table->softDeletes('deleted_at');
         });
     }
 

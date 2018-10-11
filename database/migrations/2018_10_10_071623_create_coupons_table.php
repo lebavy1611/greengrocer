@@ -21,6 +21,7 @@ class CreateCouponsTable extends Migration
             $table->date('end_date');
             $table->unsignedInteger('times');
             $table->timestamps();
+            $table->softDeletes('deleted_at');
         });
     }
 

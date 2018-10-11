@@ -25,6 +25,7 @@ class CreateShopsTable extends Migration
             $table->string('image')->nullable();
             $table->tinyInteger('active');
             $table->timestamps();
+            $table->softDeletes('deleted_at');
         });
     }
 

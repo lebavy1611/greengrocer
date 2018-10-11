@@ -26,6 +26,7 @@ class CreateCommentsTable extends Migration
             $table->unsignedInteger('parent_id')->nullable();
             $table->text('content');
             $table->timestamps();
+            $table->softDeletes('deleted_at');
         });
     }
 

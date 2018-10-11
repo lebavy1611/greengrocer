@@ -26,6 +26,7 @@ class CreateUserInforsTable extends Migration
             $table->string('phone', 13)->nullable();
             $table->tinyInteger('gender');
             $table->timestamps();
+            $table->softDeletes('deleted_at');
         });
     }
 

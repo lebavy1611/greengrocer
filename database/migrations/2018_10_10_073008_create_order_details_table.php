@@ -25,6 +25,7 @@ class CreateOrderDetailsTable extends Migration
                     ->onDelete('no action');
             $table->unsignedInteger('quantity');
             $table->timestamps();
+            $table->softDeletes('deleted_at');
         });
     }
 
