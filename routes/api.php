@@ -18,4 +18,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::group(['as' => 'api.', 'namespace' => 'Api'], function () {
     Route::get('test', 'TestController@index');
+    Route::apiResource('categories', 'CategoriesController');
+    Route::apiResource('users', 'UserController');
 }); 
