@@ -21,6 +21,7 @@ class CreatePromotionsTable extends Migration
             $table->string('image');
             $table->tinyInteger('quantity')->nullable();
             $table->timestamps();
+            $table->softDeletes('deleted_at');
         });
     }
 

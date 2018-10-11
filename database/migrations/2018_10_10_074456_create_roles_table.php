@@ -18,6 +18,7 @@ class CreateRolesTable extends Migration
             $table->string('name');
             $table->unsignedInteger('parent_id');
             $table->timestamps();
+            $table->softDeletes('deleted_at');
         });
     }
 

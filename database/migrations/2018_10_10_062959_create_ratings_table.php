@@ -26,6 +26,7 @@ class CreateRatingsTable extends Migration
             $table->tinyInteger('stars');
             $table->text('content');
             $table->timestamps();
+            $table->softDeletes('deleted_at');
         });
     }
 

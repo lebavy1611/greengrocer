@@ -21,6 +21,7 @@ class CreateImagesTable extends Migration
                     ->references('id')->on('products')
                     ->onDelete('no action');
             $table->timestamps();
+            $table->softDeletes('deleted_at');
         });
     }
 

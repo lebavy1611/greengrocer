@@ -25,6 +25,7 @@ class CreateManagersTable extends Migration
             $table->tinyInteger('active');
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes('deleted_at');
         });
     }
 

@@ -28,6 +28,7 @@ class CreateRoleResourcesTable extends Migration
             $table->tinyInteger('can_edit');
             $table->tinyInteger('can_del');
             $table->timestamps();
+            $table->softDeletes('deleted_at');
         });
     }
 
