@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
+use App\Http\Requests\Admin\UpdateCategoryRequest;
 
 class CategoryController extends ApiController
 {
@@ -38,22 +39,21 @@ class CategoryController extends ApiController
      */
     public function store(CreateCategoryRequest $request)
     {
+       
         try {
             $newImage = '';
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $newImage = Carbon::now()->format('YmdHis_u') . '.' . $image->getClientOriginalExtension();
-                $destinationPath = public_path(config('define.images_path_users'));
+                $destinationPath = public_path(config('define.images_path_categories'));
                 $image->move($destinationPath, $newImage);
             }
 
             $data = $request->only([
-                'name',
-                'parent_id',
-                'position',
-                'image'         => $newImage,
+                'name', 'parent_id', 'position',
             ]);
 
+            $data['image'] = $newImage;
             $category = Category::create($data);    
             return $this->successResponse($category, Response::HTTP_OK);
         } catch (Exception $ex) {
@@ -86,15 +86,23 @@ class CategoryController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CreateCategoryRequest $request, $id)
+    public function update(UpdateCategoryRequest $request, $id)
     {
         try {
+
+            $newImage = '';
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $newImage = Carbon::now()->format('YmdHis_u') . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path(config('define.images_path_categories'));
+                $image->move($destinationPath, $newImage);
+            }
+
             $data = $request->only([
-                'name',
-                'parent_id',
-                'position',
-                'image'
+                'name', 'parent_id', 'position',
             ]);
+            
+            $data['image'] = $newImage;
 
             $category = Category::findOrFail($id)->update($data);
             return $this->successResponse("Update category successfully", Response::HTTP_OK);

@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Http\Requests\ApiFormRequest;
+use Illuminate\Foundation\Http\FormRequest;
+use  \App\Http\Requests\ApiFormRequest;
 
-class CreateCategoryRequest extends ApiFormRequest
+class UpdateCategoryRequest extends ApiFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
