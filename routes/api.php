@@ -16,8 +16,8 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::group(['as' => 'api.', 'namespace' => 'Api\Admin'], function () {
-    Route::get('test', 'TestController@index');
-    Route::apiResource('categories', 'CategoriesController');
-    Route::apiResource('users', 'UserController');
+
+Route::group(['prefix' => 'admin', 'as' => 'api.admin.', 'namespace' => 'Api\Admin'], function () {
+    Route::apiResource('categories', 'CategoryController');
+ 
 }); 
