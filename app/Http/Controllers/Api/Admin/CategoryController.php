@@ -2,18 +2,38 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Services\CreateCategoryService;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\Category;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Admin\CreateCategoryRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
-use Illuminate\Validation\ValidationException;
 
 class CategoryController extends ApiController
 {
+
+    /**
+     * CreateCategoryService
+     *
+     * @var CreateCategoryService
+     */
+    public $createService;
+
+    /**
+     * Construct parent Controller
+     *
+     * @param CreateCategoryService $createService
+     *
+     * @return void
+     */
+    public function __construct(
+        CreateCategoryService $createService
+    ) {
+        parent::__construct();
+        $this->createService = $createService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -38,25 +58,15 @@ class CategoryController extends ApiController
     public function store(CreateCategoryRequest $request)
     {
         try {
-            $newImage = '';
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $newImage = time() . '-' . str_random(8) . '.' . $image->getClientOriginalExtension();
-            }
-
             $data = $request->only([
                 'name',
                 'parent_id',
                 'position',
-                'image'         => $newImage,
             ]);
+            $data['image'] = $request->file('image');
 
-            if ($newImage) {
-                $destinationPath = public_path(config('define.images_path_users'));
-                $image->move($destinationPath, $newImage);
-            }
+            $category = $this->createService->create($data);
 
-            $category = Category::create($data);    
             return $this->successResponse($category, Response::HTTP_OK);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when insert category.", Response::HTTP_INTERNAL_SERVER_ERROR);

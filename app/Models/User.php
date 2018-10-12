@@ -8,10 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Passport\HasApiTokens;
 use App\Models\UserInfor;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\FilterTrait;
 
 class User extends Authenticatable
 {
-    use Notifiable, SoftDeletes, HasApiTokens;
+    use Notifiable, SoftDeletes, HasApiTokens, FilterTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -49,6 +50,16 @@ class User extends Authenticatable
     public function userInfor()
     {
         return $this->hasOne(UserInfor::class);
+    }
+
+    /**
+    * Get Infor of User
+    *
+    * @return \Illuminate\Database\Eloquent\Relations\HasOne
+    */
+    public function userRole()
+    {
+        return $this->belongsTo(UserRole::class, 'role_id', 'id');
     }
 
     public $sortable = ['username'];

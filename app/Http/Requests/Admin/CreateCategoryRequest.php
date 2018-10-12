@@ -25,7 +25,7 @@ class CreateCategoryRequest extends ApiFormRequest
     {
         return [
             'name'          => 'required|unique:categories|max:255',
-            'position'      => 'required|unique:categories|integer',
+            'position'      => 'required|integer',
             'parent_id'     => 'required|integer',
             'image'         => 'image|mimes:jpeg,bmp,png',
         ];
