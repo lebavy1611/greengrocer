@@ -19,5 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['prefix' => 'admin', 'as' => 'api.admin.', 'namespace' => 'Api\Admin'], function () {
     Route::apiResource('categories', 'CategoryController');
- 
+    Route::apiResource('users', 'UserController');
 }); 

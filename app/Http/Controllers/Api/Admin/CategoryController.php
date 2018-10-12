@@ -38,22 +38,26 @@ class CategoryController extends ApiController
     public function store(CreateCategoryRequest $request)
     {
         try {
+            $newImage = '';
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $newImage = time() . '-' . str_random(8) . '.' . $image->getClientOriginalExtension();
+            }
+
             $data = $request->only([
                 'name',
                 'parent_id',
                 'position',
-                'image'
+                'image'         => $newImage,
             ]);
 
-            $category = Category::create($data);
-
-            $newImage = '';
-            if ($request->hasFile('avatar')) {
-                $image = $request->file('avatar');
-                $newImage = time() . '-' . str_random(8) . '.' . $image->getClientOriginalExtension();
+            if ($newImage) {
+                $destinationPath = public_path(config('define.images_path_users'));
+                $image->move($destinationPath, $newImage);
             }
-            
-            return $this->successResponse($category, Response::HTTP_CREATED);
+
+            $category = Category::create($data);    
+            return $this->successResponse($category, Response::HTTP_OK);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when insert category.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -95,7 +99,7 @@ class CategoryController extends ApiController
             ]);
 
             $category = Category::findOrFail($id)->update($data);
-            return $this->successResponse($category, Response::HTTP_OK);
+            return $this->successResponse("Update category successfully", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
@@ -113,7 +117,7 @@ class CategoryController extends ApiController
     {
         try {
             $result = Category::findOrfail($id)->delete();
-            return $this->successResponse("Delete category success.", Response::HTTP_OK);
+            return $this->successResponse("Delete category successfully.", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
