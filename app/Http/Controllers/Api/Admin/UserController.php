@@ -106,9 +106,9 @@ class UserController extends ApiController
         try {
             $user->userInfor()->delete();
             $user->delete();
-            return $this->successResponse('Delete a new user successfully', Response::HTTP_OK);
+            return $this->successResponse('Delete a new user successfully.', Response::HTTP_OK);
         } catch (Exception $e) {
-            return $this->errorResponse('Delete a new user failed', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->errorResponse('Delete a new user failed.', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
