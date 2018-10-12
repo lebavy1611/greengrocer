@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Http\Controllers\Api\ApiController;
 use Illuminate\Http\Response;
+use App\Http\Requests\Admin\CreateUserRequest;
 
 class UserController extends ApiController
 {
@@ -28,15 +29,6 @@ class UserController extends ApiController
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -44,9 +36,40 @@ class UserController extends ApiController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateUserRequest $request)
     {
-        //
+        try {
+            $userData = [
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+                'role_id' => $request->role_id,
+                'active' => $request->active
+            ];
+            $user = User::create($userData);
+            $newImage = '';
+            if ($request->hasFile('avatar')) {
+                $image = $request->file('avatar');
+                $newImage = time() . '-' . str_random(8) . '.' . $image->getClientOriginalExtension();
+            }
+            $userInfoData = [
+                'fullname' => $request->fullname,
+                'address' => $request->address,
+                'phone' => $request->phone,
+                'gender' => $request->gender,
+                'avatar' => $newImage,
+                'birthday' => $request->birthday,
+            ];
+            if ($user->userInfor()->create($userInfoData)) {
+                if ($newImage) {
+                    $destinationPath = public_path(config('define.images_path_users'));
+                    $image->move($destinationPath, $newImage);
+                }
+            }
+            return $this->successResponse('Create a new user successfully', Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse('Create a new user failed', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -56,17 +79,6 @@ class UserController extends ApiController
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
     {
         //
     }
@@ -89,8 +101,14 @@ class UserController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        //
+        try {
+            $user->userInfor()->delete();
+            $user->delete();
+            return $this->successResponse('Delete a new user successfully', Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse('Delete a new user failed', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
