@@ -46,6 +46,13 @@ class CategoryController extends ApiController
             ]);
 
             $category = Category::create($data);
+
+            $newImage = '';
+            if ($request->hasFile('avatar')) {
+                $image = $request->file('avatar');
+                $newImage = time() . '-' . str_random(8) . '.' . $image->getClientOriginalExtension();
+            }
+            
             return $this->successResponse($category, Response::HTTP_CREATED);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when insert category.", Response::HTTP_INTERNAL_SERVER_ERROR);
