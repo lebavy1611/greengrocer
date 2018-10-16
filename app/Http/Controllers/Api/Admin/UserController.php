@@ -101,7 +101,6 @@ class UserController extends ApiController
             ];
             if ($request->password) $userData['password'] = bcrypt($request->password);
             User::updateOrCreate(['id' => $user->id], $userData);
-            $newImage = '';
             $userInfoData = [
                 'fullname' => $request->fullname,
                 'address' => $request->address,
@@ -109,6 +108,7 @@ class UserController extends ApiController
                 'gender' => $request->gender,
                 'birthday' => $request->birthday,
             ];
+            $newImage = '';
             if ($request->hasFile('avatar')) {
                 $image = $request->file('avatar');
                 $newImage = time() . '-' . str_random(8) . '.' . $image->getClientOriginalExtension();
