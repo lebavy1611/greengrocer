@@ -10,7 +10,8 @@ use Illuminate\Http\Response;
 use App\Http\Requests\Admin\CreateUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Models\UserInfor;
-
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Exception;
 class UserController extends ApiController
 {
     /**
@@ -82,7 +83,14 @@ class UserController extends ApiController
      */
     public function show($id)
     {
-        //
+        try {
+            $user = User::findOrFail($id);
+            return $this->successResponse($user, Response::HTTP_OK);
+        } catch (ModelNotFoundException $ex) {
+            return $this->errorResponse("User not found.", Response::HTTP_NOT_FOUND);
+        } catch (Exception $ex) {
+            return $this->errorResponse("Occour error when show user.", Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
