@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Http\Controllers\Api\ApiController;
 use Illuminate\Http\Response;
 use App\Http\Requests\Admin\CreateUserRequest;
+use App\Http\Requests\Admin\UpdateUserRequest;
+use App\Models\UserInfor;
 
 class UserController extends ApiController
 {
@@ -90,9 +92,38 @@ class UserController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        //
+        try {
+            $userData = [
+                'role_id' => $request->role_id,
+                'active' => $request->active
+            ];
+            if ($request->password) $userData['password'] = bcrypt($request->password);
+            User::updateOrCreate(['id' => $user->id], $userData);
+            $newImage = '';
+            $userInfoData = [
+                'fullname' => $request->fullname,
+                'address' => $request->address,
+                'phone' => $request->phone,
+                'gender' => $request->gender,
+                'birthday' => $request->birthday,
+            ];
+            if ($request->hasFile('avatar')) {
+                $image = $request->file('avatar');
+                $newImage = time() . '-' . str_random(8) . '.' . $image->getClientOriginalExtension();
+                $userInfoData['avatar'] = $newImage;
+            }
+            if (UserInfor::updateOrCreate(['user_id' => $user->id], $userInfoData)) {
+                if ($newImage) {
+                    $destinationPath = public_path(config('define.images_path_users'));
+                    $image->move($destinationPath, $newImage);
+                }
+            }
+            return $this->successResponse('Update user successfully', Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse('Update user failed', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
