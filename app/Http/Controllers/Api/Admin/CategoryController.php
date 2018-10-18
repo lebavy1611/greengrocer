@@ -99,7 +99,7 @@ class CategoryController extends ApiController
                 $destinationPath = public_path(config('define.images_path_categories'));
                 $image->move($destinationPath, $newImage);
                 $data['image'] = $newImage;
-        }
+            }
 
             $category = Category::findOrFail($id)->update($data);
             return $this->successResponse("Update category successfully", Response::HTTP_OK);
