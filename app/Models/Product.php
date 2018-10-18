@@ -28,4 +28,12 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class, 'category_id', 'id');
     }
+
+    /**
+     * Get the user that owns the phone.
+     */
+    public function images()
+    {
+        return $this->hasMany(Image::class, 'product_id', 'id');
+    }
 }

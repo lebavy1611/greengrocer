@@ -22,38 +22,12 @@ class ProductController extends ApiController
     public function index()
     {
         try {
-            $products = Product::join('categories', 'categories.id', '=', 'products.category_id')
-                ->join('shops', 'shops.id', '=', 'products.shop_id')->orderBy('created_at', 'desc')
-                ->paginate(config('paginate.number_stores'), [
-                    'products.id',
-                    'products.name',
-                    'products.shop_id',
-                    'products.describe',
-                    'products.price',
-                    'products.origin',
-                    'products.quantity',
-                    'products.imported_date',
-                    'products.expired_date',
-                    'products.active',
-                    'products.created_at',
-                    'categories.name as category_name',
-                    'shops.name as shop_name'
-                ]);
+            $products = Product::with(['shop','category'])->orderBy('created_at', 'desc')->paginate(config('paginate.number_products'));
             $products = $this->formatPaginate($products);
             return $this->showAll($products);
         } catch (Exception $ex) {
             return $this->errorResponse("Product can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -72,7 +46,21 @@ class ProductController extends ApiController
             ]);
 
             $product = Product::create($data);
-            return $this->successResponse("Insert product successfully", Response::HTTP_OK);
+
+            $imagesData ="";
+            if (is_array(request()->file('image'))) {
+                foreach (request()->file('image') as $image) {
+                    $newImage = $image->getClientOriginalName();
+                    $image->move(public_path(config('define.product.images_path_products')), $newImage);
+                    $imagesData[] = [
+                        'product_id' => $product->id,
+                        'path' => $newImage
+                    ];
+                }
+                $product->images()->createMany($imagesData);
+            }
+
+            return $this->successResponse($product, Response::HTTP_OK);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when insert product.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -87,38 +75,13 @@ class ProductController extends ApiController
     public function show($id)
     {
         try{
-            $with['shop'] = function ($query) {
-                return $query->select([
-                    'name',
-                    'id'
-                ]);
-
-            };
-            $with['category'] = function ($query) {
-                return $query->select([
-                    'name',
-                    'id'
-                ]);
-
-            };
-            $product = Product::with($with)->findOrFail($id);
+            $product = Product::with("category:id,name", "shop:id,name")->findOrFail($id);
             return $this ->successResponse($product, Response::HTTP_OK);
         }catch (ModelNotFoundException $ex){
             return $this ->errorResponse("Product can not be show", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when show Product.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\igration  $igration
-     * @return \Illuminate\Http\Response
-     */
-    public function edit()
-    {
-        //
     }
 
     /**
