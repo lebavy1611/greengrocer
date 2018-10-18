@@ -28,7 +28,7 @@ class UpdateCategoryRequest extends ApiFormRequest
             'name'          => 'required|string|unique:categories|max:255',
             'position'      => 'required|integer',
             'parent_id'     => 'required|integer',
-            'image'         => 'image|mimes:jpeg,bmp,png',
+            'image'         => 'nullable|image|mimes:jpeg,bmp,png',
         ];
     }
 }
