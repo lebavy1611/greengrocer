@@ -84,7 +84,7 @@ class UserController extends ApiController
     public function show($id)
     {
         try {
-            $user = User::findOrFail($id);
+            $user = User::findOrFail($id)->load('userInfor');
             return $this->successResponse($user, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("User not found.", Response::HTTP_NOT_FOUND);
