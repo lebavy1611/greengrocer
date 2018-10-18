@@ -26,4 +26,5 @@ Route::group(['as' => 'api.', 'namespace' => 'Api\User'], function () {
     Route::apiResource('categories', 'CategoryController');
     Route::post('login', 'LoginController@login');
     Route::post('register', 'LoginController@register');
+    Route::apiResource('products', 'ProductController');
 }); 
