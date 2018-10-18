@@ -1,6 +1,6 @@
 <?php
 return [
-    'images_path_stores' => '/images/stores/',
+    'images_path_shops' => '/images/shops/',
     'images_path_categories' => '/images/categories/',
     'images_path_users' => '/images/users/',
     'product' => [
