@@ -59,29 +59,28 @@ class OrderController extends ApiController
         }*/
 
 
-
-        /*$user = 1;
-        $products = json_decode($request->products);
-        $request['customer_id'] = $user->id;
+        $products = ($request->products);
+        $request['customer_id'];
         $request['address'] ;
         $request['delivery_time'] = Carbon::parse($request['delivery_time'])->toDateTimeString();
         $request['note'];
         $request['processing_status'] = 0;
-        $request['payment_status'] = 0;
+        $request['payment_status'] = ($request['payment_method_id']==1) ? 1 :0 ;
         $request['payment_method_id'];
         $request['coupon_id'];
 
         $order = Order::create($request->all());
 
         foreach ($products as $product) {
+
             OrderDetail::create([
                 'order_id' => $order->id,
-                'product_id' =>$product->id,
-                'quantity' => $product->quantity
+                'product_id' =>$product['id'],
+                'quantity' => $product['quantity']
             ]);
         }
         $order->load('orderdetails');
-        return $this->successResponse($order, Response::HTTP_OK);*/
+        return $this->successResponse($order, Response::HTTP_OK);
     }
 
     /**

@@ -25,12 +25,11 @@ class CreateOrderController extends ApiFormRequest
     public function rules()
     {
         return [
-            'customer_id'          => 'required|integer|',
+            'products'             => 'required',
+            'customer_id'          => 'required|integer',
             'address'              => 'required|string|max:255',
             'delivery_time'        => 'required|date_format:"Y-m-d"',
-            'note'                 => 'required|string|max:255',
-            'processing_status'    => 'required|integer',
-            'payment_status'       => 'required|integer',
+            'note'                 => 'string|max:255',
             'payment_method_id'    => 'required|integer',
             'coupon_id'            => 'required|integer',
         ];
