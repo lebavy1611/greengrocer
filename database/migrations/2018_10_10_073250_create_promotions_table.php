@@ -19,7 +19,6 @@ class CreatePromotionsTable extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->string('image');
-            $table->tinyInteger('quantity')->nullable();
             $table->timestamps();
             $table->softDeletes('deleted_at');
         });

@@ -21,14 +21,16 @@ Route::group(['prefix' => 'admin', 'as' => 'api.admin.', 'namespace' => 'Api\Adm
     Route::apiResource('categories', 'CategoryController');
     Route::apiResource('users', 'UserController');
     Route::apiResource('shops', 'ShopController');
+    Route::apiResource('products', 'ProductController');
     Route::apiResource('coupons', 'CouponController');
     Route::apiResource('payments', 'PaymentMethodController');
     Route::apiResource('orders', 'OrderController');
-    Route::apiResource('order_details', 'OrderDetailController');
 
 });
 Route::group(['as' => 'api.', 'namespace' => 'Api\User'], function () {
     Route::apiResource('categories', 'CategoryController');
     Route::post('login', 'LoginController@login');
     Route::post('register', 'LoginController@register');
-});
+    Route::apiResource('products', 'ProductController');
+    Route::apiResource('promotions', 'PromotionController');
+}); 
