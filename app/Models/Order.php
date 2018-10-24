@@ -41,4 +41,15 @@ class Order extends Model
     {
         return $this->belongsTo(PaymentMethod::class, 'coupon_id', 'id');
     }
+
+    /**
+     * Get OrderDetail for Order, the name's function isn't the Camel, because Kyslik\ColumnSortable\Sortable
+     * doesn't allow the Camel when using withCount().
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orderdetails()
+    {
+        return $this->hasMany(OrderDetail::class, 'order_id', 'id');
+    }
 }

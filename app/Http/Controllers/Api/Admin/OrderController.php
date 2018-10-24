@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Admin\CreateOrderController;
 use App\Http\Requests\Admin\UpdateOrderController;
 use App\Models\Order;
+use App\Models\OrderDetail;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Exception;
@@ -46,7 +48,7 @@ class OrderController extends ApiController
      */
     public function store(CreateOrderController $request)
     {
-        try {
+        /*try {
             $data = $request->only([
                 'customer_id','address','delivery_time','note','processing_status','payment_status','payment_method_id','coupon_id',
             ]);
@@ -54,7 +56,32 @@ class OrderController extends ApiController
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when insert order.", Response::HTTP_INTERNAL_SERVER_ERROR);
+        }*/
+
+
+
+        /*$user = 1;
+        $products = json_decode($request->products);
+        $request['customer_id'] = $user->id;
+        $request['address'] ;
+        $request['delivery_time'] = Carbon::parse($request['delivery_time'])->toDateTimeString();
+        $request['note'];
+        $request['processing_status'] = 0;
+        $request['payment_status'] = 0;
+        $request['payment_method_id'];
+        $request['coupon_id'];
+
+        $order = Order::create($request->all());
+
+        foreach ($products as $product) {
+            OrderDetail::create([
+                'order_id' => $order->id,
+                'product_id' =>$product->id,
+                'quantity' => $product->quantity
+            ]);
         }
+        $order->load('orderdetails');
+        return $this->successResponse($order, Response::HTTP_OK);*/
     }
 
     /**
@@ -66,11 +93,12 @@ class OrderController extends ApiController
     public function show($id)
     {
         try {
-            $order = Order::with(['user','payment','coupon'])->findOrFail($id);
+            $order = Order::with(['user','payment','coupon','orderDetails.product:id,name,price'])->findOrFail($id);
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Order not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
+            dd($ex->getMessage());
             return $this->errorResponse("Occour error when show Order.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
