@@ -3,6 +3,7 @@ return [
     'images_path_shops' => '/images/shops/',
     'images_path_categories' => '/images/categories/',
     'images_path_users' => '/images/users/',
+    'images_path_promotions' => '/images/promotions/',
     'product' => [
       'images_path_products' => '/images/products/',
     ],

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Admin\CreateCategoryRequest;
-use App\Http\Requests\Admin\CreateProductController;
+use App\Http\Requests\Admin\CreateProductRequest;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -36,7 +36,7 @@ class ProductController extends ApiController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateProductController $request)
+    public function store(CreateProductRequest $request)
     {
         try {
 
