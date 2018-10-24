@@ -5,7 +5,7 @@ namespace App\Http\Requests\Admin;
 use App\Http\Requests\ApiFormRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateProductController extends ApiFormRequest
+class CreateProductRequest extends ApiFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

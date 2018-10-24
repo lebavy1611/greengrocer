@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\Category;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Admin\CreateCategoryRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
-use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 use App\Http\Requests\Admin\UpdateCategoryRequest;
 
@@ -34,7 +31,7 @@ class CategoryController extends ApiController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param CreateCategoryRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(CreateCategoryRequest $request)
@@ -82,8 +79,8 @@ class CategoryController extends ApiController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param UpdateCategoryRequest $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateCategoryRequest $request, $id)
@@ -101,7 +98,7 @@ class CategoryController extends ApiController
                 $data['image'] = $newImage;
             }
 
-            $category = Category::findOrFail($id)->update($data);
+            Category::findOrFail($id)->update($data);
             return $this->successResponse("Update category successfully", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
@@ -119,7 +116,7 @@ class CategoryController extends ApiController
     public function destroy($id)
     {
         try {
-            $result = Category::findOrfail($id)->delete();
+            Category::findOrfail($id)->delete();
             return $this->successResponse("Delete category successfully.", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
