@@ -10,6 +10,13 @@ class UserInfor extends Model
     use SoftDeletes;
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = "user_infors";
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array

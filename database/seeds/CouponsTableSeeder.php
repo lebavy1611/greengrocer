@@ -11,6 +11,6 @@ class CouponsTableSeeder extends Seeder
      */
     public function run()
     {
-        //
+        factory(App\Models\Coupon::class, 15)->create();
     }
 }
