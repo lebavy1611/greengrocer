@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\User;
 
 use App\Http\Requests\ApiFormRequest;
 use Illuminate\Foundation\Http\FormRequest;
@@ -26,6 +26,8 @@ class UpdateOrderController extends ApiFormRequest
     {
         return [
             'processing_status'    => 'required|integer',
+            'address'              => 'required|string|max:255',
+            'note'                 => 'required|string|max:255',
             'payment_status'       => 'required|integer|min:0|max:1',
             'delivery_time'        => 'required|date_format:"Y-m-d"',
         ];

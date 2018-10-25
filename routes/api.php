@@ -33,4 +33,5 @@ Route::group(['as' => 'api.', 'namespace' => 'Api\User'], function () {
     Route::post('register', 'LoginController@register');
     Route::apiResource('products', 'ProductController');
     Route::apiResource('promotions', 'PromotionController');
-}); 
+    Route::apiResource('orders', 'OrderController');
+});

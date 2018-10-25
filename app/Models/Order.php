@@ -6,6 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
+    const STATUS_PAYED = 1;
+
+    const STATUS_NOT_PAYED = 2;
+
+    const PAYMENT_ON_DELIVERY = 1;
+
+    const STATUS_NOT_PROCESSING = 1;
+
     protected $table = "orders";
     protected $fillable = [
         'customer_id','address','delivery_time','note','processing_status','payment_status','payment_method_id','coupon_id',
