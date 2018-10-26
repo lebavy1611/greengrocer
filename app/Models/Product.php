@@ -40,4 +40,20 @@ class Product extends Model
     {
         return $this->hasMany(Image::class, 'product_id', 'id');
     }
+
+    /**
+     * Get the user that owns the phone.
+     */
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'product_id', 'id');
+    }
+
+    /**
+     * Get the user that owns the phone.
+     */
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class, 'product_id', 'id');
+    }
 }
