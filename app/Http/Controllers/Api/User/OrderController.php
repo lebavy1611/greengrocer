@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\User;
 
 
 use App\Http\Controllers\Api\ApiController;
-use App\Http\Requests\Admin\CreateOrderController;
+use App\Http\Requests\User\CreateOrderController;
 use App\Http\Requests\User\UpdateOrderController;
 use App\Models\Order;
 use App\Models\OrderDetail;
@@ -22,8 +22,8 @@ class OrderController extends ApiController
     public function index()
     {
         try {
-            $user_id = 3;
-            $order = Order::with(['user','payment','coupon'])->where('customer_id', $user_id)->orderBy('created_at', 'desc')->paginate(config('paginate.number_orders'));
+            $customer_id = 3;
+            $order = Order::with(['user','payment','coupon'])->where('customer_id', $customer_id)->orderBy('created_at', 'desc')->paginate(config('paginate.number_orders'));
             return $this->formatPaginate($order);
         } catch (Exception $ex) {
             dd($ex->getMessage());
@@ -37,6 +37,8 @@ class OrderController extends ApiController
      * @return \Illuminate\Http\Response
      * processing_status = 1 Dang xu ly
      * processing_status = 2 Da xu ly
+     * processing_status = 3 huy xu ly
+     * processing_status = 4 thanh cong
      * payment_method_id = 1 thanh toan khi nhan hang
      * payment_method_id = 2,3 cac hinh thuc thanh toan
      * payment_status = 1 da thanh toan
@@ -46,7 +48,6 @@ class OrderController extends ApiController
     {
         try {
             $data = $request->only([
-                'customer_id',
                 'address',
                 'note',
                 'payment_method_id',
@@ -54,9 +55,9 @@ class OrderController extends ApiController
                 'delivery_time'
             ]);
             $products = ($request->products);
-            $data['processing_status'] = Order::STATUS_NOT_PROCESSING;
+            $data['customer_id'] = 3;
+            $data['processing_status'] = Order::STATUS_PROCESSING;
             $data['payment_status'] = ($data['payment_method_id'] != Order::PAYMENT_ON_DELIVERY) ? Order::STATUS_PAYED : Order::STATUS_NOT_PAYED;
-
             $order = Order::create($data);
 
             foreach ($products as $product) {
@@ -104,15 +105,18 @@ class OrderController extends ApiController
     public function update(UpdateOrderController $request, Order $order)
     {
         try {
-            if ($order->processing_status == 0) {
-                $order->processing_status = $request->processing_status;
-            }
-            $order->address = $request->address;
-            $order->note = $request->note;
-            $order->payment_status = $request->payment_status;
-            $order->delivery_time = $request->delivery_time;
-            $order->save();
-
+//            $user = Auth::user();
+//            if ($user->id == $order->user_id) {
+                if ($order->processing_status == Order::STATUS_PROCESSING) {
+                    $order->update(['processing_status' => Order::CANCEL_STATUS_PROCESSING]);
+                    if($order->processing_status !=Order::CANCEL_STATUS_PROCESSING){
+                        $order->address = $request->address;
+                        $order->note = $request->note;
+                    }
+                    $order->save();
+//                    return $this->showOne($order, Response::HTTP_OK);
+                }
+//            }
             return $this->successResponse("Update order successfully", Response::HTTP_OK);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when show Order.", Response::HTTP_INTERNAL_SERVER_ERROR);

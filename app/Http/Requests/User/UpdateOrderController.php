@@ -28,8 +28,7 @@ class UpdateOrderController extends ApiFormRequest
             'processing_status'    => 'required|integer',
             'address'              => 'required|string|max:255',
             'note'                 => 'required|string|max:255',
-            'payment_status'       => 'required|integer|min:0|max:1',
-            'delivery_time'        => 'required|date_format:"Y-m-d"',
+//            'delivery_time'        => 'required|date_format:"Y-m-d"',
         ];
     }
 }

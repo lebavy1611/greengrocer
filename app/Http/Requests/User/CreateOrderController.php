@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\User;
 
 use App\Http\Requests\ApiFormRequest;
 use Illuminate\Foundation\Http\FormRequest;
@@ -26,7 +26,6 @@ class CreateOrderController extends ApiFormRequest
     {
         return [
             'products'             => 'required',
-            'customer_id'          => 'required|integer',
             'address'              => 'required|string|max:255',
             'delivery_time'        => 'required|date_format:"Y-m-d"',
             'note'                 => 'string|max:255',
