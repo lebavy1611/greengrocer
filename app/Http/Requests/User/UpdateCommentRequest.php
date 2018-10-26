@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\User;
 
 use App\Http\Requests\ApiFormRequest;
+use Illuminate\Foundation\Http\FormRequest;
 
-class CreateRatingRequest extends ApiFormRequest
+class UpdateCommentRequest extends ApiFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +25,7 @@ class CreateRatingRequest extends ApiFormRequest
     public function rules()
     {
         return [
-            'product_id'        => 'required|integer',
-            'stars'             => 'required|integer|min:1|max:5',
+            'parent_id'         => 'required|integer',
             'content'           => 'required|string|max:255',
         ];
     }

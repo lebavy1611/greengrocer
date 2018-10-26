@@ -3,16 +3,21 @@
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Api\ApiController;
-use App\Http\Requests\User\CreateRatingRequest;
-use App\Http\Requests\User\UpdateRatingRequest;
-use App\Models\Rating;
+use App\Http\Requests\User\CreateCommentRequest;
+use App\Http\Requests\User\UpdateCommentRequest;
+use App\Models\Comment;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
+use App\Models\Rating;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
-class RatingController extends ApiController
+class CommentController extends ApiController
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     /**
      * Store a newly created resource in storage.
      *
@@ -20,18 +25,18 @@ class RatingController extends ApiController
      * @return \Illuminate\Http\Response
      *
      */
-    public function store(CreateRatingRequest $request)
+    public function store(CreateCommentRequest $request)
     {
         try {
             $data = $request->only([
                 'product_id',
-                'stars',
+                'parent_id',
                 'content'
             ]);
             $data['customer_id'] = 3;
 
-            $rating = Rating::create($data);
-            return $this->successResponse($rating, Response::HTTP_OK);
+            $comment = Comment::create($data);
+            return $this->successResponse($comment, Response::HTTP_OK);
         } catch (Exception $ex) {
             dd($ex->getMessage());
             return $this->errorResponse("Occour error when insert order.", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -45,16 +50,16 @@ class RatingController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateRatingRequest $request, $id)
+    public function update(UpdateCommentRequest $request, $id)
     {
         try {
 //       $user = Auth::user();
 //       if ($user->id == $order->user_id) {
             $data = $request->only([
-                'stars',
+                'parent_id',
                 'content'
             ]);
-            Rating::findOrFail($id)->update($data);
+            Comment::findOrFail($id)->update($data);
             return $this->successResponse("Update conpon successfully", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Coupon not found.", Response::HTTP_NOT_FOUND);
@@ -64,4 +69,21 @@ class RatingController extends ApiController
 
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        try {
+            Comment::findOrfail($id)->delete();
+            return $this->successResponse("Delete comment successfully.", Response::HTTP_OK);
+        } catch (ModelNotFoundException $ex) {
+            return $this->errorResponse("Comment not found.", Response::HTTP_NOT_FOUND);
+        } catch (Exception $ex) {
+            return $this->errorResponse("Occour error when delete comment.", Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
