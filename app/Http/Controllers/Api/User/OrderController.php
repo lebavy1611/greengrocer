@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api\User;
 
 
 use App\Http\Controllers\Api\ApiController;
-use App\Http\Requests\User\CreateOrderController;
-use App\Http\Requests\User\UpdateOrderController;
+use App\Http\Requests\User\CreateOrderRequest;
+use App\Http\Requests\User\UpdateOrderRequest;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -44,7 +44,7 @@ class OrderController extends ApiController
      * payment_status = 1 da thanh toan
      * payment_status = 2 chua thanh toan
      */
-    public function store(CreateOrderController $request)
+    public function store(CreateOrderRequest $request)
     {
         try {
             $data = $request->only([
@@ -55,6 +55,7 @@ class OrderController extends ApiController
                 'delivery_time'
             ]);
             $products = ($request->products);
+            dd($products);
             $data['customer_id'] = 3;
             $data['processing_status'] = Order::STATUS_PROCESSING;
             $data['payment_status'] = ($data['payment_method_id'] != Order::PAYMENT_ON_DELIVERY) ? Order::STATUS_PAYED : Order::STATUS_NOT_PAYED;
@@ -102,19 +103,13 @@ class OrderController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateOrderController $request, Order $order)
+    public function update(UpdateOrderRequest $request, Order $order)
     {
         try {
 //            $user = Auth::user();
 //            if ($user->id == $order->user_id) {
                 if ($order->processing_status == Order::STATUS_PROCESSING) {
                     $order->update(['processing_status' => Order::CANCEL_STATUS_PROCESSING]);
-                    if($order->processing_status !=Order::CANCEL_STATUS_PROCESSING){
-                        $order->address = $request->address;
-                        $order->note = $request->note;
-                    }
-                    $order->save();
-//                    return $this->showOne($order, Response::HTTP_OK);
                 }
 //            }
             return $this->successResponse("Update order successfully", Response::HTTP_OK);

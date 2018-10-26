@@ -5,7 +5,7 @@ namespace App\Http\Requests\User;
 use App\Http\Requests\ApiFormRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateOrderController extends ApiFormRequest
+class UpdateOrderRequest extends ApiFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,9 +26,6 @@ class UpdateOrderController extends ApiFormRequest
     {
         return [
             'processing_status'    => 'required|integer',
-            'address'              => 'required|string|max:255',
-            'note'                 => 'required|string|max:255',
-//            'delivery_time'        => 'required|date_format:"Y-m-d"',
         ];
     }
 }
