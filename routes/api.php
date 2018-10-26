@@ -25,6 +25,7 @@ Route::group(['prefix' => 'admin', 'as' => 'api.admin.', 'namespace' => 'Api\Adm
     Route::apiResource('coupons', 'CouponController');
     Route::apiResource('payments', 'PaymentMethodController');
     Route::apiResource('orders', 'OrderController');
+    Route::apiResource('promotions', 'PromotionController');
 
 });
 Route::group(['as' => 'api.', 'namespace' => 'Api\User'], function () {

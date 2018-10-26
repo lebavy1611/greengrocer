@@ -16,8 +16,8 @@ class PromotionController extends ApiController
      */
     public function index()
     {
-        $promotions = Promotion::where('end_date', '>=', date("Y-m-d"))->orderBy('created_at', 'desc')->paginate(config('define.limit_rows'));
-        $promotions = $this->formatPaginate($promotions);
+        $promotions = Promotion::where('end_date', '>=', date("Y-m-d"))->orderBy('created_at', 'desc')->get();
+        //$promotions = $this->formatPaginate($promotions);
         return $this->showAll($promotions, Response::HTTP_OK);
     }
 
