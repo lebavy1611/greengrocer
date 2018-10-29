@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\User;
 
 use App\Http\Requests\ApiFormRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateOrderController extends ApiFormRequest
+class CreateOrderRequest extends ApiFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,12 +25,10 @@ class CreateOrderController extends ApiFormRequest
     public function rules()
     {
         return [
-            'customer_id'          => 'required|integer|',
+            'products'             => 'required',
             'address'              => 'required|string|max:255',
             'delivery_time'        => 'required|date_format:"Y-m-d"',
-            'note'                 => 'required|string|max:255',
-            'processing_status'    => 'required|integer',
-            'payment_status'       => 'required|integer',
+            'note'                 => 'string|max:255',
             'payment_method_id'    => 'required|integer',
             'coupon_id'            => 'required|integer',
         ];
