@@ -55,7 +55,6 @@ class OrderController extends ApiController
                 'delivery_time'
             ]);
             $products = ($request->products);
-            dd($products);
             $data['customer_id'] = 3;
             $data['processing_status'] = Order::STATUS_PROCESSING;
             $data['payment_status'] = ($data['payment_method_id'] != Order::PAYMENT_ON_DELIVERY) ? Order::STATUS_PAYED : Order::STATUS_NOT_PAYED;
@@ -71,7 +70,6 @@ class OrderController extends ApiController
             $order->load('orderdetails');
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (Exception $ex) {
-            dd($ex->getMessage());
             return $this->errorResponse("Occour error when insert order.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
