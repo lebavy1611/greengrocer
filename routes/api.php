@@ -27,7 +27,7 @@ Route::group(['prefix' => 'admin', 'as' => 'api.admin.', 'namespace' => 'Api\Adm
     Route::apiResource('orders', 'OrderController');
     Route::apiResource('ratings', 'RatingController');
     Route::apiResource('comments', 'CommentController');
-
+    Route::apiResource('promotions', 'PromotionController');
 });
 Route::group(['as' => 'api.', 'namespace' => 'Api\User'], function () {
     Route::apiResource('categories', 'CategoryController');

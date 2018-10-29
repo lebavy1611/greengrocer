@@ -22,7 +22,7 @@ class OrderController extends ApiController
     public function index()
     {
         try {
-            $customer_id = 3;
+            $customer_id = 1;
             $order = Order::with(['user','payment','coupon'])->where('customer_id', $customer_id)->orderBy('created_at', 'desc')->paginate(config('paginate.number_orders'));
             return $this->formatPaginate($order);
         } catch (Exception $ex) {
@@ -55,7 +55,7 @@ class OrderController extends ApiController
                 'delivery_time'
             ]);
             $products = ($request->products);
-            $data['customer_id'] = 3;
+            $data['customer_id'] = 1;
             $data['processing_status'] = Order::STATUS_PROCESSING;
             $data['payment_status'] = ($data['payment_method_id'] != Order::PAYMENT_ON_DELIVERY) ? Order::STATUS_PAYED : Order::STATUS_NOT_PAYED;
             $order = Order::create($data);

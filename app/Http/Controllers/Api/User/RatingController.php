@@ -28,7 +28,7 @@ class RatingController extends ApiController
                 'stars',
                 'content'
             ]);
-            $data['customer_id'] = 3;
+            $data['customer_id'] = 1;
 
             $rating = Rating::create($data);
             return $this->successResponse($rating, Response::HTTP_OK);
