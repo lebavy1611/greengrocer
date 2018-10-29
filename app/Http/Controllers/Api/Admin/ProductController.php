@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Admin\CreateCategoryRequest;
 use App\Http\Requests\Admin\CreateProductRequest;
 use App\Models\Product;
+use App\Models\Rating;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -19,12 +20,16 @@ class ProductController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $products = Product::with(['shop','category'])->orderBy('created_at', 'desc')->paginate(config('paginate.number_products'));
+            if ($request->filter) {
+                $products = Product::with('category.parent', 'store', 'images')->filter($request)->paginate(config('paginate.number_products'));
+            }else{
+                $products = Product::with(['shop','category'])->orderBy('created_at', 'desc')->paginate(config('paginate.number_products'));
+            }
             $products = $this->formatPaginate($products);
-            return $this->showAll($products);
+            return $this->showAll($products, Response::HTTP_OK);
         } catch (Exception $ex) {
             return $this->errorResponse("Product can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -75,7 +80,19 @@ class ProductController extends ApiController
     public function show($id)
     {
         try{
-            $product = Product::with("category:id,name", "shop:id,name")->findOrFail($id);
+            $product = Product::with("category:id,name", "shop:id,name", "comments")->findOrFail($id);
+
+            $ratings = Rating::all()->where('product_id', $id);
+            $total = 0;
+            $stars = 0;
+            foreach ($ratings as $rating) {
+                $stars += $rating->stars;
+                $total +=1;
+            }
+            $stars = round($stars/$total);
+
+            $product['ratings']= array("avg"=>$stars ,"total"=>$total, "list"=> $ratings);
+
             return $this ->successResponse($product, Response::HTTP_OK);
         }catch (ModelNotFoundException $ex){
             return $this ->errorResponse("Product can not be show", Response::HTTP_NOT_FOUND);
