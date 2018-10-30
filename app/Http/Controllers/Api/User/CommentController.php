@@ -33,7 +33,7 @@ class CommentController extends ApiController
                 'parent_id',
                 'content'
             ]);
-            $data['customer_id'] = 3;
+            $data['customer_id'] = 1;
 
             $comment = Comment::create($data);
             return $this->successResponse($comment, Response::HTTP_OK);

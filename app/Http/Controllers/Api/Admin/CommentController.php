@@ -22,7 +22,7 @@ class CommentController extends ApiController
     public function index()
     {
         try {
-            $customer_id = 3;
+            $customer_id = 1;
             $comment = Comment::with(['user','product'])->where('customer_id', $customer_id)->orderBy('created_at', 'desc')->paginate(config('paginate.number_ratings'));
             return $this->formatPaginate($comment);
         } catch (Exception $ex) {

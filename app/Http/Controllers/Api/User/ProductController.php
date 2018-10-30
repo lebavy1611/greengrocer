@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Promotion;
+use App\Models\Rating;
 
 class ProductController extends ApiController
 {
@@ -38,7 +39,17 @@ class ProductController extends ApiController
     public function show($id)
     {
         try{
-            $product = Product::with("category:id,name", "shop:id,name", 'images', 'comments', 'ratings')->findOrFail($id);
+            $product = Product::with("category:id,name", "shop:id,name", 'images', 'comments')->findOrFail($id);
+            $ratings = Rating::all()->where('product_id', $id);
+            $total = 0;
+            $stars = 0;
+            foreach ($ratings as $rating) {
+                $stars += $rating->stars;
+                $total +=1;
+            }
+            $stars = round($stars/$total);
+
+            $product['ratings']= array("avg"=>$stars ,"total"=>$total, "list"=> $ratings);
             return $this ->successResponse($product, Response::HTTP_OK);
         }catch (ModelNotFoundException $ex){
             return $this ->errorResponse("Product can not be show", Response::HTTP_NOT_FOUND);
