@@ -25,7 +25,7 @@ class ProductController extends ApiController
         $number_products = isset($request->number_products) ? $request->number_products : config('paginate.number_products');
         //\DB::enableQueryLog();
             //$products = Product::with('category.parent', 'shop', 'images')->filter($request)->orderBy('created_at', 'desc')->paginate(config('paginate.number_products'));
-            $products = Product::with('category.parent', 'shop', 'images')->filter($request)->orderBy('created_at', 'desc')->paginate($number_products);            
+            $products = Product::with('category.parent', 'shop', 'images')->product($request)->orderBy('created_at', 'desc')->paginate($number_products);
             $products = $this->formatPaginate($products);
             //dd(\DB::getQueryLog());
             return $this->showAll($products, Response::HTTP_OK);

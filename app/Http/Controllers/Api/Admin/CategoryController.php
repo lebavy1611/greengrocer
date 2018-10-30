@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
 use Carbon\Carbon;
 use App\Http\Requests\Admin\UpdateCategoryRequest;
+use Illuminate\Http\Request;
+
 
 class CategoryController extends ApiController
 {
@@ -18,10 +20,10 @@ class CategoryController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $categories = Category::where('parent_id', 0)->with('children')->get();
+            $categories = Category::where('parent_id', 0)->category($request)->with('children')->get();
             return $this->showAll($categories);
         } catch (Exception $ex) {
             return $this->errorResponse("Category can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);

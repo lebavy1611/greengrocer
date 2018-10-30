@@ -23,11 +23,7 @@ class ProductController extends ApiController
     public function index(Request $request)
     {
         try {
-            if ($request->filter) {
-                $products = Product::with('category.parent', 'store', 'images')->filter($request)->paginate(config('paginate.number_products'));
-            }else{
-                $products = Product::with(['shop','category'])->orderBy('created_at', 'desc')->paginate(config('paginate.number_products'));
-            }
+            $products = Product::with('category.parent', 'shop', 'images')->product($request)->orderBy('created_at', 'desc')->paginate(config('paginate.number_products'));
             $products = $this->formatPaginate($products);
             return $this->showAll($products, Response::HTTP_OK);
         } catch (Exception $ex) {
@@ -80,7 +76,7 @@ class ProductController extends ApiController
     public function show($id)
     {
         try{
-            $product = Product::with("category:id,name", "shop:id,name", "comments")->findOrFail($id);
+            $product = Product::with("category:id,name", "shop:id,name", 'images', 'comments')->findOrFail($id);
 
             $ratings = Rating::all()->where('product_id', $id);
             $total = 0;
