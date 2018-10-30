@@ -160,7 +160,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
-        
+        BC\Laravel\DropboxDriver\ServiceProvider::class,
         /*
          * Package Service Providers...
          */

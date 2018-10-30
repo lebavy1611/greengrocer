@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Promotion;
 use App\Http\Controllers\Api\ApiController;
 use Illuminate\Http\Response;
+use App\Models\PromotionDetail;
+use App\Models\Product;
 
 class PromotionController extends ApiController
 {
@@ -30,8 +32,11 @@ class PromotionController extends ApiController
     public function show($id)
     {
         try {
-            $promotion = Promotion::findOrFail($id);
-            return $this->successResponse($promotion, Response::HTTP_OK);
+            $data = [];
+            $data['promotion'] = Promotion::findOrFail($id);
+            $productIds = PromotionDetail::where('promotion_id', $id)->pluck('product_id')->toArray();
+            $data['products'] = Product::with('category.parent', 'shop', 'images')->whereIn('id', $productIds)->get();
+            return $this->successResponse($data, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Shop not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {

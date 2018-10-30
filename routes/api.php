@@ -38,6 +38,6 @@ Route::group(['as' => 'api.', 'namespace' => 'Api\User'], function () {
     Route::apiResource('orders', 'OrderController');
     Route::apiResource('ratings', 'RatingController');
     Route::apiResource('comments', 'CommentController');
-
+    Route::apiResource('uploads', 'UploadImageController');
 
 });
