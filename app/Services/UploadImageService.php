@@ -39,6 +39,6 @@ class UploadImageService
             $image->move($pulicPath, $newImage);
             return $destinationPath . $newImage;
         }
-        return 'No image';
+        return config('define.product.no_image');;
     }
 }

@@ -23,8 +23,7 @@ class UploadImageController extends ApiController
     }
 
     public function uploadToDropbox(){
-        $contents = Storage::get('ThXEsXZYnsXdv4Xfqc9w0tSxT4zrSKRduDFSpcUp.png');
-        return view('dropbox', compact('contents'));
+        return view('dropbox');
     }
 
     public function uploadToDropboxFile(Request $RequestInput){

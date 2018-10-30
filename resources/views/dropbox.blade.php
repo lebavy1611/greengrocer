@@ -42,7 +42,6 @@
                 @if($errors->any())
                 <h4>{{$errors->first()}}</h4>
                 @endif
-                {{$contents}}
                 <div class="title m-b-md">
                     Upload file to dropbox
                     <form enctype="multipart/form-data" method="post" action="upload_to_dropbox">
