@@ -7,9 +7,22 @@ use App\Http\Controllers\Api\ApiController;
 use App\Models\Shop;
 use Illuminate\Http\Response;
 use App\Http\Requests\Admin\CreateShopRequest;
+use App\Services\UploadImageService;
 
 class ShopController extends ApiController
 {
+    protected $uploadImageService;
+    
+    /**
+     * CategoryController constructor..
+     *
+     * @param UploadImageService   $uploadImageService   UploadImageService
+     */
+    public function __construct(UploadImageService $uploadImageService)
+    {
+        $this->uploadImageService = $uploadImageService;
+    }
+ 
     /**
      * Display a listing of the resource.
      *
@@ -31,15 +44,8 @@ class ShopController extends ApiController
     public function store(CreateShopRequest $request)
     {
         try {
-            $newImage = '';
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $newImage = Carbon::now()->format('YmdHis_u') . '.' . $image->getClientOriginalExtension();
-                $destinationPath = public_path(config('define.images_path_shops'));
-                $image->move($destinationPath, $newImage);
-            }
             $data = $request->only(['name', 'provider_id', 'address', 'phone', 'active']);
-            $data['image'] = $newImage;
+            $data['image'] = $this->uploadImageService->fileUpload($request, 'shops', 'image');
             $shop = Shop::create($data);    
             return $this->successResponse($shop, Response::HTTP_OK);
         } catch (Exception $ex) {
@@ -76,13 +82,8 @@ class ShopController extends ApiController
     public function update(Request $request, $id)
     {
         try {
-            $newImage = '';
             if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $newImage = Carbon::now()->format('YmdHis_u') . '.' . $image->getClientOriginalExtension();
-                $destinationPath = public_path(config('define.images_path_shops'));
-                $image->move($destinationPath, $newImage);
-                $data['image'] = $newImage;
+                $data['image'] = $this->uploadImageService->fileUpload($request, 'shops', 'image');
             }
             $data = $request->only(['name', 'provider_id', 'address', 'phone', 'active']);
             Shop::findOrFail($id)->update($data);

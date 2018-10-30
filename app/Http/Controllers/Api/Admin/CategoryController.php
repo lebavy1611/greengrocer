@@ -10,9 +10,22 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
 use Carbon\Carbon;
 use App\Http\Requests\Admin\UpdateCategoryRequest;
+use App\Services\UploadImageService;
 
 class CategoryController extends ApiController
 {
+    protected $uploadImageService;
+    
+    /**
+     * CategoryController constructor..
+     *
+     * @param UploadImageService   $uploadImageService   UploadImageService
+     */
+    public function __construct(UploadImageService $uploadImageService)
+    {
+        $this->uploadImageService = $uploadImageService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -38,19 +51,10 @@ class CategoryController extends ApiController
     {
        
         try {
-            $newImage = '';
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $newImage = Carbon::now()->format('YmdHis_u') . '.' . $image->getClientOriginalExtension();
-                $destinationPath = public_path(config('define.images_path_categories'));
-                $image->move($destinationPath, $newImage);
-            }
-
             $data = $request->only([
                 'name', 'parent_id', 'position',
             ]);
-
-            $data['image'] = $newImage;
+            $data['image'] = $this->uploadImageService->fileUpload($request, 'categories');
             $category = Category::create($data);    
             return $this->successResponse($category, Response::HTTP_OK);
         } catch (Exception $ex) {
@@ -91,11 +95,7 @@ class CategoryController extends ApiController
             ]);
 
             if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $newImage = Carbon::now()->format('YmdHis_u') . '.' . $image->getClientOriginalExtension();
-                $destinationPath = public_path(config('define.images_path_categories'));
-                $image->move($destinationPath, $newImage);
-                $data['image'] = $newImage;
+                $data['image'] = $this->uploadImageService->fileUpload($request, 'categories');
             }
 
             Category::findOrFail($id)->update($data);

@@ -55,7 +55,7 @@ class ProductController extends ApiController
             $imagesData ="";
             if (is_array(request()->file('image'))) {
                 foreach (request()->file('image') as $image) {
-                    $newImage = $image->getClientOriginalName();
+                    $newImage = config('define.product.images_path_products') . $image->getClientOriginalName();
                     $image->move(public_path(config('define.product.images_path_products')), $newImage);
                     $imagesData[] = [
                         'product_id' => $product->id,
