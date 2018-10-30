@@ -15,6 +15,7 @@ class RouteServiceProvider extends ServiceProvider
      * @var string
      */
     protected $namespace = 'App\Http\Controllers';
+    protected $apiNamespace = 'App\Http\Controllers\Api\User';
 
     /**
      * Define your route model bindings, pattern filters, etc.
@@ -65,9 +66,24 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapApiRoutes()
     {
-        Route::prefix('api')
-             ->middleware('api')
-             ->namespace($this->namespace)
-             ->group(base_path('routes/api.php'));
+        Route::group([
+            'middleware' => ['api', 'cors'],
+            'namespace' => $this->apiNamespace,
+        ], function ($router) {
+             //Add you routes here, for example:
+            Route::apiResource('categories', 'CategoryController');
+            Route::post('login', 'LoginController@login');
+            Route::post('register', 'LoginController@register');
+            Route::apiResource('products', 'ProductController');
+            Route::apiResource('promotions', 'PromotionController');
+            Route::apiResource('orders', 'OrderController');
+            Route::apiResource('ratings', 'RatingController');
+            Route::apiResource('comments', 'CommentController');
+            Route::apiResource('uploads', 'UploadImageController');
+        });
+        // Route::prefix('api')
+        //      ->middleware('api')
+        //      ->namespace($this->namespace)
+        //      ->group(base_path('routes/api.php'));
     }
 }
