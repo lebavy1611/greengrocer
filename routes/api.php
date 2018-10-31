@@ -17,7 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['prefix' => 'admin', 'as' => 'api.admin.', 'namespace' => 'Api\Admin', 'middleware' => ['api', 'cors']], function () {
+Route::group(['prefix' => 'admin', 'as' => 'api.admin.', 'namespace' => 'Api\Admin', 'middleware' => ['cors']], function () {
     Route::apiResource('categories', 'CategoryController');
     Route::apiResource('users', 'UserController');
     Route::apiResource('shops', 'ShopController');
@@ -29,7 +29,7 @@ Route::group(['prefix' => 'admin', 'as' => 'api.admin.', 'namespace' => 'Api\Adm
     Route::apiResource('comments', 'CommentController');
     Route::apiResource('promotions', 'PromotionController');
 });
-Route::group(['as' => 'api.', 'namespace' => 'Api\User', 'middleware' => ['api', 'cors']], function () {
+Route::group(['as' => 'api.', 'namespace' => 'Api\User', 'middleware' => ['cors']], function () {
     Route::apiResource('categories', 'CategoryController');
     Route::post('login', 'LoginController@login');
     Route::post('register', 'LoginController@register');
