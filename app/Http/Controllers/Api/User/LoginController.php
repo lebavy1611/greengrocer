@@ -84,7 +84,7 @@ class LoginController extends ApiController
         ];
         $user->userInfor()->create($userInfoData);
         $data['token'] =  $user->createToken('token')->accessToken;
-        $data['user'] =  $user->load('userInfor');
+        $data['user'] =  $user->load('userInfor','userRole');
         return $this->successResponse($data, Response::HTTP_OK);
     }
 
