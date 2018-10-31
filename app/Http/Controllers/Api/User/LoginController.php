@@ -10,9 +10,22 @@ use App\Models\User;
 use App\Http\Requests\User\RegisterRequest;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Auth;
+use App\Services\UploadImageService;
 
 class LoginController extends ApiController
 {
+    protected $uploadImageService;
+    
+    /**
+     * CategoryController constructor..
+     *
+     * @param UploadImageService   $uploadImageService   UploadImageService
+     */
+    public function __construct(UploadImageService $uploadImageService)
+    {
+        $this->uploadImageService = $uploadImageService;
+    }
+    
     /**
      * Login as user
      *
@@ -61,24 +74,15 @@ class LoginController extends ApiController
         ];
         $user = User::create($userData);
         $newImage = '';
-        if ($request->hasFile('avatar')) {
-            $image = $request->file('avatar');
-            $newImage = time() . '-' . str_random(8) . '.' . $image->getClientOriginalExtension();
-        }
         $userInfoData = [
             'fullname' => $request->fullname,
             'address' => $request->address,
             'phone' => $request->phone,
             'gender' => $request->gender,
-            'avatar' => $newImage,
+            'avatar' => $this->uploadImageService->fileUpload($request, 'users', 'avatar'),
             'birthday' => $request->birthday,
         ];
-        if ($user->userInfor()->create($userInfoData)) {
-            if ($newImage) {
-                $destinationPath = public_path(config('define.images_path_users'));
-                $image->move($destinationPath, $newImage);
-            }
-        }
+        $user->userInfor()->create($userInfoData);
         $data['token'] =  $user->createToken('token')->accessToken;
         $data['user'] =  $user->load('userInfor');
         return $this->successResponse($data, Response::HTTP_OK);

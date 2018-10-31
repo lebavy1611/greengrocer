@@ -14,3 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
+Route::group(['as' => 'api.', 'namespace' => 'Api\User'], function () {
+    Route::get('/upload-to-dropbox','UploadImageController@uploadToDropbox');
+    Route::post('/upload_to_dropbox','UploadImageController@uploadToDropboxFile');
+});

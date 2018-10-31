@@ -7,6 +7,7 @@ return [
     'product' => [
       'images_path_products' => '/images/products/',
     ],
+    'no_image' => '/images/no-image.jpg',
     'limit_rows' => 4,
     'login' => [
       'unauthorised' => 'The user name or password is incorrect!',
