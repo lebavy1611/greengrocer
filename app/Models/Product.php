@@ -56,4 +56,12 @@ class Product extends Model
     {
         return $this->hasMany(Rating::class, 'product_id', 'id');
     }
+
+    /**
+     * Get the images path that product.
+     */
+    public function pathImages()
+    {
+        return $this->images()->select('id', 'path');
+    }
 }

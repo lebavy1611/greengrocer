@@ -33,7 +33,7 @@ class LoginController extends ApiController
      */
     public function login()
     {
-        if (Auth::attempt(['username' => request('username'), 'password' => request('password')])) {
+        if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user = Auth::user();
             $data['token'] =  $user->createToken('token')->accessToken;
             $data['user'] = $user->load('userInfor', 'userRole');;
