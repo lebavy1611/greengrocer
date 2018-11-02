@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Category;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Api\ApiController;
+use App\Models\Product;
 
 class CategoryController extends ApiController
 {
@@ -29,8 +30,9 @@ class CategoryController extends ApiController
     public function show($id)
     {
         try {
-            $category = Category::findOrFail($id);
-            return $this->successResponse($category, Response::HTTP_OK);
+            $request['id'] = $id;
+            $data['category'] = Category::with('parentsProducts', 'childrenProducts')->findOrFail($id);
+            return $this->successResponse($data, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {

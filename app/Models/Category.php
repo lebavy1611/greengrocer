@@ -31,7 +31,17 @@ class Category extends Model
      *
      * @return array
      */
-    public function products()
+    public function parentsProducts()
+    {
+        return $this->hasManyThrough(Product::class, self::class, 'parent_id', 'category_id', 'id');
+    }
+
+    /**
+     * Relationship hasMany with Like
+     *
+     * @return array
+     */
+    public function childrenProducts()
     {
         return $this->hasMany(Product::class);
     }
