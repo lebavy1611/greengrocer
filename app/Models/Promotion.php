@@ -28,6 +28,14 @@ class Promotion extends Model
         return $this->hasMany(PromotionDetail::class, 'promotion_id', 'id');
     }
 
+     /**
+     * The product that belong to the promotion.
+     */
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'promotion_details', 'promotion_id', 'product_id')->withPivot('percents');
+    }
+
     /**
      * The attributes that should be mutated to dates.
      *

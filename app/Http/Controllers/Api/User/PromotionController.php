@@ -28,13 +28,14 @@ class PromotionController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, Request $request)
     {
         try {
+            $number_products = isset($request->number_products) ? $request->number_products : config('paginate.number_products');
             $data = [];
-            $data['promotion'] = Promotion::findOrFail($id);
-            $productIds = PromotionDetail::where('promotion_id', $id)->pluck('product_id')->toArray();
-            $data['products'] = Product::with('category.parent', 'shop', 'images')->whereIn('id', $productIds)->get();
+            $data['promotion'] = Promotion::with(['products' => function($query) use($number_products) {
+                return $query->paginate($number_products);
+            }])->findOrFail($id);
             return $this->successResponse($data, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Promotion not found.", Response::HTTP_NOT_FOUND);

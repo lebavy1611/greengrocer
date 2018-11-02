@@ -26,6 +26,12 @@ class ProductController extends ApiController
         $number_products = isset($request->number_products) ? $request->number_products : config('paginate.number_products');
         $products = Product::with('category.parent', 'shop', 'images')->filter($request)->orderBy('created_at', 'desc')->paginate($number_products);            
         $products = $this->formatPaginate($products);
+        $data = $products['data'];
+        array_walk($data, function(&$product, $key) {
+            $collection = collect($product['images']);
+            $product['images'] = $collection->pluck('path')->toArray();
+        });
+        $products['data'] = $data;
         return $this->showAll($products, Response::HTTP_OK);
     }
 
