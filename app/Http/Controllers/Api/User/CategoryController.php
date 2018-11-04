@@ -22,7 +22,7 @@ class CategoryController extends ApiController
     }
 
     /**
-     * Display the specified resource.
+     * Display specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
