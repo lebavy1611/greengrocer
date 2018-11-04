@@ -5,15 +5,14 @@ namespace App\Http\Controllers\Api\User;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Admin\CreateCategoryRequest;
 use App\Http\Requests\Admin\CreateProductController;
-use App\Models\Comment;
 use App\Models\Product;
-use App\Models\Shop;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Promotion;
+use App\Models\Rating;
 
 class ProductController extends ApiController
 {
@@ -24,11 +23,11 @@ class ProductController extends ApiController
      */
     public function index(Request $request)
     {
-            $number_products = isset($request->number_products) ? $request->number_products : config('paginate.number_products');
-            $products = Product::with('shop.inforProvider','category.parent', 'images')->productFilter($request)
-                ->where('active', 1)->orderBy('created_at', 'desc')->paginate($number_products);
-            $products = $this->formatPaginate($products);
-            return $this->showAll($products, Response::HTTP_OK);
+        $number_products = isset($request->number_products) ? $request->number_products : config('paginate.number_products');
+        $products = Product::with('shop.inforProvider','category.parent', 'images')->productFilter($request)
+            ->where('active', 1)->orderBy('created_at', 'desc')->paginate($number_products);
+        $products = $this->formatPaginate($products);
+        return $this->showAll($products, Response::HTTP_OK);
     }
 
     /**
@@ -43,8 +42,21 @@ class ProductController extends ApiController
         try{
             $product = Product::with("category:id,name", "shop.inforProvider", 'images', 'ratings')
                 ->where('active', 1)->findOrFail($id);
+
             $comments = Comment::with('user.userInfor')->where('product_id', $id)->get();
             $product['comments'] = $comments;
+
+            $ratings = Rating::all()->where('product_id', $id);
+            $total = 0;
+            $stars = 0;
+            if (count($ratings)) {
+                foreach ($ratings as $rating) {
+                    $stars += $rating->stars;
+                    $total +=1;
+                }
+                $stars = round($stars/$total);
+            }
+            $product['ratings']= array("avg"=>$stars ,"total"=>$total, "list"=> $ratings);
             return $this ->successResponse($product, Response::HTTP_OK);
         }catch (ModelNotFoundException $ex){
             return $this ->errorResponse("Product can not be show", Response::HTTP_NOT_FOUND);

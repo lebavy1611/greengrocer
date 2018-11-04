@@ -9,9 +9,22 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
+use App\Services\UploadImageService;
 
 class PromotionController extends ApiController
 {
+    protected $uploadImageService;
+    
+    /**
+     * CategoryController constructor..
+     *
+     * @param UploadImageService   $uploadImageService   UploadImageService
+     */
+    public function __construct(UploadImageService $uploadImageService)
+    {
+        $this->uploadImageService = $uploadImageService;
+    }
+ 
     /**
      * Display a listing of the resource.
      *
@@ -36,17 +49,11 @@ class PromotionController extends ApiController
     public function store(CreatePromotionRequest $request)
     {
         try {
-            $newImage = '';
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $newImage = Carbon::now()->format('YmdHis_u') . '.' . $image->getClientOriginalExtension();
-                $destinationPath = public_path(config('define.images_path_promotions'));
-                $image->move($destinationPath, $newImage);
-            }
+            
             $data = $request->only([
-                'name', 'start_date','end_date', 'image',
+                'name', 'start_date','end_date',
                 ]);
-            $data['image'] = $newImage;
+            $data['image'] = $this->uploadImageService->fileUpload($request, 'promotions', 'image');
             $promotion = Promotion::create($data);
             return $this->successResponse($promotion, Response::HTTP_OK);
         } catch (Exception $ex) {
@@ -83,16 +90,12 @@ class PromotionController extends ApiController
     {
         try {
             $newImage = '';
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $newImage = Carbon::now()->format('YmdHis_u') . '.' . $image->getClientOriginalExtension();
-                $destinationPath = public_path(config('define.images_path_promotions'));
-                $image->move($destinationPath, $newImage);
-            }
             $data = $request->only([
                 'name', 'start_date','end_date', 'image',
-                ]);
-            $data['image'] = $newImage;
+            ]);
+            if ($request->hasFile('image')) {
+                $data['image'] = $this->uploadImageService->fileUpload($request, 'promotions', 'image');
+            }
             Promotion::findOrFail($id)->update($data);
             return $this->successResponse("Update promotion successfully", Response::HTTP_OK);
         } catch (Exception $ex) {

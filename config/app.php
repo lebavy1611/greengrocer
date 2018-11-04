@@ -160,7 +160,8 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
-        
+        BC\Laravel\DropboxDriver\ServiceProvider::class,
+        Barryvdh\Cors\ServiceProvider::class,
         /*
          * Package Service Providers...
          */
@@ -224,5 +225,15 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
     ],
+    // "extra"=> [
+    //     "laravel" => [
+    //         "providers" => [
+    //             Barryvdh\Debugbar\ServiceProvider::class
+    //         ],
+    //         "aliases" => [
+    //             "Debugbar" => Barryvdh\Debugbar\Facade::class
+    //         ]
+    //     ]
+    // ],
 
 ];
