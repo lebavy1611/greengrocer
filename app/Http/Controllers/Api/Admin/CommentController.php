@@ -5,10 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\Comment;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CreateRatingRequest;
-use App\Models\Rating;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,8 +19,9 @@ class CommentController extends ApiController
     public function index()
     {
         try {
-            $customer_id = 1;
-            $comment = Comment::with(['user','product'])->where('customer_id', $customer_id)->orderBy('created_at', 'desc')->paginate(config('paginate.number_ratings'));
+            $comment = Comment::with(['inforUser','product.category:id,name', 'product.shop:id,name'])
+                ->orderBy('created_at', 'desc')
+                ->paginate(config('paginate.number_ratings'));
             return $this->formatPaginate($comment);
         } catch (Exception $ex) {
             dd($ex->getMessage());
@@ -41,11 +39,12 @@ class CommentController extends ApiController
     public function show($id)
     {
         try {
-            $comment = Comment::with(['user','product'])->findOrFail($id);
+            $comment = Comment::with(['user','product.category:id,name', 'product.shop:id,name'])->findOrFail($id);
             return $this->successResponse($comment, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Comment not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
+            dd($ex->getMessage());
             return $this->errorResponse("Occour error when show comment.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

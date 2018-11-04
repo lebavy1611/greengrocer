@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Api\ApiController;
-use App\Http\Requests\Admin\CreateCategoryRequest;
 use App\Http\Requests\Admin\CreateProductRequest;
+use App\Http\Requests\Admin\UpdateProductRequest;
+use App\Models\Comment;
 use App\Models\Product;
 use App\Models\Rating;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -23,7 +23,7 @@ class ProductController extends ApiController
     public function index(Request $request)
     {
         try {
-            $products = Product::with('category.parent', 'shop', 'images')->product($request)->orderBy('created_at', 'desc')->paginate(config('paginate.number_products'));
+            $products = Product::with('category.parent', 'shop.inforProvider', 'images')->productFilter($request)->orderBy('created_at', 'desc')->paginate(config('paginate.number_products'));
             $products = $this->formatPaginate($products);
             return $this->showAll($products, Response::HTTP_OK);
         } catch (Exception $ex) {
@@ -76,23 +76,27 @@ class ProductController extends ApiController
     public function show($id)
     {
         try{
-            $product = Product::with("category:id,name", "shop:id,name", 'images', 'comments')->findOrFail($id);
-
+            $product = Product::with("category:id,name", "shop.inforProvider", 'images')->findOrFail($id);
+            $comments = Comment::with('user.userInfor')->where('product_id', $id)->get();
             $ratings = Rating::all()->where('product_id', $id);
+
             $total = 0;
             $stars = 0;
             foreach ($ratings as $rating) {
                 $stars += $rating->stars;
                 $total +=1;
             }
+            if($total != 0)
             $stars = round($stars/$total);
 
             $product['ratings']= array("avg"=>$stars ,"total"=>$total, "list"=> $ratings);
 
+            $product['comments'] = $comments;
             return $this ->successResponse($product, Response::HTTP_OK);
         }catch (ModelNotFoundException $ex){
             return $this ->errorResponse("Product can not be show", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
+            dd($ex->getMessage());
             return $this->errorResponse("Occour error when show Product.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -104,7 +108,7 @@ class ProductController extends ApiController
      * @param  \App\igration  $igration
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateProductRequest $request, $id)
     {
         try {
             $data = $request->only([
@@ -112,11 +116,12 @@ class ProductController extends ApiController
                 'origin','quantity', 'active', 'imported_date','expired_date',
             ]);
 
-            $product = Product::findOrFail($id)->update($data);
+            Product::findOrFail($id)->update($data);
             return $this->successResponse("Update product successfully", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Product not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
+            dd($ex->getMessage());
             return $this->errorResponse("Occour error when show product.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

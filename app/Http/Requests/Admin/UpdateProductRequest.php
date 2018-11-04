@@ -3,9 +3,8 @@
 namespace App\Http\Requests\Admin;
 
 use App\Http\Requests\ApiFormRequest;
-use Illuminate\Foundation\Http\FormRequest;
 
-class CreateProductRequest extends ApiFormRequest
+class UpdateProductRequest extends ApiFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -34,7 +33,7 @@ class CreateProductRequest extends ApiFormRequest
             'quantity'      => 'required|integer',
             'imported_date' => 'required|date_format:"Y-m-d"',
             'expired_date'  => 'required|date_format:"Y-m-d"|after:imported_date',
-            'active'         => 'required|integer|min:0|max:1',
+            'active'        => 'required|integer|min:0|max:1',
         ];
     }
 }

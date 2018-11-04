@@ -58,6 +58,19 @@ class Product extends Model
 //            ]);
     }
 
+    public function getName()
+    {
+        return $this->DB::table(comments)
+            ->join('users', 'users.id' , '=', 'comments.customer_id')
+            ->join('user_infors', 'user_infors.user_id' , '=', 'users.id')
+            ->select([
+                'users.id',
+                'user_infors.fullname',
+                'user_infors.address',
+                'user_infors.phone',
+            ]);
+    }
+
     /**
      * Get the user that owns the phone.
      */
