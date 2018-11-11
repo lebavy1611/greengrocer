@@ -64,4 +64,22 @@ class Product extends Model
     {
         return $this->images()->select('id', 'path');
     }
+
+    /**
+     * The promotions that belong to the product.
+     */
+    public function promotions()
+    {
+        return $this->belongsToMany(Promotion::class, 'promotion_details', 'product_id', 'promotion_id');
+    }
+
+    /**
+     * Get Category Object
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\hasMany
+     */
+    public function promotionDetails()
+    {
+        return $this->hasMany(PromotionDetail::class, 'promotion_id', 'id');
+    }
 }
