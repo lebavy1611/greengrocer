@@ -44,8 +44,11 @@ class ProductController extends ApiController
     */
     public function show($id)
     {
-        $product = Product::with("category:id,name", "shop:id,name", 'images', 'comments')->findOrFail($id);
-        $ratings = Rating::all()->where('product_id', $id);
+        $product = Product::with("category:id,name", "shop:id,name", 'images', 'comments.user:users.id,user_infors.fullname')->findOrFail($id);
+        $ratings = Rating::with('user:users.id,user_infors.fullname')->where('product_id', $id)->get();
+        $images = $product['images']->pluck('path')->toArray();
+        unset($product['images']);
+        $product['images'] = $images;
         $total = 0;
         $stars = 0;
         if (count($ratings)) {
