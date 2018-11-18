@@ -33,7 +33,7 @@ class PromotionController extends ApiController
         try {
             $number_products = isset($request->number_products) ? $request->number_products : config('paginate.number_products');
             $data = [];
-            $data['promotion'] = Promotion::with(['products' => function($query) use($number_products) {
+            $data = Promotion::with(['products.images' => function($query) use($number_products) {
                 return $query->paginate($number_products);
             }])->findOrFail($id);
             return $this->successResponse($data, Response::HTTP_OK);
