@@ -10,7 +10,7 @@
         "benjamincrozat/laravel-dropbox-driver": "^2.0",
         "fideloper/proxy": "^4.0",
         "fzaninotto/faker": "^1.4",
-        "laravel/framework": "5.7.*",
+        "laravel/framework": "5.5.*",
         "laravel/passport": "^7.0",
         "laravel/tinker": "^1.0",
         "league/flysystem-dropbox": "^1.0"
