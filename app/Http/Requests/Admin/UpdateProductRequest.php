@@ -27,13 +27,13 @@ class UpdateProductRequest extends ApiFormRequest
             'name'          => 'required|string|max:255',
             'shop_id'       => 'required|integer',
             'category_id'   => 'required|integer',
-            'describe'      => 'required|string|max:255',
+            'describe'      => 'string|max:255',
             'price'         => 'required|integer',
             'origin'        => 'required|string|max:255',
             'quantity'      => 'required|integer',
-            'imported_date' => 'required|date_format:"Y-m-d"',
-            'expired_date'  => 'required|date_format:"Y-m-d"|after:imported_date',
-            'active'        => 'required|integer|min:0|max:1',
+//            'imported_date' => 'required|date_format:"Y-m-d"',
+//            'expired_date'  => 'required|date_format:"Y-m-d"|after:imported_date',
+            'active'        => 'integer|min:0|max:1',
         ];
     }
 }

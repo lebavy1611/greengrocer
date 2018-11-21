@@ -14,7 +14,7 @@ class AddPercentsColumnToPromotionDetailsTable extends Migration
     public function up()
     {
         Schema::table('promotion_details', function (Blueprint $table) {
-            $table->unsignedInteger('percents');            
+            $table->unsignedInteger('percents')->after('product_id');            
         });
     }
 

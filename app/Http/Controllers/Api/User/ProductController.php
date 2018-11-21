@@ -27,6 +27,12 @@ class ProductController extends ApiController
         $products = Product::with('shop.inforProvider','category.parent', 'images')->productFilter($request)
             ->where('active', 1)->orderBy('created_at', 'desc')->paginate($number_products);
         $products = $this->formatPaginate($products);
+        $data = $products['data'];
+        array_walk($data, function(&$product, $key) {
+            $collection = collect($product['images']);
+            $product['images'] = $collection->pluck('path')->toArray();
+        });
+        $products['data'] = $data;
         return $this->showAll($products, Response::HTTP_OK);
     }
 

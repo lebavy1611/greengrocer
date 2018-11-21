@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\UpdateProductRequest;
 use App\Models\Comment;
 use App\Models\Product;
 use App\Models\Rating;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Exception;
@@ -43,8 +44,12 @@ class ProductController extends ApiController
 
             $data = $request->only([
                 'name', 'shop_id', 'category_id','describe', 'price',
-                'origin','quantity', 'active', 'imported_date','expired_date'
+                'origin','quantity','number_expired'
             ]);
+
+            $data['imported_date'] = Carbon::now();
+            $data['expired_date'] = Carbon::now()->addDay($data['number_expired']);
+            unset($data['number_expired']);
 
             $product = Product::create($data);
 
@@ -113,8 +118,14 @@ class ProductController extends ApiController
         try {
             $data = $request->only([
                 'name', 'shop_id', 'category_id','describe', 'price',
-                'origin','quantity', 'active', 'imported_date','expired_date',
+                'origin','quantity', 'active', 'number_expired'
             ]);
+
+            if ($data['number_expired']) {
+                $data['imported_date'] = Carbon::now();
+                $data['expired_date'] = Carbon::now()->addDay($data['number_expired']);
+            }
+            unset($data['number_expired']);
 
             Product::findOrFail($id)->update($data);
             return $this->successResponse("Update product successfully", Response::HTTP_OK);
@@ -135,7 +146,7 @@ class ProductController extends ApiController
     public function destroy($id)
     {
         try {
-            $result = Product::findOrfail($id)->delete();
+            Product::findOrfail($id)->delete();
             return $this->successResponse("Delete product successfully.", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Product not found.", Response::HTTP_NOT_FOUND);

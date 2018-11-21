@@ -37,6 +37,7 @@ class CategoryController extends ApiController
     {
         try {
             $categories = Category::where('parent_id', 0)->categoryFilter($request)->with('children')->orderBy('position','ASC')->get();
+
             return $this->showAll($categories);
         } catch (Exception $ex) {
             return $this->errorResponse("Category can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -54,12 +55,20 @@ class CategoryController extends ApiController
        
         try {
             $data = $request->only([
-                'name', 'parent_id', 'position',
+                'name', 'parent_id',
             ]);
+
+            $maxPosition = Category::where([
+                    'parent_id' => $data['parent_id'],
+                ])->first([DB::raw('MAX(position) as position')])->position ?? 0;
+            $data['position'] = $maxPosition + 1;
+
             $data['image'] = $this->uploadImageService->fileUpload($request, 'categories');
+
             $category = Category::create($data);    
             return $this->successResponse($category, Response::HTTP_OK);
         } catch (Exception $ex) {
+            dd($ex->getMessage());
             return $this->errorResponse("Occour error when insert category.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
