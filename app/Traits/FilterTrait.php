@@ -17,7 +17,7 @@ trait FilterTrait
      */
     public function scopeProductFilter($query, Request $request, $id = 0)
     {
-        if ($request->role) {
+        /*if ($request->role) {
             return $query->where('role_id', $request->role == 'customer'?1:2);
         }
         if ($request->filter) {
@@ -33,15 +33,7 @@ trait FilterTrait
                 return $query->orderBy('created_at', 'desc');
             }
         }
-        if ($request->category_id) {
-            return $query->join('categories', function ($join) {
-                $join->on('categories.id', '=', 'products.category_id');
-            })
-            ->select('products.*')
-            ->where('categories.parent_id', $request->category_id)
-            ->orWhere('products.category_id', $request->category_id);
 
-        }
         if ($request->promotion_id) {
             $query->whereIn('id', function ($query) use ($request) {
                 $query->select('product_id')
@@ -49,8 +41,40 @@ trait FilterTrait
                         ->where('promotion_id', $request->promotion_id);
             });
         }
+        */
+
         if ($request->name) {
             return $query->where('name', 'like', '%'.$request->name.'%');
+        }
+
+        if ($request->category_id) {
+            return $query->join('categories', function ($join) {
+                $join->on('categories.id', '=', 'products.category_id');
+            })
+                ->select('products.*')
+                ->where('categories.parent_id', $request->category_id)
+                ->orWhere('products.category_id', $request->category_id);
+
+        }
+
+        if ($request->shop_id) {
+            return $query->join('shops', function ($join) {
+                $join->on('shops.id', '=', 'products.shop_id');
+            })
+                ->where('products.shop_id', $request->shop_id)
+                ->select('products.*');
+        }
+
+        if ($request->origin) {
+            return $query->where('origin', 'like', '%'.$request->origin.'%');
+        }
+
+        if ($request->imported_date) {
+            return $query->where('imported_date', 'like', '%'.$request->imported_date.'%');
+        }
+
+        if ($request->price) {
+            return $query->where('price', 'like', '%'.$request->price.'%');
         }
     }
 
@@ -86,6 +110,8 @@ trait FilterTrait
         if ($request->payment_method_id) {
             return $query->where('orders.payment_method_id', $request->payment_method_id);
         }
+
+
 
     }
 }

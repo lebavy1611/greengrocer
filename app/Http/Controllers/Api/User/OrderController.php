@@ -87,7 +87,7 @@ class OrderController extends ApiController
     public function show($id)
     {
         try {
-            $user = Auth::user();
+            Auth::user();
             $order = Order::with(['user','payment','coupon','orderDetails.product:id,name,price'])->findOrFail($id);
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
@@ -109,8 +109,8 @@ class OrderController extends ApiController
     public function cancel(int $orderId)
     {
         try {
+            Auth::user();
             $order = Order::find($orderId);
-//            dd($order);
             $user = Auth::user();
             if ($user->id == $order->customer_id) {
                 if ($order->processing_status == Order::STATUS_PROCESSING) {
@@ -135,7 +135,7 @@ class OrderController extends ApiController
     public function destroy(Order $order)
     {
         try {
-            $user = Auth::user();
+            Auth::user();
             $order->orderDetails()->delete();
             $order->delete();
             return $this->successResponse("Delete order successfully", Response::HTTP_OK);

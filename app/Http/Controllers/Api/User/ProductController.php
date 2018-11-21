@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\User;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Admin\CreateCategoryRequest;
 use App\Http\Requests\Admin\CreateProductController;
+use App\Models\Comment;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;

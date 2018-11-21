@@ -68,6 +68,7 @@ class ProductController extends ApiController
 
             return $this->successResponse($product, Response::HTTP_OK);
         } catch (Exception $ex) {
+            dd($ex->getMessage());
             return $this->errorResponse("Occour error when insert product.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
