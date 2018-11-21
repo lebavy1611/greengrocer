@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\FilterTrait;
+
 
 class Order extends Model
 {
+    use FilterTrait;
+
     const STATUS_PAYED = 1;             //da thanh toan
 
     const STATUS_NOT_PAYED = 2;         //chua thanh toan
@@ -19,7 +23,8 @@ class Order extends Model
 
     protected $table = "orders";
     protected $fillable = [
-        'customer_id','address','delivery_time','note','processing_status','payment_status','payment_method_id','coupon_id',
+        'customer_id','full_name','phone', 'address','delivery_time','note','processing_status',
+        'payment_status','payment_method_id','coupon_id',
     ];
 
     /**

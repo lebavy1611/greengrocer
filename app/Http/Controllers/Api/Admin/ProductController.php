@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Api\ApiController;
-use App\Http\Requests\Admin\CreateCategoryRequest;
 use App\Http\Requests\Admin\CreateProductRequest;
+use App\Http\Requests\Admin\UpdateProductRequest;
+use App\Models\Comment;
 use App\Models\Product;
 use App\Models\Rating;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -23,11 +24,7 @@ class ProductController extends ApiController
     public function index(Request $request)
     {
         try {
-            if ($request->filter) {
-                $products = Product::with('category.parent', 'store', 'images')->filter($request)->paginate(config('paginate.number_products'));
-            }else{
-                $products = Product::with(['shop','category'])->orderBy('created_at', 'desc')->paginate(config('paginate.number_products'));
-            }
+            $products = Product::with('category.parent', 'shop.inforProvider', 'images')->productFilter($request)->orderBy('created_at', 'desc')->paginate(config('paginate.number_products'));
             $products = $this->formatPaginate($products);
             return $this->showAll($products, Response::HTTP_OK);
         } catch (Exception $ex) {
@@ -47,8 +44,12 @@ class ProductController extends ApiController
 
             $data = $request->only([
                 'name', 'shop_id', 'category_id','describe', 'price',
-                'origin','quantity', 'active', 'imported_date','expired_date'
+                'origin','quantity','number_expired'
             ]);
+
+            $data['imported_date'] = Carbon::now();
+            $data['expired_date'] = Carbon::now()->addDay($data['number_expired']);
+            unset($data['number_expired']);
 
             $product = Product::create($data);
 
@@ -67,6 +68,7 @@ class ProductController extends ApiController
 
             return $this->successResponse($product, Response::HTTP_OK);
         } catch (Exception $ex) {
+            dd($ex->getMessage());
             return $this->errorResponse("Occour error when insert product.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -80,23 +82,27 @@ class ProductController extends ApiController
     public function show($id)
     {
         try{
-            $product = Product::with("category:id,name", "shop:id,name", "comments")->findOrFail($id);
-
+            $product = Product::with("category:id,name", "shop.inforProvider", 'images')->findOrFail($id);
+            $comments = Comment::with('user.userInfor')->where('product_id', $id)->get();
             $ratings = Rating::all()->where('product_id', $id);
+
             $total = 0;
             $stars = 0;
             foreach ($ratings as $rating) {
                 $stars += $rating->stars;
                 $total +=1;
             }
+            if($total != 0)
             $stars = round($stars/$total);
 
             $product['ratings']= array("avg"=>$stars ,"total"=>$total, "list"=> $ratings);
 
+            $product['comments'] = $comments;
             return $this ->successResponse($product, Response::HTTP_OK);
         }catch (ModelNotFoundException $ex){
             return $this ->errorResponse("Product can not be show", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
+            dd($ex->getMessage());
             return $this->errorResponse("Occour error when show Product.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -108,19 +114,26 @@ class ProductController extends ApiController
      * @param  \App\igration  $igration
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateProductRequest $request, $id)
     {
         try {
             $data = $request->only([
                 'name', 'shop_id', 'category_id','describe', 'price',
-                'origin','quantity', 'active', 'imported_date','expired_date',
+                'origin','quantity', 'active', 'number_expired'
             ]);
 
-            $product = Product::findOrFail($id)->update($data);
+            if ($data['number_expired']) {
+                $data['imported_date'] = Carbon::now();
+                $data['expired_date'] = Carbon::now()->addDay($data['number_expired']);
+            }
+            unset($data['number_expired']);
+
+            Product::findOrFail($id)->update($data);
             return $this->successResponse("Update product successfully", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Product not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
+            dd($ex->getMessage());
             return $this->errorResponse("Occour error when show product.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -134,7 +147,7 @@ class ProductController extends ApiController
     public function destroy($id)
     {
         try {
-            $result = Product::findOrfail($id)->delete();
+            Product::findOrfail($id)->delete();
             return $this->successResponse("Delete product successfully.", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Product not found.", Response::HTTP_NOT_FOUND);

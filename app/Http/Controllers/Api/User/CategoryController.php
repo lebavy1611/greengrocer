@@ -19,9 +19,7 @@ class CategoryController extends ApiController
      */
     public function index()
     {
-        $user = Auth::user();
-        dd($user);
-        $categories = Category::where('parent_id', 0)->with('children')->get();
+        $categories = Category::where('parent_id', 0)->with('children')->orderBy('position','ASC')->get();
         return $this->showAll($categories, Response::HTTP_OK);
     }
 

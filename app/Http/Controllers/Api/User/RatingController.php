@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Api\User;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\User\CreateRatingRequest;
 use App\Http\Requests\User\UpdateRatingRequest;
+use App\Models\Order;
 use App\Models\Rating;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class RatingController extends ApiController
@@ -23,12 +25,15 @@ class RatingController extends ApiController
     public function store(CreateRatingRequest $request)
     {
         try {
+
+            $user = Auth::user();
+
             $data = $request->only([
                 'product_id',
                 'stars',
                 'content'
             ]);
-            $data['customer_id'] = 1;
+            $data['customer_id'] = $user->id;
 
             $rating = Rating::create($data);
             return $this->successResponse($rating, Response::HTTP_OK);
@@ -45,17 +50,19 @@ class RatingController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateRatingRequest $request, $id)
+    public function update(UpdateRatingRequest $request, Rating $rating)
     {
         try {
-//       $user = Auth::user();
-//       if ($user->id == $order->user_id) {
-            $data = $request->only([
-                'stars',
-                'content'
-            ]);
-            Rating::findOrFail($id)->update($data);
-            return $this->successResponse("Update conpon successfully", Response::HTTP_OK);
+            $user = Auth::user();
+            if ($user->id == $rating->customer_id) {
+
+                $data = $request->only([
+                    'stars',
+                    'content'
+                ]);
+                Rating::findOrFail($rating->id)->update($data);
+            }
+           return $this->successResponse("Update conpon successfully", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Coupon not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {

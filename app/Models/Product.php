@@ -39,6 +39,7 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany(Image::class, 'product_id', 'id');
+
     }
 
     /**
@@ -47,6 +48,27 @@ class Product extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class, 'product_id', 'id');
+//            ->join('users', 'users.id' , '=', 'comments.customer_id')
+//            ->join('user_infors', 'user_infors.user_id' , '=', 'users.id')
+//            ->select([
+//                'users.id',
+//                'user_infors.fullname',
+//                'user_infors.address',
+//                'user_infors.phone',
+//            ]);
+    }
+
+    public function getName()
+    {
+        return $this->DB::table(comments)
+            ->join('users', 'users.id' , '=', 'comments.customer_id')
+            ->join('user_infors', 'user_infors.user_id' , '=', 'users.id')
+            ->select([
+                'users.id',
+                'user_infors.fullname',
+                'user_infors.address',
+                'user_infors.phone',
+            ]);
     }
 
     /**

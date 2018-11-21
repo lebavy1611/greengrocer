@@ -35,9 +35,13 @@ Route::group(['as' => 'api.', 'namespace' => 'Api\User', 'middleware' => ['cors'
     Route::post('register', 'LoginController@register');
     Route::apiResource('products', 'ProductController');
     Route::apiResource('promotions', 'PromotionController');
-    Route::apiResource('orders', 'OrderController');
-    Route::apiResource('ratings', 'RatingController');
-    Route::apiResource('comments', 'CommentController');
-    Route::apiResource('uploads', 'UploadImageController');
+    Route::group(['middleware' => 'auth:api'], function () {
+        Route::apiResource('orders', 'OrderController');
+        Route::put('orders/{id}/cancel', 'OrderController@cancel');
+        Route::apiResource('ratings', 'RatingController');
+        Route::apiResource('comments', 'CommentController');
+        Route::apiResource('uploads', 'UploadImageController');
+    });
+
 
 });

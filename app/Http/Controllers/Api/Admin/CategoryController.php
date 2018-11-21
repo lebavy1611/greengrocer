@@ -11,11 +11,13 @@ use Exception;
 use Carbon\Carbon;
 use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Services\UploadImageService;
+use Illuminate\Http\Request;
+use DB;
 
 class CategoryController extends ApiController
 {
     protected $uploadImageService;
-    
+
     /**
      * CategoryController constructor..
      *
@@ -31,10 +33,11 @@ class CategoryController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $categories = Category::where('parent_id', 0)->with('children')->get();
+            $categories = Category::where('parent_id', 0)->categoryFilter($request)->with('children')->orderBy('position','ASC')->get();
+
             return $this->showAll($categories);
         } catch (Exception $ex) {
             return $this->errorResponse("Category can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -52,12 +55,20 @@ class CategoryController extends ApiController
        
         try {
             $data = $request->only([
-                'name', 'parent_id', 'position',
+                'name', 'parent_id',
             ]);
+
+            $maxPosition = Category::where([
+                    'parent_id' => $data['parent_id'],
+                ])->first([DB::raw('MAX(position) as position')])->position ?? 0;
+            $data['position'] = $maxPosition + 1;
+
             $data['image'] = $this->uploadImageService->fileUpload($request, 'categories');
+
             $category = Category::create($data);    
             return $this->successResponse($category, Response::HTTP_OK);
         } catch (Exception $ex) {
+            dd($ex->getMessage());
             return $this->errorResponse("Occour error when insert category.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -71,7 +82,7 @@ class CategoryController extends ApiController
     public function show($id)
     {
         try {
-            $category = Category::findOrFail($id);
+            $category = Category::with('children')->findOrFail($id);
             return $this->successResponse($category, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
@@ -91,14 +102,26 @@ class CategoryController extends ApiController
     {
         try {
             $data = $request->only([
-                'name', 'parent_id', 'position',
+                'name', 'parent_id', 'position'
             ]);
 
+                Category::where([
+                    'parent_id' => $data['parent_id'],
+                    ['position', '>=', $data['position']],
+                    ['id', '!=', $id],
+                ])->update([
+                    'position' => DB::raw ('position + 1')
+                ]);
+
             if ($request->hasFile('image')) {
-                $data['image'] = $this->uploadImageService->fileUpload($request, 'categories');
+                $image = $request->file('image');
+                $newImage = Carbon::now()->format('YmdHis_u') . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path(config('define.images_path_categories'));
+                $image->move($destinationPath, $newImage);
+                $data['image'] = $newImage;
             }
 
-            Category::findOrFail($id)->update($data);
+                Category::findOrFail($id)->update($data);
             return $this->successResponse("Update category successfully", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
