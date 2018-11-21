@@ -2,17 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Passport\HasApiTokens;
 use App\Models\UserInfor;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\FilterTrait;
+use Illuminate\Database\Eloquent\Model;
 
-class User extends Authenticatable
+class User extends Model
 {
-    use Notifiable, SoftDeletes, HasApiTokens, FilterTrait;
+    use SoftDeletes, FilterTrait;
 
     /**
      * The table associated with the model.
@@ -77,5 +75,15 @@ class User extends Authenticatable
      * @var array
      */
     protected $dates = ['deleted_at'];
+
+    /**
+     * User has one account via loginable
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany MorphMany
+     */
+    public function accounts()
+    {
+        return $this->morphMany(Account::class, 'loginable')->select('id', 'email', 'username', 'loginable_id', 'loginable_type');
+    }
 
 }
