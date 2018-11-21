@@ -45,30 +45,25 @@ class ProductController extends ApiController
     */
     public function show($id)
     {
-        try{
-            $product = Product::with("category:id,name", "shop.inforProvider", 'images', 'ratings')
-                ->where('active', 1)->findOrFail($id);
+        $product = Product::with("category:id,name", "shop:id,name", 'images', 'comments.user:users.id,user_infors.fullname')
+            ->where('active', 1)->findOrFail($id)->findOrFail($id);
+        $comments = Comment::with('user.userInfor')->where('product_id', $id)->get();
+        $product['comments'] = $comments;
 
-            $comments = Comment::with('user.userInfor')->where('product_id', $id)->get();
-            $product['comments'] = $comments;
-
-            $ratings = Rating::all()->where('product_id', $id);
-            $total = 0;
-            $stars = 0;
-            if (count($ratings)) {
-                foreach ($ratings as $rating) {
-                    $stars += $rating->stars;
-                    $total +=1;
-                }
-                $stars = round($stars/$total);
+        $ratings = Rating::with('user:users.id,user_infors.fullname')->where('product_id', $id)->get();
+        $images = $product['images']->pluck('path')->toArray();
+        unset($product['images']);
+        $product['images'] = $images;
+        $total = 0;
+        $stars = 0;
+        if (count($ratings)) {
+            foreach ($ratings as $rating) {
+                $stars += $rating->stars;
+                $total +=1;
             }
-            $product['ratings']= array("avg"=>$stars ,"total"=>$total, "list"=> $ratings);
-            return $this ->successResponse($product, Response::HTTP_OK);
-        }catch (ModelNotFoundException $ex){
-            return $this ->errorResponse("Product can not be show", Response::HTTP_NOT_FOUND);
-        } catch (Exception $ex) {
-            dd($ex->getMessage());
-            return $this->errorResponse("Occour error when show Product.", Response::HTTP_INTERNAL_SERVER_ERROR);
+            $stars = round($stars/$total);
         }
+        $product['ratings']= array("avg"=>$stars ,"total"=>$total, "list"=> $ratings);
+        return $this ->successResponse($product, Response::HTTP_OK);
     }
 }

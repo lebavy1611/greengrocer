@@ -22,7 +22,7 @@ class CategoryController extends ApiController
     }
 
     /**
-     * Display the specified resource.
+     * Display specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -30,7 +30,7 @@ class CategoryController extends ApiController
     public function show($id)
     {
         try {
-            $category = Category::with('parentsProducts', 'childrenProducts')->findOrFail($id);
+            $category = Category::with('parentsProducts.images', 'childrenProducts.images')->findOrFail($id);
             return $this->showOne($category, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
