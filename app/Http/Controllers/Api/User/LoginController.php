@@ -44,16 +44,6 @@ class LoginController extends ApiController
         }
     }
 
-    // public function login(Request $request)
-    // {
-    //   $credentials = $request->only('email', 'password');
-    //   dd($request->all());
-    //   if (Auth::guard('employee')->attempt($credentials)) {
-    //     return redirect()->intended(route('admin.dashboard'));
-    //   }
-    //   return redirect()->back()->withInput($request->only('email', 'remember'));
-    // }
-
     /**
      * Logout
      *
