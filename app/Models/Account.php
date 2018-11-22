@@ -21,6 +21,10 @@ class Account extends Authenticatable
      */
     protected $table = "accounts";
 
+    const TYPE_ADMIN = 'App\Models\Manager';
+
+    const TYPE_USER = 'App\Models\User';
+
     protected $guarded = [];
     /**
      * The attributes that are mass assignable.

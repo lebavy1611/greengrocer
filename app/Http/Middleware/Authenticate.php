@@ -7,13 +7,23 @@ use Illuminate\Auth\Middleware\Authenticate as Middleware;
 class Authenticate extends Middleware
 {
     /**
-     * Get the path the user should be redirected to when they are not authenticated.
+     * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return string
+     * @param \Illuminate\Http\Request $request the application request
+     * @param \Closure                 $next    the callback after middleware
+     * @param string|null              $guard   the authentication guard
+     *
+     * @return mixed
      */
-    protected function redirectTo($request)
+    public function handle($request, Closure $next, $guard = null)
     {
-        return route('login');
+        if (Auth::guard($guard)->guest()) {
+            $response = [
+                'message' => 'Unauthorized'
+            ];
+            return response($response, 401);
+        }
+
+        return $next($request);
     }
 }

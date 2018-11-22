@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\User;
+namespace App\Http\Controllers\Api\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -37,7 +37,7 @@ class LoginController extends ApiController
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $account = Auth::user();
             $data['token'] =  $account->createToken('token')->accessToken;
-            $data['user'] = $account->loginable->load('userInfor', 'userRole');
+            $data['manager'] = $account->loginable;
             return $this->successResponse($data, Response::HTTP_OK);
         } else {
             return $this->errorResponse(config('define.login.unauthorised'), Response::HTTP_UNAUTHORIZED);
