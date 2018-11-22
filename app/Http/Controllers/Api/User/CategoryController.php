@@ -7,6 +7,8 @@ use App\Models\Category;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Api\ApiController;
 use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
+
 
 class CategoryController extends ApiController
 {
