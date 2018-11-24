@@ -26,8 +26,8 @@ class CreateOrderRequest extends ApiFormRequest
     {
         return [
             'products'             => 'required',
-            'full_name'             => 'required|string|max:255',
-            'phone'                => 'regex:/^0[0-9]{9,10}$/',
+            'full_name'            => 'required|string|max:255',
+            'phone'                => 'required|regex:/^0[0-9]{9,10}$/',
             'address'              => 'required|string|max:255',
             'delivery_time'        => 'required|date_format:"Y-m-d"',
             'note'                 => 'string|max:255',
