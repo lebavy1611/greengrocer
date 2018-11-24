@@ -24,10 +24,12 @@ class ProductController extends ApiController
     public function index(Request $request)
     {
         try {
-            $products = Product::with('category.parent', 'shop.inforProvider', 'images')->productFilter($request)->orderBy('created_at', 'desc')->paginate(config('paginate.number_products'));
+            $products = Product::with('category.parent', 'shop.inforProvider', 'images')->productFilter($request)
+                ->orderBy('created_at', 'desc')->paginate(config('paginate.number_products'));
             $products = $this->formatPaginate($products);
             return $this->showAll($products, Response::HTTP_OK);
         } catch (Exception $ex) {
+            dd($ex->getMessage());
             return $this->errorResponse("Product can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

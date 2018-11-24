@@ -36,7 +36,7 @@ class CategoryController extends ApiController
     public function index(Request $request)
     {
         try {
-            $categories = Category::where('parent_id', 0)->categoryFilter($request)->with('children')->orderBy('position','ASC')->get();
+            $categories = Category::where('parent_id', 0)->with('children')->orderBy('position','ASC')->get();
 
             return $this->showAll($categories);
         } catch (Exception $ex) {
