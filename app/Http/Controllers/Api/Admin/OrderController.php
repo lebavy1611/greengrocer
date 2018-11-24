@@ -4,12 +4,10 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Admin\CreateOrderController;
-use App\Http\Requests\Admin\UpdateOrderController;
+use App\Http\Requests\Admin\UpdateOrderRequest;
 use App\Models\Order;
-use App\Models\OrderDetail;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,11 +18,10 @@ class OrderController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $customer_id = 1;
-            $order = Order::with(['user','payment','coupon'])->where('customer_id', $customer_id)->orderBy('created_at', 'desc')->paginate(config('paginate.number_orders'));
+            $order = Order::with(['user','payment','coupon'])->orderFilter($request)->orderBy('created_at', 'desc')->paginate(config('paginate.number_orders'));
             return $this->formatPaginate($order);
         } catch (Exception $ex) {
             dd($ex->getMessage());
@@ -60,10 +57,10 @@ class OrderController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateOrderController $request, Order $order)
+    public function update(UpdateOrderRequest $request, Order $order)
     {
         try {
-            if ($order->processing_status == 0) {
+            if ($order->processing_status == Order::STATUS_PROCESSING) {
                 $order->processing_status = $request->processing_status;
             }
             $order->payment_status = $request->payment_status;

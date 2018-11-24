@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\User;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Admin\CreateCategoryRequest;
 use App\Http\Requests\Admin\CreateProductController;
+use App\Models\Comment;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -24,7 +25,8 @@ class ProductController extends ApiController
     public function index(Request $request)
     {
         $number_products = isset($request->number_products) ? $request->number_products : config('paginate.number_products');
-        $products = Product::with('category.parent', 'shop', 'images')->filter($request)->orderBy('created_at', 'desc')->paginate($number_products);            
+        $products = Product::with('shop.inforProvider','category.parent', 'images')->productFilter($request)
+            ->where('active', 1)->orderBy('created_at', 'desc')->paginate($number_products);
         $products = $this->formatPaginate($products);
         $data = $products['data'];
         array_walk($data, function(&$product, $key) {
@@ -44,7 +46,11 @@ class ProductController extends ApiController
     */
     public function show($id)
     {
-        $product = Product::with("category:id,name", "shop:id,name", 'images', 'comments.user:users.id,user_infors.fullname')->findOrFail($id);
+        $product = Product::with("category:id,name", "shop:id,name", 'images', 'comments.user:users.id,user_infors.fullname')
+            ->where('active', 1)->findOrFail($id)->findOrFail($id);
+        $comments = Comment::with('user.userInfor')->where('product_id', $id)->get();
+        $product['comments'] = $comments;
+
         $ratings = Rating::with('user:users.id,user_infors.fullname')->where('product_id', $id)->get();
         $images = $product['images']->pluck('path')->toArray();
         unset($product['images']);

@@ -4,11 +4,9 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Admin\CreateCouponRequest;
-use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Http\Requests\Admin\UpdateCouponRequest;
 use App\Models\Coupon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,9 +20,11 @@ class CouponController extends ApiController
     public function index()
     {
         try {
-            $coupons = Coupon::get();
-            return $this->showAll($coupons);
+            $coupons = Coupon::orderBy('created_at', 'desc')->paginate(config('paginate.number_products'));
+            return $this->formatPaginate($coupons);
+//            return $this->showAll($coupons, Response::HTTP_OK);
         } catch (Exception $ex) {
+            dd($ex->getMessage());
             return $this->errorResponse("Coupons can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

@@ -11,7 +11,7 @@ class Comment extends Model
         'product_id','customer_id','parent_id','content'
     ];
 
-    public function user()
+    public function inforUser()
     {
         return $this->belongsTo(User::class, 'customer_id', 'id')
             ->join('user_infors', 'user_infors.user_id' , '=', 'users.id')
@@ -22,6 +22,12 @@ class Comment extends Model
                 'user_infors.phone',
             ]);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'customer_id', 'id');
+    }
+
 
     /**
      * Get the user that owns the phone.

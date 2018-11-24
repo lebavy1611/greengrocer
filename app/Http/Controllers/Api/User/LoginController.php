@@ -11,6 +11,7 @@ use App\Http\Requests\User\RegisterRequest;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Auth;
 use App\Services\UploadImageService;
+use App\Models\Account;
 
 class LoginController extends ApiController
 {
@@ -34,9 +35,9 @@ class LoginController extends ApiController
     public function login()
     {
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
-            $user = Auth::user();
-            $data['token'] =  $user->createToken('token')->accessToken;
-            $data['user'] = $user->load('userInfor', 'userRole');;
+            $account = Auth::user();
+            $data['token'] =  $account->createToken('token')->accessToken;
+            $data['user'] = $account->loginable->load('userInfor', 'userRole');
             return $this->successResponse($data, Response::HTTP_OK);
         } else {
             return $this->errorResponse(config('define.login.unauthorised'), Response::HTTP_UNAUTHORIZED);

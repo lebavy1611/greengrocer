@@ -19,6 +19,8 @@ class CreateOrdersTable extends Migration
             $table->foreign('customer_id')
                     ->references('id')->on('users')
                     ->onDelete('no action');
+            $table->string('full_name', 45)->charset('utf8')->collation('utf8_unicode_ci');
+            $table->string('phone', 13)->nullable();
             $table->string('address')->charset('utf8')->collation('utf8_unicode_ci');
             $table->dateTime('delivery_time');
             $table->string('note')->charset('utf8')->collation('utf8_unicode_ci');

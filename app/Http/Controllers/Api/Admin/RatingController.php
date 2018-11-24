@@ -20,7 +20,9 @@ class RatingController extends ApiController
     {
         try {
             $customer_id = 1;
-            $rating = Rating::with(['user','product'])->where('customer_id', $customer_id)->orderBy('created_at', 'desc')->paginate(config('paginate.number_ratings'));
+            $rating = Rating::with(['user','product'])->where('customer_id', $customer_id)
+                ->orderBy('created_at', 'desc')
+                ->paginate(config('paginate.number_ratings'));
             return $this->formatPaginate($rating);
         } catch (Exception $ex) {
             dd($ex->getMessage());
@@ -38,7 +40,7 @@ class RatingController extends ApiController
     public function show($id)
     {
         try {
-            $rating = Rating::with(['user','product'])->findOrFail($id);
+            $rating = Rating::with(['user','product.category:id,name', 'product.shop:id,name'])->findOrFail($id);
             return $this->successResponse($rating, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
