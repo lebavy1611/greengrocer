@@ -84,7 +84,17 @@ class LoginController extends ApiController
             'birthday' => $request->birthday,
         ];
         $user->userInfor()->create($userInfoData);
-        $data['token'] =  $user->createToken('token')->accessToken;
+        foreach (array_values($request->account) as $account) {
+            $accountId = empty($user['id']) ? null : $user['id'];
+            $account['username'] = $request->username;
+            $account['email'] = $request->email;
+            $account['fullname'] = $request->fullname;
+            $account['password'] = bcrypt($request->password);
+            $user->accounts()->updateOrCreate(['id' => $accountId], $account);
+        }
+        $data['token'] =  Account::where([
+            ['loginable_type', '=', 'App\Models\User'],
+            ['loginable_id', '=', $user->id]])->first()->createToken('token')->accessToken;
         $data['user'] =  $user->load('userInfor','userRole');
         return $this->successResponse($data, Response::HTTP_OK);
     }

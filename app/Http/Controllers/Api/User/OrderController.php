@@ -23,7 +23,7 @@ class OrderController extends ApiController
     public function index()
     {
         try {
-            $user = Auth::user();
+            $user = accountLogin();
             $order = Order::with(['user','payment','coupon'])->where('customer_id', $user->id)->orderBy('created_at', 'desc')->paginate(config('paginate.number_orders'));
             return $this->formatPaginate($order);
         } catch (Exception $ex) {
