@@ -83,7 +83,7 @@ class User extends Model
      */
     public function accounts()
     {
-        return $this->morphMany(Account::class, 'loginable')->select('id', 'email', 'username', 'loginable_id', 'loginable_type');
+        return $this->morphMany(Account::class, 'loginable')->select('id', 'email', 'loginable_id', 'loginable_type');
     }
 
 }

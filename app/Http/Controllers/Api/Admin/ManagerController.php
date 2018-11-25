@@ -30,12 +30,11 @@ class ManagerController extends ApiController
     public function store(CreateManagerRequest $request)
     {
         $request['password'] = bcrypt($request->password);
+        $accounts = processParamAccount('App\Models\Manager');
         $manager = Manager::create($request->all());
-        foreach (array_values($request->account) as $account) {
+        foreach (array_values($accounts) as $account) {
                 $accountId = empty($account['id']) ? null : $account['id'];
-                $account['username'] = $request->username;
                 $account['email'] = $request->email;
-                $account['fullname'] = $request->fullname;
                 $account['password'] = $request['password'];
                 $manager->accounts()->updateOrCreate(['id' => $accountId], $account);
         }

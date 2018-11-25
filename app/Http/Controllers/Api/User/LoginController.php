@@ -88,11 +88,10 @@ class LoginController extends ApiController
             'birthday' => $request->birthday,
         ];
         $user->userInfor()->create($userInfoData);
-        foreach (array_values($request->account) as $account) {
+        $accounts = processParamAccount('App\Models\User');
+        foreach (array_values($accounts) as $account) {
             $accountId = empty($user['id']) ? null : $user['id'];
-            $account['username'] = $request->username;
             $account['email'] = $request->email;
-            $account['fullname'] = $request->fullname;
             $account['password'] = bcrypt($request->password);
             $user->accounts()->updateOrCreate(['id' => $accountId], $account);
         }

@@ -32,7 +32,7 @@ class Account extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'username', 'email', 'password',
+        'email', 'password',
     ];
 
     /**

@@ -18,12 +18,20 @@ class VerifyAdmin
     public function handle($request, Closure $next)
     {
         $manager = auth('api')->user();
-        if ($manager->loginable_type != Account::TYPE_ADMIN) {
+        if ($manager){
+            if($manager->loginable_type != Account::TYPE_ADMIN) {
+                $response = [
+                    'message' => 'Unauthorized'
+                ];
+                return response($response, Response::HTTP_UNAUTHORIZED);
+            }   
+        } else {
             $response = [
-                'message' => 'Unauthorized'
+                'message' => 'Unauthorized, please Login'
             ];
             return response($response, Response::HTTP_UNAUTHORIZED);
         }
+            
         return $next($request);
     }
 }

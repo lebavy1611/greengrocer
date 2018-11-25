@@ -96,3 +96,20 @@ if (!function_exists('getCompanyId')) {
         }
     }
 }
+
+if (!function_exists('processParamAccount')) {
+    /**
+     * Get Id Company
+     *
+     * @return int
+     */
+    function processParamAccount($loginableType)
+    {
+        $account = [];
+        $accounts = [];
+        array_push($account, $loginableType);
+        array_push($accounts, $account);
+        return $accounts;
+    }
+}
+

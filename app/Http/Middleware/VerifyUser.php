@@ -18,9 +18,16 @@ class VerifyUser
     public function handle($request, Closure $next)
     {
         $user = auth('api')->user();
-        if ($user->loginable_type != Account::TYPE_USER) {
+        if ($user){
+            if($user->loginable_type != Account::TYPE_USER) {
+                $response = [
+                    'message' => 'Unauthorized'
+                ];
+                return response($response, Response::HTTP_UNAUTHORIZED);
+            }   
+        } else {
             $response = [
-                'message' => 'Unauthorized'
+                'message' => 'Unauthorized, please Login'
             ];
             return response($response, Response::HTTP_UNAUTHORIZED);
         }
