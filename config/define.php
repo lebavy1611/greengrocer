@@ -10,7 +10,7 @@ return [
     'no_image' => '/images/no-image.jpg',
     'limit_rows' => 4,
     'login' => [
-      'unauthorised' => 'The user name or password is incorrect!',
+      'unauthorised' => 'Unauthorized',
       'success' => 'You have login successfully!'
     ],
     'limit_row_slide' => 8,
