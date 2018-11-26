@@ -28,12 +28,13 @@ class CommentController extends ApiController
     public function store(CreateCommentRequest $request)
     {
         try {
+            $user = accountLogin();
             $data = $request->only([
                 'product_id',
                 'parent_id',
                 'content'
             ]);
-            $data['customer_id'] = 1;
+            $data['customer_id'] = $user->id;
 
             $comment = Comment::create($data);
             return $this->successResponse($comment, Response::HTTP_OK);
@@ -50,17 +51,18 @@ class CommentController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateCommentRequest $request, $id)
+    public function update(UpdateCommentRequest $request, Comment $comment)
     {
         try {
-//       $user = Auth::user();
-//       if ($user->id == $order->user_id) {
-            $data = $request->only([
-                'parent_id',
-                'content'
-            ]);
-            Comment::findOrFail($id)->update($data);
-            return $this->successResponse("Update conpon successfully", Response::HTTP_OK);
+            $user = accountLogin();
+            if ($user->id == $comment->customer_id) {
+                $data = $request->only([
+                    'parent_id',
+                    'content'
+                ]);
+                Comment::findOrFail($comment->id)->update($data);
+                return $this->successResponse("Update conpon successfully", Response::HTTP_OK);
+            }
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Coupon not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
@@ -78,6 +80,7 @@ class CommentController extends ApiController
     public function destroy($id)
     {
         try {
+            accountLogin();
             Comment::findOrfail($id)->delete();
             return $this->successResponse("Delete comment successfully.", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {

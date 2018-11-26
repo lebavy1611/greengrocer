@@ -26,7 +26,7 @@ class RatingController extends ApiController
     {
         try {
 
-            $user = Auth::user();
+            $user = accountLogin();
 
             $data = $request->only([
                 'product_id',
@@ -53,7 +53,7 @@ class RatingController extends ApiController
     public function update(UpdateRatingRequest $request, Rating $rating)
     {
         try {
-            $user = Auth::user();
+            $user = accountLogin();
             if ($user->id == $rating->customer_id) {
 
                 $data = $request->only([
