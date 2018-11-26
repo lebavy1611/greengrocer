@@ -40,12 +40,15 @@ Route::group(['as' => 'api.', 'namespace' => 'Api\User', 'middleware' => ['cors'
     Route::post('register', 'LoginController@register');
     Route::apiResource('products', 'ProductController');
     Route::apiResource('promotions', 'PromotionController');
+    Route::post('ordersNologin', 'OrderControllerNoLogin@store');
     Route::group(['middleware' => 'verify.user'], function () {
         Route::apiResource('orders', 'OrderController');
         Route::put('orders/{id}/cancel', 'OrderController@cancel');
         Route::apiResource('ratings', 'RatingController');
         Route::apiResource('comments', 'CommentController');
         Route::apiResource('uploads', 'UploadImageController');
+        Route::get('userInfor', 'UserController@show');
+        Route::put('editUserInfor', 'UserController@update');
     });
 
 
