@@ -3,10 +3,10 @@
 namespace App\Http\Middleware;
 
 use Closure;
-
 use App\Models\Account;
 use Illuminate\Http\Response;
-class VerifyAdmin
+
+class VerifyUser
 {
     /**
      * Handle an incoming request.
@@ -17,9 +17,9 @@ class VerifyAdmin
      */
     public function handle($request, Closure $next)
     {
-        $manager = auth('api')->user();
-        if ($manager){
-            if($manager->loginable_type != Account::TYPE_ADMIN) {
+        $user = auth('api')->user();
+        if ($user){
+            if($user->loginable_type != Account::TYPE_USER) {
                 $response = [
                     'message' => 'Unauthorized'
                 ];
@@ -31,7 +31,6 @@ class VerifyAdmin
             ];
             return response($response, Response::HTTP_UNAUTHORIZED);
         }
-            
         return $next($request);
     }
 }

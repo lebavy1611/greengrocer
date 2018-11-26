@@ -36,6 +36,7 @@ class LoginController extends ApiController
     {
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $account = Auth::user();
+            if (!isAdminLogin()) return $this->errorResponse(config('define.login.unauthorised'), Response::HTTP_UNAUTHORIZED);
             $data['token'] =  $account->createToken('token')->accessToken;
             $data['manager'] = $account->loginable;
             return $this->successResponse($data, Response::HTTP_OK);

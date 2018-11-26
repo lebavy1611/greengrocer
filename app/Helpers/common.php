@@ -1,5 +1,18 @@
 <?php
 
+if (!function_exists('accountLogin')) {
+    /**
+     * Check if current logged in user is Admin
+     *
+     * @return boolean
+     */
+    function accountLogin()
+    {
+        return auth('api')->user()->loginable;
+    }
+}
+
+
 if (!function_exists('isAdminLogin')) {
     /**
      * Check if current logged in user is Admin
@@ -83,3 +96,20 @@ if (!function_exists('getCompanyId')) {
         }
     }
 }
+
+if (!function_exists('processParamAccount')) {
+    /**
+     * Get Id Company
+     *
+     * @return int
+     */
+    function processParamAccount($loginableType)
+    {
+        $account = [];
+        $accounts = [];
+        array_push($account, $loginableType);
+        array_push($accounts, $account);
+        return $accounts;
+    }
+}
+

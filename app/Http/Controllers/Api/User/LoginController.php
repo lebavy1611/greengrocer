@@ -37,7 +37,11 @@ class LoginController extends ApiController
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $account = Auth::user();
             $data['token'] =  $account->createToken('token')->accessToken;
-            $data['user'] = $account->loginable->load('userInfor', 'userRole');
+            if (isAdminLogin()) {
+                $data['manager'] = $account->loginable;
+            } else {
+                $data['user'] = $account->loginable->load('userInfor', 'userRole');
+            }
             return $this->successResponse($data, Response::HTTP_OK);
         } else {
             return $this->errorResponse(config('define.login.unauthorised'), Response::HTTP_UNAUTHORIZED);
@@ -84,7 +88,16 @@ class LoginController extends ApiController
             'birthday' => $request->birthday,
         ];
         $user->userInfor()->create($userInfoData);
-        $data['token'] =  $user->createToken('token')->accessToken;
+        $accounts = processParamAccount('App\Models\User');
+        foreach (array_values($accounts) as $account) {
+            $accountId = empty($user['id']) ? null : $user['id'];
+            $account['email'] = $request->email;
+            $account['password'] = bcrypt($request->password);
+            $user->accounts()->updateOrCreate(['id' => $accountId], $account);
+        }
+        $data['token'] =  Account::where([
+            ['loginable_type', '=', 'App\Models\User'],
+            ['loginable_id', '=', $user->id]])->first()->createToken('token')->accessToken;
         $data['user'] =  $user->load('userInfor','userRole');
         return $this->successResponse($data, Response::HTTP_OK);
     }
