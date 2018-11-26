@@ -47,7 +47,7 @@ class OrderController extends ApiController
     public function store(CreateOrderRequest $request)
     {
         try {
-            $user = Auth::user();
+            $user = accountLogin();
             $data = $request->only([
                 'full_name',
                 'phone',
@@ -87,7 +87,7 @@ class OrderController extends ApiController
     public function show($id)
     {
         try {
-            Auth::user();
+            accountLogin();
             $order = Order::with(['user','payment','coupon','orderDetails.product:id,name,price'])->findOrFail($id);
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
@@ -109,9 +109,8 @@ class OrderController extends ApiController
     public function cancel(int $orderId)
     {
         try {
-            Auth::user();
+            $user = accountLogin();
             $order = Order::find($orderId);
-            $user = Auth::user();
             if ($user->id == $order->customer_id) {
                 if ($order->processing_status == Order::STATUS_PROCESSING) {
                     $order->update(['processing_status' => Order::CANCEL_STATUS_PROCESSING]);
@@ -119,6 +118,7 @@ class OrderController extends ApiController
             }
             return $this->successResponse("Update order successfully", Response::HTTP_OK);
         } catch (Exception $ex) {
+            dd($ex->getMessage());
             return $this->errorResponse("Occour error when show Order.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -135,7 +135,7 @@ class OrderController extends ApiController
     public function destroy(Order $order)
     {
         try {
-            Auth::user();
+            accountLogin();
             $order->orderDetails()->delete();
             $order->delete();
             return $this->successResponse("Delete order successfully", Response::HTTP_OK);
