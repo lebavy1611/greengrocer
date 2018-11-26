@@ -20,7 +20,7 @@ class Manager extends Model
      * @var array
      */
     protected $fillable = [
-        'username', 'email', 'password', 'phone', 'fullname', 'address', 'gender'
+        'username', 'email', 'password', 'role', 'phone', 'fullname', 'address', 'gender'
     ];
 
     /**

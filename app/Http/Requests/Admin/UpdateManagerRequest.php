@@ -5,7 +5,7 @@ namespace App\Http\Requests\Admin;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\ApiFormRequest;
 
-class CreateManagerRequest extends ApiFormRequest
+class UpdateManagerRequest extends ApiFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,9 +25,7 @@ class CreateManagerRequest extends ApiFormRequest
     public function rules()
     {
         return [
-            'username'       => 'required|string|max:32|unique:managers',
-            'email'          => 'required|string|email|max:25|unique:managers',
-            'password'       => 'required|string|min:8',
+            'password'       => 'nullable|required_with:password_confirmation|string|confirmed|min:8',
             'fullname'       => 'required|string|max:45',
             'address'        => 'string|max:255',
             'phone'          => 'regex:/^0[0-9]{9,10}$/',

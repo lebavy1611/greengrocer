@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\CreateManagerRequest;
 use App\Models\Manager;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Requests\Admin\UpdateManagerRequest;
 
 class ManagerController extends ApiController
 {
@@ -17,7 +18,12 @@ class ManagerController extends ApiController
      */
     public function index()
     {
-        return $this->successResponse('index', Response::HTTP_OK);        
+        try {
+            $managers = Manager::all();
+            return $this->showAll($managers);
+        } catch (Exception $ex) {
+            return $this->errorResponse("Danh sách trống!", Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
 
@@ -59,9 +65,16 @@ class ManagerController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateManagerRequest $request, Manager $manager)
     {
-        //
+        try {
+            $managerData = $request->all();
+            if ($request->password) $managerData['password'] = bcrypt($request->password);
+            Manager::updateOrCreate(['id' => $manager->id], $managerData);
+            return $this->successResponse('Cập nhật thành công', Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse('Cập nhập thất bại', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
