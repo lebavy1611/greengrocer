@@ -114,11 +114,7 @@ class CategoryController extends ApiController
                 ]);
 
             if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $newImage = Carbon::now()->format('YmdHis_u') . '.' . $image->getClientOriginalExtension();
-                $destinationPath = public_path(config('define.images_path_categories'));
-                $image->move($destinationPath, $newImage);
-                $data['image'] = $newImage;
+                $data['image'] = $this->uploadImageService->fileUpload($request, 'categories');
             }
 
                 Category::findOrFail($id)->update($data);
