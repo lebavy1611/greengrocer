@@ -8,6 +8,9 @@ use App\Models\Manager;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Admin\UpdateManagerRequest;
+use App\Models\Role;
+use App\Models\RoleResource;
+
 
 class ManagerController extends ApiController
 {
@@ -19,7 +22,7 @@ class ManagerController extends ApiController
     public function index()
     {
         try {
-            $managers = Manager::all();
+            $managers = Manager::with(['roleResources.resource:id,name', 'roleResources.role:id,name'])->get();
             return $this->showAll($managers);
         } catch (Exception $ex) {
             return $this->errorResponse("Danh sách trống!", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -35,6 +38,7 @@ class ManagerController extends ApiController
      */
     public function store(CreateManagerRequest $request)
     {
+        
         $request['password'] = bcrypt($request->password);
         $accounts = processParamAccount('App\Models\Manager');
         $manager = Manager::create($request->all());
@@ -44,7 +48,22 @@ class ManagerController extends ApiController
                 $account['password'] = $request['password'];
                 $manager->accounts()->updateOrCreate(['id' => $accountId], $account);
         }
-        return $this->successResponse($manager, Response::HTTP_OK);
+        if ($request->role == 'mod') {
+            $roleData = [
+                'name' => 'mod' . $manager->id,
+                'manager_id' => $manager->id
+            ];
+            $role = Role::create($roleData);
+            if ($request->role_resources) {
+                $roleResourcesReq = $request->role_resources;
+                array_walk($roleResourcesReq, function(&$role_resource, $key) use($role) {
+                    $role_resource['role_id'] = $role->id;
+                });
+
+                $roleResource = RoleResource::insert($roleResourcesReq);
+            }
+        }
+        return $this->successResponse($manager->load(['roleResources.resource:id,name', 'roleResources.role:id,name']), Response::HTTP_OK);
     }
 
     /**
@@ -56,7 +75,7 @@ class ManagerController extends ApiController
     public function show($id)
     {
         try {
-            $manager = Manager::findOrFail($id);
+            $manager = Manager::with(['roleResources.resource:id,name', 'roleResources.role:id,name'])->findOrFail($id);
             return $this->successResponse($manager, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Không tìm thấy.", Response::HTTP_NOT_FOUND);
