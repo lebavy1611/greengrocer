@@ -13,9 +13,22 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
+use App\Services\UploadImageService;
 
 class ProductController extends ApiController
 {
+    protected $uploadImageService;
+
+    /**
+     * CategoryController constructor..
+     *
+     * @param UploadImageService   $uploadImageService   UploadImageService
+     */
+    public function __construct(UploadImageService $uploadImageService)
+    {
+        $this->uploadImageService = $uploadImageService;
+    }
+    
     /**
      * Display a listing of the resource.
      *
@@ -43,7 +56,6 @@ class ProductController extends ApiController
     public function store(CreateProductRequest $request)
     {
         try {
-
             $data = $request->only([
                 'name', 'shop_id', 'category_id','describe', 'price',
                 'origin','quantity','number_expired'
@@ -55,23 +67,15 @@ class ProductController extends ApiController
 
             $product = Product::create($data);
 
-            $imagesData ="";
-            if (is_array(request()->file('image'))) {
-                foreach (request()->file('image') as $image) {
-                    $newImage = config('define.product.images_path_products') . $image->getClientOriginalName();
-                    $image->move(public_path(config('define.product.images_path_products')), $newImage);
-                    $imagesData[] = [
-                        'product_id' => $product->id,
-                        'path' => $newImage
-                    ];
-                }
+            $imagesData = [];
+            if ($request->hasFile('images')) {
+                $imagesData = $this->uploadImageService->multiFilesUpload($request, 'products',  $product);
                 $product->images()->createMany($imagesData);
             }
-
-            return $this->successResponse($product, Response::HTTP_OK);
+            return $this->successResponse("Tạo sản phẩm thành công.", Response::HTTP_OK);
         } catch (Exception $ex) {
             dd($ex->getMessage());
-            return $this->errorResponse("Occour error when insert product.", Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->errorResponse("Có lỗi xảy ra.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -102,10 +106,10 @@ class ProductController extends ApiController
             $product['comments'] = $comments;
             return $this ->successResponse($product, Response::HTTP_OK);
         }catch (ModelNotFoundException $ex){
-            return $this ->errorResponse("Product can not be show", Response::HTTP_NOT_FOUND);
+            return $this ->errorResponse("Sản phẩm không tồn tại", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
             dd($ex->getMessage());
-            return $this->errorResponse("Occour error when show Product.", Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->errorResponse("Có lỗi xảy ra.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -116,7 +120,7 @@ class ProductController extends ApiController
      * @param  \App\igration  $igration
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateProductRequest $request, $id)
+    public function update(UpdateProductRequest $request, Product $product)
     {
         try {
             $data = $request->only([
@@ -130,13 +134,18 @@ class ProductController extends ApiController
             }
             unset($data['number_expired']);
 
-            Product::findOrFail($id)->update($data);
-            return $this->successResponse("Update product successfully", Response::HTTP_OK);
+            $product->update($data);
+            $imagesData = [];
+            if ($request->hasFile('images')) {
+                $imagesData = $this->uploadImageService->multiFilesUpload($request, 'products',  $product);
+                $product->images()->createMany($imagesData);
+            }
+            return $this->successResponse("Chỉnh sửa sản phẩm thành công.", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
-            return $this->errorResponse("Product not found.", Response::HTTP_NOT_FOUND);
+            return $this->errorResponse("Không tìm thấy sản phẩm", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
             dd($ex->getMessage());
-            return $this->errorResponse("Occour error when show product.", Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->errorResponse("Có lỗi xảy ra.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -150,11 +159,11 @@ class ProductController extends ApiController
     {
         try {
             Product::findOrfail($id)->delete();
-            return $this->successResponse("Delete product successfully.", Response::HTTP_OK);
+            return $this->successResponse("Xóa sản phẩm thành công.", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
-            return $this->errorResponse("Product not found.", Response::HTTP_NOT_FOUND);
+            return $this->errorResponse("Sản phẩm không tồn tại", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
-            return $this->errorResponse("Occour error when delete product.", Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->errorResponse("Có lỗi xảy ra.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
