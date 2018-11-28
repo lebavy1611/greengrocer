@@ -31,6 +31,7 @@ Route::group(['prefix' => 'admin', 'as' => 'api.admin.', 'namespace' => 'Api\Adm
         Route::apiResource('comments', 'CommentController');
         Route::apiResource('promotions', 'PromotionController');
         Route::apiResource('managers', 'ManagerController');
+        Route::apiResource('resources', 'ResourceController');
     });
 
 });

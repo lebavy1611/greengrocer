@@ -24,6 +24,15 @@ class Manager extends Model
     ];
 
     /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+
+    /**
      * Relationship account t
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany
@@ -31,5 +40,13 @@ class Manager extends Model
     public function accounts()
     {
         return $this->morphMany(Account::class, 'loginable');
+    }
+
+    /**
+     * Get all of the posts for the country.
+     */
+    public function roleResources()
+    {
+        return $this->hasManyThrough(RoleResource::class, Role::class);
     }
 }
