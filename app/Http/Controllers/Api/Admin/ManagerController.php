@@ -39,6 +39,7 @@ class ManagerController extends ApiController
     public function store(CreateManagerRequest $request)
     {
         
+        
         $request['password'] = bcrypt($request->password);
         $accounts = processParamAccount('App\Models\Manager');
         $manager = Manager::create($request->all());
@@ -54,10 +55,10 @@ class ManagerController extends ApiController
                 'manager_id' => $manager->id
             ];
             $role = Role::create($roleData);
-            $now = \Carbon\Carbon::now();   
+            $now = \Carbon\Carbon::now()->toDateTimeString();   
             if (count($request->role_resources)) {
                 $roleResourcesReq = $request->role_resources;
-                array_walk($roleResourcesReq, function(&$role_resource, $key) use($role) {
+                array_walk($roleResourcesReq, function(&$role_resource, $key) use($role, $now) {
                     $role_resource['role_id'] = $role->id;
                     $role_resource['created_at'] = $now;
                     $role_resource['updated_at'] = $now;
