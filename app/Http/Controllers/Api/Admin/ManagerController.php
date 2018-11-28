@@ -54,10 +54,13 @@ class ManagerController extends ApiController
                 'manager_id' => $manager->id
             ];
             $role = Role::create($roleData);
-            if ($request->role_resources) {
+            $now = \Carbon\Carbon::now();   
+            if (count($request->role_resources)) {
                 $roleResourcesReq = $request->role_resources;
                 array_walk($roleResourcesReq, function(&$role_resource, $key) use($role) {
                     $role_resource['role_id'] = $role->id;
+                    $role_resource['created_at'] = $now;
+                    $role_resource['updated_at'] = $now;
                 });
 
                 $roleResource = RoleResource::insert($roleResourcesReq);
