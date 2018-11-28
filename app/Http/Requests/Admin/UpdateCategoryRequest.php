@@ -33,4 +33,31 @@ class UpdateCategoryRequest extends ApiFormRequest
             'image'         => 'nullable|image|mimes:jpeg,bmp,png',
         ];
     }
+
+    /**
+     * Custom message error for rules
+     *
+     * @return void
+     */
+
+    public function messages()
+    {
+
+        return [
+            'name.required'             => "Yêu cầu bạn nhập vào tên danh mục sản phẩm",
+            'name.string'               => "Tên danh mục sản phẩm phải là chuỗi kí ",
+            'name.max'                  => "Tên danh mục sản phẩm không được quá 255 kí tự",
+            'name.unique'               => "Tên danh mục sản phẩm không được trùng nhau",
+
+            'position.required'         => "Vị trí danh mục sản phẩm không được trống ",
+            'position.integer'          => "Vị trí danh mục sản phẩm phải là số nguyên",
+
+            'parent_id.required'        => "Parent danh mục sản phẩm không được trống ",
+            'parent_id.integer'         => "Parent danh mục sản phẩm  phải là số nguyên",
+
+            'image.image'               => "Image phải là hình ảnh",
+            'image.mimes'               => "Image phải đúng định dạng jpeg,bmp,png",
+        ];
+
+    }
 }
