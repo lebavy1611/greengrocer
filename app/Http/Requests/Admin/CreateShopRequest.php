@@ -24,13 +24,13 @@ class CreateShopRequest extends ApiFormRequest
      */
     public function rules()
     {
+        $provider = 'provider'; 
         return [
             'name'        => 'required|string|max:255',
-            'provider_id' => 'required|integer|exists:users,id',
+            'provider_id' => 'required|integer|exists:managers,id,role,' .$provider,
             'address'     => 'required',
             'phone'       => 'required|regex:/^0[0-9]{9,10}$/',
             'image'       => 'image|mimes:png,jpg,jpeg',
-            'active'      => 'integer|min:0|max:1'
         ];
     }
 
@@ -49,7 +49,8 @@ class CreateShopRequest extends ApiFormRequest
             'name.max'                  => "Tên của hàng không được quá 255 kí tự",
 
             'provider_id.required'      => "Yêu cầu bạn nhập vào tên chủ cửa hàng",
-            'provider_id.integer'       => "Id_provider của hàng phải là số nguyên",
+            'provider_id.integer'       => "Id_provider của cửa hàng phải là số nguyên",
+            'provider_id.exists'        => "Id_provider của cửa hàng phải tồn tại và phải là provider",
 
             'address.required'          => "Địa chỉ cửa hàng không được trống",
 
@@ -57,12 +58,7 @@ class CreateShopRequest extends ApiFormRequest
             'phone.regex'               => "Số điện thoại của hàng phải đúng định  ",
 
             'image.image'               => "Image phải là hình ảnh",
-            'image.mimes'               => "Image phải đúng định dạng jpeg,bmp,png",
-
-            'active.integer'             => "Active phải là số nguyên ",
-            'active.min'                 => "Active không được bé hơn 0",
-            'active.max'                 => "Active không được hơn hơn 1",
-
+            'image.mimes'               => "Image phải đúng định dạng jpeg,bmp,png"
         ];
 
     }

@@ -88,4 +88,15 @@ trait FilterTrait
         return $query->select('orders.*');
 
     }
+
+    public function scopeManagerFilter($query, Request $request)
+    {
+        if ($request->role) {
+            $query->where(function ($q) use ($request) {
+                return $q->where('managers.role', $request->role);
+            });
+        }
+        return $query->select('managers.*');
+
+    }
 }

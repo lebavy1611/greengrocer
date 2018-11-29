@@ -25,19 +25,7 @@ class Shop extends Model
      */
     public function provider()
     {
-        return $this->belongsTo(User::class, 'provider_id', 'id');
-    }
-
-    public function inforProvider()
-    {
-        return $this->belongsTo(User::class, 'provider_id', 'id')
-            ->join('user_infors', 'user_infors.user_id' , '=', 'users.id')
-            ->select([
-                'users.id',
-                'user_infors.fullname',
-                'user_infors.address',
-                'user_infors.phone',
-            ]);
+        return $this->belongsTo(Manager::class, 'provider_id', 'id');
     }
 
     /**

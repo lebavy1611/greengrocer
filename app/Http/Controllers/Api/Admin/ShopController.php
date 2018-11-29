@@ -8,6 +8,7 @@ use App\Models\Shop;
 use Illuminate\Http\Response;
 use App\Http\Requests\Admin\CreateShopRequest;
 use App\Services\UploadImageService;
+use App\Models\Manager;
 
 class ShopController extends ApiController
 {
@@ -30,7 +31,7 @@ class ShopController extends ApiController
      */
     public function index()
     {
-        $shops = Shop::orderBy('created_at', 'desc')->paginate(config('paginate.number_stores'));
+        $shops = Shop::with('provider')->orderBy('created_at', 'desc')->paginate(config('paginate.number_stores'));
         $shops = $this->formatPaginate($shops);
         return $this->showAll($shops, Response::HTTP_OK);
     }
@@ -45,6 +46,9 @@ class ShopController extends ApiController
     {
         try {
             $data = $request->only(['name', 'provider_id', 'address', 'phone', 'active']);
+            if (accountLogin()->role == Manager::ROLE_PROVIDER) {
+                $data['provider_id'] = accountLogin()->id;
+            }
             $data['image'] = $this->uploadImageService->fileUpload($request, 'shops', 'image');
             $shop = Shop::create($data);    
             return $this->successResponse($shop, Response::HTTP_OK);
@@ -63,7 +67,7 @@ class ShopController extends ApiController
     {
         try {
             $shop = Shop::findOrFail($id);
-            return $this->successResponse($shop, Response::HTTP_OK);
+            return $this->successResponse($shop->load('provider'), Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Shop not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
@@ -79,15 +83,18 @@ class ShopController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CreateShopRequest $request, $id)
     {
         try {
             if ($request->hasFile('image')) {
                 $data['image'] = $this->uploadImageService->fileUpload($request, 'shops', 'image');
             }
             $data = $request->only(['name', 'provider_id', 'address', 'phone', 'active']);
+            if (accountLogin()->role == Manager::ROLE_PROVIDER) {
+                $data['provider_id'] = accountLogin()->id;
+            }
             Shop::findOrFail($id)->update($data);
-            return $this->successResponse(Shop::findOrFail($id), Response::HTTP_OK);
+            return $this->successResponse(Shop::with('provider')->findOrFail($id), Response::HTTP_OK);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when insert shop.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }

@@ -37,7 +37,7 @@ class ProductController extends ApiController
     public function index(Request $request)
     {
         try {
-            $products = Product::with('category.parent', 'shop.inforProvider', 'images')->productFilter($request)
+            $products = Product::with('category.parent', 'shop.provider', 'images')->productFilter($request)
                 ->orderBy('created_at', 'desc')->paginate(config('paginate.number_products'));
             $products = $this->formatPaginate($products);
             return $this->showAll($products, Response::HTTP_OK);
@@ -88,7 +88,7 @@ class ProductController extends ApiController
     public function show($id)
     {
         try{
-            $product = Product::with("category:id,name", "shop.inforProvider", 'images')->findOrFail($id);
+            $product = Product::with("category:id,name", "shop.provider", 'images')->findOrFail($id);
             $comments = Comment::with('user.userInfor')->where('product_id', $id)->get();
             $ratings = Rating::all()->where('product_id', $id);
 
