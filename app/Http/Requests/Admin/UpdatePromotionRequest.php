@@ -4,7 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Http\Requests\ApiFormRequest;
 
-class CreatePromotionRequest extends ApiFormRequest
+class UpdatePromotionRequest extends ApiFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
