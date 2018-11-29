@@ -19,10 +19,10 @@ class ManagerController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $managers = Manager::with(['roleResources.resource:id,name', 'roleResources.role:id,name'])->get();
+            $managers = Manager::with(['roleResources.resource:id,name', 'roleResources.role:id,name'])->managerFilter($request)->get();
             return $this->showAll($managers);
         } catch (Exception $ex) {
             return $this->errorResponse("Danh sách trống!", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -121,5 +121,16 @@ class ManagerController extends ApiController
         } catch (Exception $e) {
             return $this->errorResponse('Xóa thất bai', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Get manager login
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getManagerLogin()
+    {
+        return $this->successResponse(accountLogin(), Response::HTTP_OK);
     }
 }
