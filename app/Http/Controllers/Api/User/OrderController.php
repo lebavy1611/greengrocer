@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\Coupon;
 
 class OrderController extends ApiController
 {
@@ -24,7 +25,7 @@ class OrderController extends ApiController
     {
         try {
             $user = accountLogin();
-            $order = Order::with(['user','payment','coupon'])->where('customer_id', $user->id)->orderBy('created_at', 'desc')->paginate(config('paginate.number_orders'));
+            $order = Order::with(['user', 'payment:id,name', 'coupon:id,code,percents', 'processStatus:id,name', 'orderDetails.product:id,name,price'])->where('customer_id', $user->id)->orderBy('created_at', 'desc')->paginate(config('paginate.number_orders'));
             return $this->formatPaginate($order);
         } catch (Exception $ex) {
             return $this->errorResponse("Orders can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -36,9 +37,9 @@ class OrderController extends ApiController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      * processing_status = 1 Dang xu ly
-     * processing_status = 2 Da xu ly
-     * processing_status = 3 huy xu ly
-     * processing_status = 4 thanh cong
+     * processing_status = 11 Da xu ly
+     * processing_status = 21 huy xu ly
+     * processing_status = 31 thanh cong
      * payment_method_id = 1 thanh toan khi nhan hang
      * payment_method_id = 2,3 cac hinh thuc thanh toan
      * payment_status = 1 da thanh toan
@@ -70,6 +71,7 @@ class OrderController extends ApiController
                     'quantity' => $product['quantity']
                 ]);
             }
+            if (!empty($data['coupon_id'])) Coupon::where('id', $data['coupon_id'])->decrement('times');
             $order->load('orderdetails');
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (Exception $ex) {
@@ -88,7 +90,7 @@ class OrderController extends ApiController
     {
         try {
             accountLogin();
-            $order = Order::with(['user','payment','coupon','orderDetails.product:id,name,price'])->findOrFail($id);
+            $order = Order::with(['user', 'payment:id,name', 'coupon:id,code,percents', 'processStatus:id,name', 'orderDetails.product:id,name,price'])->findOrFail($id);
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Order not found.", Response::HTTP_NOT_FOUND);
