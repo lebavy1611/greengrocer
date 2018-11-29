@@ -32,4 +32,37 @@ class UpdateManagerRequest extends ApiFormRequest
             'role'           => 'required'
         ];
     }
+
+    /**
+     * Custom message error for rules
+     *
+     * @return void
+     */
+
+    public function messages()
+    {
+
+        return [
+            'password.required_with'        => "Yêu cầu bạn nhập lại password",
+            'password.confirmed'            => "Password không khớp. Mời bạn nhập ",
+            'password.string'               => "Password phải là chuỗi kí ",
+            'password.min'                  => "Password ít 8 kí tự",
+
+            'fullname.required'             => "Yêu cầu bạn nhập vào fullname",
+            'fullname.string'               => "fullname phải là chuỗi kí ",
+            'fullname.max'                  => "fullname không được quá 45 kí tự",
+
+            'address.string'                =>  "Địa chỉ phải là chuỗi kí ",
+            'address.max'                   => "Địa  không được quá 255 kí tự",
+
+
+            'phone.regex'                   => "Số điện thoại phải đúng định  ",
+
+            'role.required'               => "Yêu cầu bạn nhập chọn phân quyền",
+
+
+
+        ];
+
+    }
 }

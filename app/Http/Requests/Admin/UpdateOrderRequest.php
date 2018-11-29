@@ -30,4 +30,29 @@ class UpdateOrderRequest extends ApiFormRequest
             'delivery_time'        => 'required|date_format:"Y-m-d"',
         ];
     }
+
+    /**
+     * Custom message error for rules
+     *
+     * @return void
+     */
+
+    public function messages()
+    {
+
+        return [
+            'processing_status.required'             => "Yêu cầu bạn chọn để huỷ đơn hàng",
+            'processing_status.integer'               => "Trạng thái huỷ đơn hàng phải là số nguyên",
+
+            'payment_status.required'             => "Yêu cầu bạn nhập vào trạng thái thanh toán",
+            'payment_status.integer'              => "id trạng thái thanh toán phải là số nguyên ",
+            'payment_status.min'                 => "Trạng thái thanh toán không được bé hơn 1",
+            'payment_status.max'                 => "Trạng thái thanh toán không được hơn hơn 2",
+
+            'delivery_time.required'       => "Yêu cầu bạn nhập vào ngày bắt đầu giao hàng",
+            'delivery_time.date_format'    => "Ngày bắt đầu khuyến mãi phải đúng định dạng y-m-d",
+
+        ];
+
+    }
 }

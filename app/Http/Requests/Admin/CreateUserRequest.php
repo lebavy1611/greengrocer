@@ -84,7 +84,7 @@ class CreateUserRequest extends ApiFormRequest
 
             'phone.regex'                   => "Số điện thoại phải đúng định  ",
 
-            'gender.required'               => "Yêu cầu bạn nhập vào giới ",
+            'gender.required'               => "Yêu cầu bạn nhập vào giới tính",
             'gender.integer'                => "Gender phải là số nguyên ",
             'gender.min'                    => "Gender  không được bé hơn 0",
             'gender.max'                    => "Gender  không được lớn hơn 1",
