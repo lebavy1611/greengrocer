@@ -46,8 +46,8 @@ class UpdateUserRequest extends ApiFormRequest
     {
 
         return [
-            'password.nullable'             => "Password có thể null",
-//            'password.required'             => "Yêu cầu bạn nhập vào password",
+            'password.required_with'        => "Yêu cầu bạn nhập lại password",
+            'password.confirmed'            => "Password không khớp. Mời bạn nhập ",
             'password.string'               => "Password phải là chuỗi kí ",
             'password.min'                  => "Password ít 8 kí tự",
 
@@ -71,7 +71,7 @@ class UpdateUserRequest extends ApiFormRequest
 
             'phone.regex'                   => "Số điện thoại phải đúng định  ",
 
-            'gender.required'               => "Yêu cầu bạn nhập vào giới ",
+            'gender.required'               => "Yêu cầu bạn nhập vào giới tính",
             'gender.integer'                => "Gender phải là số nguyên ",
             'gender.min'                    => "Gender  không được bé hơn 0",
             'gender.max'                    => "Gender  không được lớn hơn 1",
