@@ -31,8 +31,7 @@ class ShopController extends ApiController
      */
     public function index()
     {
-        $shops = Shop::with('provider')->orderBy('created_at', 'desc')->paginate(config('paginate.number_stores'));
-        $shops = $this->formatPaginate($shops);
+        $shops = Shop::with('provider')->orderBy('created_at', 'desc')->get();
         return $this->showAll($shops, Response::HTTP_OK);
     }
 
