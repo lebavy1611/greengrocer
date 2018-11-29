@@ -47,7 +47,7 @@ class ProductController extends ApiController
     public function show($id)
     {
         $product = Product::with("category:id,name", "shop:id,name", 'images', 'comments.user:users.id,user_infors.fullname')
-            ->where('active', 1)->findOrFail($id)->findOrFail($id);
+            ->where('active', 1)->findOrFail($id);
         $comments = Comment::with('user.userInfor')->where('product_id', $id)->get();
         $product['comments'] = $comments;
 
