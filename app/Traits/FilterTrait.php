@@ -51,6 +51,12 @@ trait FilterTrait
             });
         }
 
+        if ($request->price) {
+            $query->where(function ($q) use ($request) {
+                return $q->where('price', 'like', '%'.$request->price.'%');
+            });
+        }
+
         return $query->select('products.*');
 
     }
