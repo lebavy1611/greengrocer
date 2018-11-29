@@ -32,6 +32,7 @@ Route::group(['prefix' => 'admin', 'as' => 'api.admin.', 'namespace' => 'Api\Adm
         Route::apiResource('promotions', 'PromotionController');
         Route::apiResource('managers', 'ManagerController');
         Route::apiResource('resources', 'ResourceController');
+        Route::get('manager-logined', 'ManagerController@getManagerLogin')->name('getManagerLogined');
     });
 
 });

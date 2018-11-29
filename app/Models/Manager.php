@@ -3,10 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\FilterTrait;
 
 
 class Manager extends Model
 {
+    const ROLE_ADMIN = 'admin';
+    const ROLE_MOD = 'mod';
+    const ROLE_PROVIDER = 'provider';
+
+    use FilterTrait;
     /**
      * The table associated with the model.
      *
