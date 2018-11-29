@@ -29,4 +29,23 @@ class UpdatePaymentMethodRequest extends ApiFormRequest
             'name'          => 'required|string|unique:payment_methods,name,'.PaymentMethod::find($id)->name.',name|max:255',
         ];
     }
+
+    /**
+     * Custom message error for rules
+     *
+     * @return void
+     */
+
+    public function messages()
+    {
+
+        return [
+            'name.required'             => "Yêu cầu bạn nhập vào hình thức thanh toán",
+            'name.string'               => "Hình thức thanh toán phải là chuỗi kí ",
+            'name.max'                  => "Hình thức thanh toán không được quá 255 kí tự",
+            'name.unique'               => "Hình thức thanh toán  không được trùng nhau",
+
+        ];
+
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Admin\CreatePromotionRequest;
+use App\Http\Requests\Admin\UpdatePromotionRequest;
 use App\Models\Promotion;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -86,7 +87,7 @@ class PromotionController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CreatePromotionRequest $request, $id)
+    public function update(UpdatePromotionRequest $request, $id)
     {
         try {
             $newImage = '';

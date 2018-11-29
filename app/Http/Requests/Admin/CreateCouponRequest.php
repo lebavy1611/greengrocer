@@ -31,4 +31,39 @@ class CreateCouponRequest extends ApiFormRequest
             'times'         => 'required|integer|min:1|max:5',
         ];
     }
+
+    /**
+     * Custom message error for rules
+     *
+     * @return void
+     */
+
+    public function messages()
+    {
+
+        return [
+            'code.required'             => "Yêu cầu bạn nhập vào mã giảm giá",
+            'code.string'               => "Mã giảm giá phải là chuỗi kí ",
+            'code.max'                  => "Mã giảm giá không được quá 255 kí tự",
+            'code.unique'               => "Mã giảm giá không được trùng nhau",
+
+            'percents.required'         => "Yêu cầu bạn nhập vào phần trăm khuyến mã",
+            'percents.integer'          => "Phần trăm phải là số nguyên ",
+            'percents.min'              => "Phần trăm khuyến mãi không được bé hơn 0",
+            'percents.max'              => "Phần trăm khuyến mãi không được lớn hơn 100",
+
+            'start_date.required'       => "Yêu cầu bạn nhập vào ngày bắt đầu khuyến mãi",
+            'start_date.date_format'    => "Ngày bắt đầu khuyến mãi phải đúng định dạng y-m-d",
+
+            'end_date.required'         => "Yêu cầu bạn nhập vào ngày kết thúc khuyến mãi",
+            'end_date.date_format'      => "Ngày kết thúc khuyến mãi phải đúng định dạng y-m-d",
+            'end_date.after'            => "Ngày kết thúc khuyến mãi phải sau ngày bắt đầu khuyến mãi",
+
+            'times.required'            => "Yêu cầu bạn nhập vào số lần khuyến mãi",
+            'times.integer'             => "Số lần khuyến mãi phải là số nguyên ",
+            'times.min'                 => "Số lần khuyến mãi không được bé hơn 1",
+            'times.max'                 => "Số  khuyến mãi không được lớn hơn 5",
+        ];
+
+    }
 }
