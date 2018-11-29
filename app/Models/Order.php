@@ -55,7 +55,7 @@ class Order extends Model
      */
     public function coupon()
     {
-        return $this->belongsTo(PaymentMethod::class, 'coupon_id', 'id');
+        return $this->belongsTo(Coupon::class, 'coupon_id', 'id');
     }
 
     /**
@@ -68,4 +68,13 @@ class Order extends Model
     {
         return $this->hasMany(OrderDetail::class, 'order_id', 'id');
     }
+
+    /**
+     * Get the user that owns the phone.
+     */
+    public function processStatus()
+    {
+        return $this->belongsTo(ProcessStatus::class, 'processing_status', 'id');
+    }
+
 }

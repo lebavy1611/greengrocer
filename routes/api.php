@@ -42,6 +42,7 @@ Route::group(['as' => 'api.', 'namespace' => 'Api\User', 'middleware' => ['cors'
     Route::apiResource('products', 'ProductController');
     Route::apiResource('promotions', 'PromotionController');
     Route::post('ordersNologin', 'OrderControllerNoLogin@store');
+    Route::get('check-coupon', 'CouponController@checkCodeCoupon');
     Route::group(['middleware' => 'verify.user'], function () {
         Route::apiResource('orders', 'OrderController');
         Route::put('orders/{id}/cancel', 'OrderController@cancel');
