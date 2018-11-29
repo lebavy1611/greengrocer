@@ -28,4 +28,21 @@ class UpdateOrderRequest extends ApiFormRequest
             'processing_status'    => 'required|integer',
         ];
     }
+
+    /**
+     * Custom message error for rules
+     *
+     * @return void
+     */
+
+    public function messages()
+    {
+
+        return [
+            'processing_status.required'             => "Yêu cầu bạn chọn để huỷ đơn hàng",
+            'processing_status.integer'               => "Trạng thái huỷ đơn hàng phải là số nguyên",
+
+        ];
+
+    }
 }

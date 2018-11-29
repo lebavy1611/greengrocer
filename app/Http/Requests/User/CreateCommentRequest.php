@@ -30,4 +30,27 @@ class CreateCommentRequest extends ApiFormRequest
             'content'           => 'required|string|max:255',
         ];
     }
+
+    /**
+     * Custom message error for rules
+     *
+     * @return void
+     */
+
+    public function messages()
+    {
+
+        return [
+            'product_id.required'             => "Yêu cầu bạn nhập vào sản phâm",
+            'product_id.integer'              => "Product_id phải là số nguyên ",
+
+            'parent_id.required'             => "Yêu cầu bạn nhập vào parent_id của commnent",
+            'parent_id.integer'              => "Parent_id phải là số nguyên ",
+
+            'content.required'             => "Yêu cầu bạn nhập vào nội dung comment",
+            'content.string'               => "Nội dung phải là chuỗi kí ",
+            'content.max'                  => "Nội dung không được quá 255 kí tự",
+        ];
+
+    }
 }

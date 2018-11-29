@@ -25,7 +25,7 @@ class ProductController extends ApiController
     public function index(Request $request)
     {
         $number_products = isset($request->number_products) ? $request->number_products : config('paginate.number_products');
-        $products = Product::with('shop.inforProvider','category.parent', 'images')->productFilter($request)
+        $products = Product::with('shop.provider','category.parent', 'images')->productFilter($request)
             ->where('active', 1)->orderBy('created_at', 'desc')->paginate($number_products);
         $products = $this->formatPaginate($products);
         $data = $products['data'];
