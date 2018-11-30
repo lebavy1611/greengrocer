@@ -17,6 +17,14 @@ class OrderDetail extends Model
     }
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_id', 'id');
+        return $this->belongsTo(Product::class, 'product_id', 'id')
+        ->join('images', 'images.product_id' , '=', 'products.id')
+        ->select([
+            'products.id',
+            'products.name',
+            'products.price',
+            'images.path',
+
+        ]);
     }
 }
