@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OrderDetail extends Model
 {
+    use SoftDeletes;
+
     protected $table = "order_details";
     protected $fillable = [
         'order_id','product_id','quantity'
@@ -17,6 +20,14 @@ class OrderDetail extends Model
     }
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_id', 'id');
+        return $this->belongsTo(Product::class, 'product_id', 'id')
+        ->join('images', 'images.product_id' , '=', 'products.id')
+        ->select([
+            'products.id',
+            'products.name',
+            'products.price',
+            'images.path',
+
+        ]);
     }
 }

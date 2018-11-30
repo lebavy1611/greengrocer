@@ -21,8 +21,8 @@ class CommentController extends ApiController
         try {
             $comment = Comment::with(['inforUser','product.category:id,name', 'product.shop:id,name'])
                 ->orderBy('created_at', 'desc')
-                ->paginate(config('paginate.number_ratings'));
-            return $this->formatPaginate($comment);
+                ->get();
+            return $this->successResponse($comment, Response::HTTP_OK);
         } catch (Exception $ex) {
             dd($ex->getMessage());
             return $this->errorResponse("Comments can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);

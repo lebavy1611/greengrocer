@@ -44,17 +44,17 @@ class CreateShopRequest extends ApiFormRequest
     {
 
         return [
-            'name.required'             => "Yêu cầu bạn nhập vào tên của hàng",
+            'name.required'             => "Vui lòng mời bạn nhập vào tên của hàng",
             'name.string'               => "Tên của hàng phải là chuỗi kí ",
             'name.max'                  => "Tên của hàng không được quá 255 kí tự",
 
-            'provider_id.required'      => "Yêu cầu bạn nhập vào tên chủ cửa hàng",
+            'provider_id.required'      => "Vui lòng mời bạn nhập vào tên chủ cửa hàng",
             'provider_id.integer'       => "Id_provider của cửa hàng phải là số nguyên",
             'provider_id.exists'        => "Id_provider của cửa hàng phải tồn tại và phải là provider",
 
             'address.required'          => "Địa chỉ cửa hàng không được trống",
 
-            'phone.required'            => "Yêu cầu bạn nhập vào số điện thoại của hàng",
+            'phone.required'            => "Vui lòng mời bạn nhập vào số điện thoại của hàng",
             'phone.regex'               => "Số điện thoại của hàng phải đúng định  ",
 
             'image.image'               => "Image phải là hình ảnh",

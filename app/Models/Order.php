@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\FilterTrait;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 class Order extends Model
 {
-    use FilterTrait;
+    use FilterTrait, SoftDeletes;
 
     const STATUS_PAYED = 1;             //da thanh toan
 
@@ -18,7 +19,7 @@ class Order extends Model
 
     const STATUS_PROCESSING = 1;        //dang xu ly
 
-    const CANCEL_STATUS_PROCESSING = 3; //huy order
+    const CANCEL_STATUS_PROCESSING = 21; //huy order
 
 
     protected $table = "orders";
