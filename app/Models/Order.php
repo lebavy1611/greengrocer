@@ -18,7 +18,7 @@ class Order extends Model
 
     const STATUS_PROCESSING = 1;        //dang xu ly
 
-    const CANCEL_STATUS_PROCESSING = 3; //huy order
+    const CANCEL_STATUS_PROCESSING = 21; //huy order
 
 
     protected $table = "orders";

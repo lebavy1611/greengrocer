@@ -25,7 +25,8 @@ class OrderController extends ApiController
     {
         try {
             $user = accountLogin();
-            $order = Order::with(['user', 'payment:id,name', 'coupon:id,code,percents', 'processStatus:id,name', 'orderDetails.product:id,name,price'])->where('customer_id', $user->id)->orderBy('created_at', 'desc')->paginate(config('paginate.number_orders'));
+            $order = Order::with(['user', 'payment:id,name', 'coupon:id,code,percents', 'processStatus:id,name', 'orderDetails.product'])
+                ->where('customer_id', $user->id)->orderBy('created_at', 'desc')->paginate(config('paginate.number_orders'));
             return $this->formatPaginate($order);
         } catch (Exception $ex) {
             return $this->errorResponse("Orders can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -90,7 +91,7 @@ class OrderController extends ApiController
     {
         try {
             accountLogin();
-            $order = Order::with(['user', 'payment:id,name', 'coupon:id,code,percents', 'processStatus:id,name', 'orderDetails.product:id,name,price'])->findOrFail($id);
+            $order = Order::with(['user', 'payment:id,name', 'coupon:id,code,percents', 'processStatus:id,name', 'orderDetails.product'])->findOrFail($id);
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Order not found.", Response::HTTP_NOT_FOUND);
