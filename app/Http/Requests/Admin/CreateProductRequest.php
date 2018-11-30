@@ -26,8 +26,8 @@ class CreateProductRequest extends ApiFormRequest
     {
         return [
             'name'          => 'required|string|max:255',
-            'shop_id'       => 'required|integer',
-            'category_id'   => 'required|integer',
+            'shop_id'       => 'required|integer|exists:shops',
+            'category_id'   => 'required|integer|exists:categories',
             'describe'      => 'string|max:255',
             'price'         => 'required|integer',
             'origin'        => 'required|string|max:255',
@@ -48,15 +48,17 @@ class CreateProductRequest extends ApiFormRequest
     {
 
         return [
-            'name.required'             => "Yêu cầu bạn nhập vào tên sản phẩm",
+            'name.required'             => "Vui lòng mời bạn nhập vào tên sản phẩm",
             'name.string'               => "Tên sản phẩm phải là chuỗi kí ",
             'name.max'                  => "Tên sản phẩm không được quá 255 kí tự",
 
             'shop_id.required'          => "Cửa hàng không được trống",
             'shop_id.integer'           => "Id của hàng phải là số nguyên",
+            'shop_id.exists'            => "Id của hàng không tồn tại",
 
             'category_id.required'      => "Danh mục sản phẩm không được trống",
-            'category_id.integer'       => "Id danh phải là số nguyên",
+            'category_id.integer'       => "Id danh mục sản phẩm phải là số nguyên",
+            'category_id.exists'       => "Id danh mục sản phẩm không tồn tại",
 
             'describe.string'           => "Mô tả sản phẩm phải là chuỗi kí ",
             'describe.max'              => "Mô tả sản phẩm không được quá 255 kí tự",
@@ -64,7 +66,7 @@ class CreateProductRequest extends ApiFormRequest
             'price.required'            => "Giá không được trống",
             'price.integer'             => "Gía bán phải là số nguyên",
 
-            'origin.required'           => "Yêu cầu bạn nhập vào nguồn gốc sản phẩm",
+            'origin.required'           => "Vui lòng mời bạn nhập vào nguồn gốc sản phẩm",
             'origin.string'             => "Nguồn gốc sản phẩm phải là chuỗi kí ",
             'origin.max'                => "Nguồn gốc sản phẩm không được quá 255 kí tự",
 

@@ -41,17 +41,17 @@ class UpdatePromotionRequest extends ApiFormRequest
     {
 
         return [
-            'name.required'             => "Yêu cầu bạn nhập vào tên đợt khuyến mãi",
+            'name.required'             => "Vui lòng mời bạn nhập vào tên đợt khuyến mãi",
             'name.string'               => "Đợt khuyến mãi phải là chuỗi kí ",
             'name.max'                  => "Đợt khuyến  không được quá 255 kí tự",
 
             'image.image'               => "Image phải là hình ảnh",
             'image.mimes'               => "Image phải đúng định dạng jpeg,bmp,png",
 
-            'start_date.required'       => "Yêu cầu bạn nhập vào ngày bắt đầu khuyến mãi",
+            'start_date.required'       => "Vui lòng mời bạn nhập vào ngày bắt đầu khuyến mãi",
             'start_date.date_format'    => "Ngày bắt đầu khuyến mãi phải đúng định dạng y-m-d",
 
-            'end_date.required'         => "Yêu cầu bạn nhập vào ngày kết thúc khuyến mãi",
+            'end_date.required'         => "Vui lòng mời bạn nhập vào ngày kết thúc khuyến mãi",
             'end_date.date_format'      => "Ngày kết thúc khuyến mãi phải đúng định dạng y-m-d",
             'end_date.after'            => "Ngày kết thúc khuyến mãi phải sau ngày bắt đầu khuyến mãi",
         ];

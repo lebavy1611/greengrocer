@@ -45,7 +45,7 @@ class CreateManagerRequest extends ApiFormRequest
     {
 
         return [
-            'username.required'             => "Yêu cầu bạn nhập vào username",
+            'username.required'             => "Vui lòng mời bạn nhập vào username",
             'username.string'               => "Username phải là chuỗi kí ",
             'username.max'                  => "Username không được quá 255 kí tự",
             'username.unique'               => "Username không được trùng nhau",
@@ -56,11 +56,11 @@ class CreateManagerRequest extends ApiFormRequest
             'email.max'                     => "Email không được quá 25 kí tự",
             'email.unique'                  => "Email không được trùng nhau",
 
-            'password.required'             => "Yêu cầu bạn nhập vào password",
+            'password.required'             => "Vui lòng mời bạn nhập vào password",
             'password.string'               => "Password phải là chuỗi kí ",
             'password.min'                  => "Password ít 8 kí tự",
 
-            'fullname.required'             => "Yêu cầu bạn nhập vào fullname",
+            'fullname.required'             => "Vui lòng mời bạn nhập vào fullname",
             'fullname.string'               => "fullname phải là chuỗi kí ",
             'fullname.max'                  => "fullname không được quá 45 kí tự",
 
@@ -70,7 +70,7 @@ class CreateManagerRequest extends ApiFormRequest
 
             'phone.regex'                   => "Số điện thoại phải đúng định  ",
 
-            'role.required'               => "Yêu cầu bạn nhập chọn phân quyền",
+            'role.required'               => "Vui lòng mời bạn nhập chọn phân quyền",
 
 
 
