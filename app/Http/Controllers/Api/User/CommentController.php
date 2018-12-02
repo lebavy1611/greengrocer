@@ -35,8 +35,6 @@ class CommentController extends ApiController
                 'parent_id',
                 'content'
             ]);
-            Product::findOrfail($data['product_id']);
-            Comment::findOrfail($data['parent_id']);
 
             $data['customer_id'] = $user->id;
 
