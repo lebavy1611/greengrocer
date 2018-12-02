@@ -50,7 +50,7 @@ class ShopController extends ApiController
             }
             $data['image'] = $this->uploadImageService->fileUpload($request, 'shops', 'image');
             $shop = Shop::create($data);    
-            return $this->successResponse($shop, Response::HTTP_OK);
+            return $this->successResponse($shop->load('provider'), Response::HTTP_OK);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when insert category.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
