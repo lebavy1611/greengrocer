@@ -44,7 +44,7 @@ class UpdateCategoryRequest extends ApiFormRequest
     {
 
         return [
-            'name.required'             => "Yêu cầu bạn nhập vào tên danh mục sản phẩm",
+            'name.required'             => "Vui lòng mời bạn nhập vào tên danh mục sản phẩm",
             'name.string'               => "Tên danh mục sản phẩm phải là chuỗi kí ",
             'name.max'                  => "Tên danh mục sản phẩm không được quá 255 kí tự",
             'name.unique'               => "Tên danh mục sản phẩm không được trùng nhau",

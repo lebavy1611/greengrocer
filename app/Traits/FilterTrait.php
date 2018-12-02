@@ -105,4 +105,10 @@ trait FilterTrait
         return $query->select('managers.*');
 
     }
+
+    public function scopeUserFilter($query, Request $request)
+    {
+        return $query->select('users.*');
+
+    }
 }
