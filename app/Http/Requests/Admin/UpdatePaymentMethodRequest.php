@@ -43,7 +43,7 @@ class UpdatePaymentMethodRequest extends ApiFormRequest
             'name.required'             => "Vui lòng mời bạn nhập vào hình thức thanh toán",
             'name.string'               => "Hình thức thanh toán phải là chuỗi kí ",
             'name.max'                  => "Hình thức thanh toán không được quá 255 kí tự",
-            'name.unique'               => "Hình thức thanh toán  không được trùng nhau",
+            'name.unique'               => "Hình thức thanh toán  đã tồn tại.",
 
         ];
 

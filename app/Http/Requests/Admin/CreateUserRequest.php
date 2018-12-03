@@ -28,7 +28,6 @@ class CreateUserRequest extends ApiFormRequest
             'username'       => 'required|string|max:32|unique:users',
             'email'          => 'required|string|email|max:25|unique:users',
             'password'       => 'required|string|min:8',
-            'role_id'        => 'required|integer|min:0|max:1',
             'fullname'       => 'required|string|max:45',
             'avatar'         => 'image|mimes:png,jpg,jpeg',
             'birthday'       => 'date_format:"Y-m-d"',
@@ -51,22 +50,17 @@ class CreateUserRequest extends ApiFormRequest
             'username.required'             => "Vui lòng mời bạn nhập vào username",
             'username.string'               => "Username phải là chuỗi kí ",
             'username.max'                  => "Username không được quá 255 kí tự",
-            'username.unique'               => "Username không được trùng nhau",
+            'username.unique'               => "Username đã tồn tại.",
 
             'email.required'                => "Email không được trống",
             'email.string'                  => "Email phải là chuỗi kí ",
             'email.email'                   => "Email phải đúng định dạng",
             'email.max'                     => "Email không được quá 25 kí tự",
-            'email.unique'                  => "Email không được trùng nhau",
+            'email.unique'                  => "Email đã tồn tại.",
 
             'password.required'             => "Vui lòng mời bạn nhập vào password",
             'password.string'               => "Password phải là chuỗi kí ",
             'password.min'                  => "Password ít 8 kí tự",
-
-            'role_id.required'              => "Vui lòng mời bạn nhập vào quyền của người đùng",
-            'role_id.integer'               => "Role_id phải là số nguyên ",
-            'role_id.min'                   => "Role_id  không được bé hơn 0",
-            'role_id.max'                   => "Role_id  không được lớn hơn 1",
 
             'fullname.required'             => "Vui lòng mời bạn nhập vào fullname",
             'fullname.string'               => "fullname phải là chuỗi kí ",

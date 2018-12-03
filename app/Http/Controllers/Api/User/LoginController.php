@@ -40,7 +40,7 @@ class LoginController extends ApiController
             if (isAdminLogin()) {
                 $data['manager'] = $account->loginable;
             } else {
-                $data['user'] = $account->loginable->load('userInfor', 'userRole');
+                $data['user'] = $account->loginable->load('userInfor');
             }
             return $this->successResponse($data, Response::HTTP_OK);
         } else {
@@ -74,8 +74,6 @@ class LoginController extends ApiController
             'username' => $request->username,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'role_id' => $request->role_id,
-            'active' => $request->active
         ];
         $user = User::create($userData);
         $newImage = '';
@@ -98,7 +96,7 @@ class LoginController extends ApiController
         $data['token'] =  Account::where([
             ['loginable_type', '=', 'App\Models\User'],
             ['loginable_id', '=', $user->id]])->first()->createToken('token')->accessToken;
-        $data['user'] =  $user->load('userInfor','userRole');
+        $data['user'] =  $user->load('userInfor');
         return $this->successResponse($data, Response::HTTP_OK);
     }
 

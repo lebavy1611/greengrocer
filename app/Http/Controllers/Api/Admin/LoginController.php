@@ -71,7 +71,6 @@ class LoginController extends ApiController
             'username' => $request->username,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'role_id' => $request->role_id,
             'active' => $request->active
         ];
         $user = User::create($userData);
@@ -86,7 +85,7 @@ class LoginController extends ApiController
         ];
         $user->userInfor()->create($userInfoData);
         $data['token'] =  $user->createToken('token')->accessToken;
-        $data['user'] =  $user->load('userInfor','userRole');
+        $data['user'] =  $user->load('userInfor');
         return $this->successResponse($data, Response::HTTP_OK);
     }
 
