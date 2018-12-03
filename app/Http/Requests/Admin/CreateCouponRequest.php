@@ -45,7 +45,7 @@ class CreateCouponRequest extends ApiFormRequest
             'code.required'             => "Vui lòng mời bạn nhập vào mã giảm giá",
             'code.string'               => "Mã giảm giá phải là chuỗi kí ",
             'code.max'                  => "Mã giảm giá không được quá 255 kí tự",
-            'code.unique'               => "Mã giảm giá không được trùng nhau",
+            'code.unique'               => "Mã giảm giá đã tồn tại.",
 
             'percents.required'         => "Vui lòng mời bạn nhập vào phần trăm khuyến mã",
             'percents.integer'          => "Phần trăm phải là số nguyên ",

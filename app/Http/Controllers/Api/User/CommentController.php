@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\User\CreateCommentRequest;
 use App\Http\Requests\User\UpdateCommentRequest;
 use App\Models\Comment;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Rating;
 use Exception;
@@ -34,10 +35,13 @@ class CommentController extends ApiController
                 'parent_id',
                 'content'
             ]);
+
             $data['customer_id'] = $user->id;
 
             $comment = Comment::create($data);
             return $this->successResponse($comment, Response::HTTP_OK);
+        } catch (ModelNotFoundException $ex) {
+            return $this->errorResponse(trans("messages.{$ex->getModel()}.not_found"), Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
             dd($ex->getMessage());
             return $this->errorResponse("Occour error when insert order.", Response::HTTP_INTERNAL_SERVER_ERROR);

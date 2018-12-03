@@ -34,15 +34,9 @@ class UserController extends ApiController
      */
     public function index(Request $request)
     {
-        if ($request->role) {
-            $users = User::with('userInfor', 'userRole:id,name')->userFilter($request)->paginate(config('define.limit_rows'));
+            $users = User::with('userInfor')->paginate(config('define.limit_rows'));
             $users = $this->formatPaginate($users);
             return $this->showAll($users, Response::HTTP_OK);
-        } else {
-            $users = User::with('userInfor', 'userRole:id,name')->paginate(config('define.limit_rows'));
-            $users = $this->formatPaginate($users);
-            return $this->showAll($users, Response::HTTP_OK);
-        }
     }
 
 
@@ -59,7 +53,6 @@ class UserController extends ApiController
                 'username' => $request->username,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
-                'role_id' => $request->role_id,
             ];
             $user = User::create($userData);
             $userInfoData = [
@@ -105,10 +98,6 @@ class UserController extends ApiController
     public function update(UpdateUserRequest $request, User $user)
     {
         try {
-            $userData = [
-                'role_id' => $request->role_id,
-                'active' => $request->active
-            ];
             if ($request->password) $userData['password'] = bcrypt($request->password);
             User::updateOrCreate(['id' => $user->id], $userData);
             $userInfoData = [
