@@ -49,13 +49,13 @@ class RegisterRequest extends ApiFormRequest
             'username.required'             => "Vui lòng mời bạn nhập vào username",
             'username.string'               => "Username phải là chuỗi kí ",
             'username.max'                  => "Username không được quá 32 kí tự",
-            'username.unique'               => "Username không được trùng nhau",
+            'username.unique'               => "Username đã tồn tại.",
 
             'email.required'                => "Email không được trống",
             'email.string'                  => "Email phải là chuỗi kí ",
             'email.email'                   => "Email phải đúng định dạng",
             'email.max'                     => "Email không được quá 25 kí tự",
-            'email.unique'                  => "Email không được trùng nhau",
+            'email.unique'                  => "Email đã tồn tại.",
 
             'password.required'             => "Vui lòng mời bạn nhập vào password",
             'password.string'               => "Password phải là chuỗi kí ",
