@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\FilterTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Interfaces\StatisticInterface;
 
-class Product extends Model
+class Product extends Model implements StatisticInterface
 {
     use SoftDeletes, FilterTrait;
 
@@ -103,5 +104,13 @@ class Product extends Model
     public function promotionDetails()
     {
         return $this->hasMany(PromotionDetail::class, 'promotion_id', 'id');
+    }
+
+    public function count($conditions = []) 
+    {
+        if ($conditions) {
+            return Product::where($conditions)->count();
+        }
+        return Product::all()->count();
     }
 }

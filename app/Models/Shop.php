@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Interfaces\StatisticInterface;
 
-class Shop extends Model
+class Shop extends Model implements StatisticInterface
 {
     use SoftDeletes;
 
@@ -44,4 +45,12 @@ class Shop extends Model
      * @var array
      */
     protected $dates = ['deleted_at'];
+
+    public function count($conditions = []) 
+    {
+        if ($conditions) {
+            return Shop::where($conditions)->count();
+        }
+        return Shop::all()->count();
+    }
 }

@@ -5,9 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\FilterTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Interfaces\StatisticInterface;
 
 
-class Order extends Model
+class Order extends Model implements StatisticInterface
 {
     use FilterTrait, SoftDeletes;
 
@@ -76,6 +77,14 @@ class Order extends Model
     public function processStatus()
     {
         return $this->belongsTo(ProcessStatus::class, 'processing_status', 'id');
+    }
+
+    public function count($conditions = []) 
+    {
+        if ($conditions) {
+            return Order::where($conditions)->count();
+        }
+        return Order::all()->count();
     }
 
 }

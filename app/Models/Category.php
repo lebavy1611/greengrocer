@@ -5,8 +5,9 @@ namespace App\Models;
 use App\Traits\FilterTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Interfaces\StatisticInterface;
 
-class Category extends Model
+class Category extends Model implements StatisticInterface
 {
     use SoftDeletes, FilterTrait;
 
@@ -94,5 +95,13 @@ class Category extends Model
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    public function count($conditions = []) 
+    {
+        if ($conditions) {
+            return Category::where($conditions)->count();
+        }
+        return Category::all()->count();
     }
 }
