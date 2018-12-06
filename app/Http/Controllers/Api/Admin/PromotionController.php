@@ -15,7 +15,9 @@ use App\Services\UploadImageService;
 class PromotionController extends ApiController
 {
     protected $uploadImageService;
-    
+
+    protected $account;
+
     /**
      * CategoryController constructor..
      *
@@ -24,6 +26,7 @@ class PromotionController extends ApiController
     public function __construct(UploadImageService $uploadImageService)
     {
         $this->uploadImageService = $uploadImageService;
+        $this->account = auth('api')->user();
     }
  
     /**
@@ -35,7 +38,11 @@ class PromotionController extends ApiController
     {
         try {
             $promotions = Promotion::get();
-            return $this->showAll($promotions);
+            if ($this->account->can('view', $promotions->first())) {
+                return $this->showAll($promotions);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (Exception $ex) {
             return $this->errorResponse("Promotions can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -50,13 +57,16 @@ class PromotionController extends ApiController
     public function store(CreatePromotionRequest $request)
     {
         try {
-            
-            $data = $request->only([
-                'name', 'start_date','end_date',
-                ]);
-            $data['image'] = $this->uploadImageService->fileUpload($request, 'promotions', 'image');
-            $promotion = Promotion::create($data);
-            return $this->successResponse($promotion, Response::HTTP_OK);
+            if ($this->account->can('create', Promotion::class)) {
+                $data = $request->only([
+                    'name', 'start_date','end_date',
+                    ]);
+                $data['image'] = $this->uploadImageService->fileUpload($request, 'promotions', 'image');
+                $promotion = Promotion::create($data);
+                return $this->successResponse($promotion, Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when insert Promotion.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -68,14 +78,18 @@ class PromotionController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Promotion $promotion)
     {
         try {
-            $promotion = Promotion::findOrFail($id);
-            return $this->successResponse($promotion, Response::HTTP_OK);
+            if ($this->account->can('view', $promotion)) {
+                return $this->successResponse($promotion, Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Promotion not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
+            dd($ex->getMessage());
             return $this->errorResponse("Occour error when show Promotion.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -87,18 +101,22 @@ class PromotionController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePromotionRequest $request, $id)
+    public function update(UpdatePromotionRequest $request, Promotion $promotion)
     {
         try {
-            $newImage = '';
-            $data = $request->only([
-                'name', 'start_date','end_date', 'image',
-            ]);
-            if ($request->hasFile('image')) {
-                $data['image'] = $this->uploadImageService->fileUpload($request, 'promotions', 'image');
+            if ($this->account->can('update', $promotion)) {
+                $newImage = '';
+                $data = $request->only([
+                    'name', 'start_date','end_date', 'image',
+                ]);
+                if ($request->hasFile('image')) {
+                    $data['image'] = $this->uploadImageService->fileUpload($request, 'promotions', 'image');
+                }
+                $promotion->update($data);
+                return $this->successResponse("Update promotion successfully", Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
             }
-            Promotion::findOrFail($id)->update($data);
-            return $this->successResponse("Update promotion successfully", Response::HTTP_OK);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when edit Promotion.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -110,11 +128,15 @@ class PromotionController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Promotion $promotion)
     {
         try {
-            Promotion::findOrFail($id)->delete();
-            return $this->successResponse("Delete Promotion successfully", Response::HTTP_OK);
+            if ($this->account->can('delete', $promotion)) {
+                $promotion->delete();
+                return $this->successResponse("Delete Promotion successfully", Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Promotion not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {

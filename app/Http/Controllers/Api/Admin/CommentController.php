@@ -22,7 +22,11 @@ class CommentController extends ApiController
             $comment = Comment::with(['inforUser','product.category:id,name', 'product.shop:id,name'])
                 ->orderBy('created_at', 'desc')
                 ->get();
-            return $this->successResponse($comment, Response::HTTP_OK);
+            if ($this->account->can('view', $comment->first())) {
+                return $this->successResponse($comment, Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (Exception $ex) {
             dd($ex->getMessage());
             return $this->errorResponse("Comments can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -40,7 +44,11 @@ class CommentController extends ApiController
     {
         try {
             $comment = Comment::with(['user','product.category:id,name', 'product.shop:id,name'])->findOrFail($id);
-            return $this->successResponse($comment, Response::HTTP_OK);
+            if ($this->account->can('view', $comment)) {
+                return $this->successResponse($comment, Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Comment not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
@@ -55,11 +63,15 @@ class CommentController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Comment $comment)
     {
         try {
-            Comment::findOrfail($id)->delete();
-            return $this->successResponse("Delete comment successfully.", Response::HTTP_OK);
+            if ($this->account->can('delete', $comment)) {
+                $comment->delete();
+                return $this->successResponse("Delete comment successfully.", Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Comment not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
