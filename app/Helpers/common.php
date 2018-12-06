@@ -1,5 +1,9 @@
 <?php
 
+use App\Models\RoleResource;
+use App\Models\Role;
+use App\Models\Resource;
+
 if (!function_exists('accountLogin')) {
     /**
      * Check if current logged in user is Admin
@@ -110,6 +114,21 @@ if (!function_exists('processParamAccount')) {
         array_push($account, $loginableType);
         array_push($accounts, $account);
         return $accounts;
+    }
+}
+
+if (!function_exists('getRoleResource')) {
+    /**
+     * Get Id Company
+     *
+     * @return int
+     */
+    function getRoleResource($resource)
+    {
+        return RoleResource::where([
+            ['role_id', Role::where('manager_id', accountLogin()->id)->first()->id],
+            ['resource_id', Resource::where('name', '=', $resource)->first()->id]
+        ])->first();
     }
 }
 

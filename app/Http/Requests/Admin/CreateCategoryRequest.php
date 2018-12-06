@@ -27,7 +27,7 @@ class CreateCategoryRequest extends ApiFormRequest
             'name'          => 'required|string|unique:categories|max:255',
             'position'      => 'integer',
             'parent_id'     => 'required|integer',
-            'image'         => 'image|mimes:jpeg,bmp,png',
+            'image'         => 'required|image|mimes:jpeg,bmp,png',
         ];
     }
 
@@ -54,6 +54,7 @@ class CreateCategoryRequest extends ApiFormRequest
 
             'image.image'               => "Image phải là hình ảnh",
             'image.mimes'               => "Image phải đúng định dạng jpeg,bmp,png",
+            'image.required'             => "Vui lòng mời bạn chọn ảnh",
         ];
 
     }

@@ -9,9 +9,22 @@ use App\Models\Coupon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\Category;
 
 class CouponController extends ApiController
 {
+    protected $account;
+
+    /**
+     * CategoryController constructor..
+     *
+     * @param UploadImageService   $uploadImageService   UploadImageService
+     */
+    public function __construct()
+    {
+        $this->account = auth('api')->user();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -21,7 +34,11 @@ class CouponController extends ApiController
     {
         try {
             $coupons = Coupon::orderBy('created_at', 'desc')->get();
-            return $this->successResponse($coupons, Response::HTTP_OK);
+            if ($this->account->can('view', $coupons->first())) {
+                return $this->successResponse($coupons, Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (Exception $ex) {
             dd($ex->getMessage());
             return $this->errorResponse("Coupons can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -37,12 +54,16 @@ class CouponController extends ApiController
     public function store(CreateCouponRequest $request)
     {
         try {
-            $data = $request->only([
-                'code', 'percents', 'start_date','end_date', 'times',
-            ]);
-            $coupon = Coupon::create($data);
-
-            return $this->successResponse($coupon, Response::HTTP_OK);
+            if ($this->account->can('create', Category::class)) {
+                $data = $request->only([
+                    'code', 'percents', 'start_date','end_date', 'times',
+                ]);
+                $coupon = Coupon::create($data);
+    
+                return $this->successResponse($coupon, Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when insert coupon.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -58,7 +79,11 @@ class CouponController extends ApiController
     {
         try {
             $coupon = Coupon::findOrFail($id);
-            return $this->successResponse($coupon, Response::HTTP_OK);
+            if ($this->account->can('view', $coupon)) {
+                return $this->successResponse($coupon, Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Coupon not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
@@ -76,11 +101,16 @@ class CouponController extends ApiController
     public function update(UpdateCouponRequest $request, $id)
     {
         try {
-            $data = $request->only([
-                'code', 'percents', 'start_date','end_date', 'times',
-            ]);
-            $coupon = Coupon::findOrFail($id)->update($data);
-            return $this->successResponse($coupon, Response::HTTP_OK);
+            $coupon = Coupon::findOrFail($id);
+            if ($this->account->can('update', $coupon)) {
+                $data = $request->only([
+                    'code', 'percents', 'start_date','end_date', 'times',
+                ]);
+                $coupon->update($data);
+                return $this->successResponse($coupon, Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Coupon not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
@@ -97,8 +127,13 @@ class CouponController extends ApiController
     public function destroy($id)
     {
         try {
-            Coupon::findOrFail($id)->delete();
-            return $this->successResponse("Delete coupon successfully", Response::HTTP_OK);
+            $coupon = Coupon::findOrFail($id);
+            if ($this->account->can('delete', $coupon)) {
+                $coupon->delete();
+                return $this->successResponse("Delete coupon successfully", Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Coupon not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {

@@ -14,6 +14,18 @@ use App\Models\RoleResource;
 
 class ManagerController extends ApiController
 {
+    protected $account;
+
+    /**
+     * CategoryController constructor..
+     *
+     * @param UploadImageService   $uploadImageService   UploadImageService
+     */
+    public function __construct()
+    {
+        $this->account = auth('api')->user();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -23,7 +35,11 @@ class ManagerController extends ApiController
     {
         try {
             $managers = Manager::with(['roleResources.resource:id,name', 'roleResources.role:id,name'])->managerFilter($request)->get();
-            return $this->showAll($managers);
+            if ($this->account->can('view', $managers->first())) {
+                return $this->showAll($managers);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (Exception $ex) {
             return $this->errorResponse("Danh sách trống!", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -38,36 +54,47 @@ class ManagerController extends ApiController
      */
     public function store(CreateManagerRequest $request)
     {
-        
-        
-        $request['password'] = bcrypt($request->password);
-        $accounts = processParamAccount('App\Models\Manager');
-        $manager = Manager::create($request->all());
-        foreach (array_values($accounts) as $account) {
+        if ($this->account->can('create', Manager::class)) {
+            $request['password'] = bcrypt($request->password);
+            $accounts = processParamAccount('App\Models\Manager');
+            $manager = Manager::create($request->all());
+            foreach (array_values($accounts) as $account) {
                 $accountId = empty($account['id']) ? null : $account['id'];
                 $account['email'] = $request->email;
                 $account['password'] = $request['password'];
                 $manager->accounts()->updateOrCreate(['id' => $accountId], $account);
-        }
-        if ($request->role == 'mod') {
-            $roleData = [
-                'name' => 'mod' . $manager->id,
-                'manager_id' => $manager->id
-            ];
+            }
+            
+            $roleResourcesReq;
+            $roleData['manager_id'] = $manager->id;
+            switch ($request->role) {
+                case 'mod':
+                    $roleData['name'] = 'mod' . $manager->id;
+                    if (count($request->role_resources)) {
+                        $roleResourcesReq = $request->role_resources;
+                    }
+                    break;
+                case 'admin':
+                    $roleData['name'] = 'admin' . $manager->id;
+                    $roleResourcesReq = config('define.admin_role_resources');
+                    break;
+                case 'provider':
+                    $roleData['name'] = 'provider' . $manager->id;
+                    $roleResourcesReq = config('define.provider_role_resources');
+                    break;
+            }
             $role = Role::create($roleData);
             $now = \Carbon\Carbon::now()->toDateTimeString();   
-            if (count($request->role_resources)) {
-                $roleResourcesReq = $request->role_resources;
-                array_walk($roleResourcesReq, function(&$role_resource, $key) use($role, $now) {
-                    $role_resource['role_id'] = $role->id;
-                    $role_resource['created_at'] = $now;
-                    $role_resource['updated_at'] = $now;
-                });
-
-                $roleResource = RoleResource::insert($roleResourcesReq);
-            }
+            array_walk($roleResourcesReq, function(&$role_resource, $key) use($role, $now) {
+                $role_resource['role_id'] = $role->id;
+                $role_resource['created_at'] = $now;
+                $role_resource['updated_at'] = $now;
+            });
+            $roleResource = RoleResource::insert($roleResourcesReq);
+            return $this->successResponse($manager->load(['roleResources.resource:id,name', 'roleResources.role:id,name']), Response::HTTP_OK);
+        } else {
+            return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
         }
-        return $this->successResponse($manager->load(['roleResources.resource:id,name', 'roleResources.role:id,name']), Response::HTTP_OK);
     }
 
     /**
@@ -80,7 +107,11 @@ class ManagerController extends ApiController
     {
         try {
             $manager = Manager::with(['roleResources.resource:id,name', 'roleResources.role:id,name'])->findOrFail($id);
-            return $this->successResponse($manager, Response::HTTP_OK);
+            if ($this->account->can('view', $manager)) {
+                return $this->successResponse($manager, Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Không tìm thấy.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
@@ -98,10 +129,14 @@ class ManagerController extends ApiController
     public function update(UpdateManagerRequest $request, Manager $manager)
     {
         try {
-            $managerData = $request->all();
-            if ($request->password) $managerData['password'] = bcrypt($request->password);
-            $manager = Manager::updateOrCreate(['id' => $manager->id], $managerData);
-            return $this->successResponse($manager, Response::HTTP_OK);
+            if ($this->account->can('update', $manager)) {
+                $managerData = $request->all();
+                if ($request->password) $managerData['password'] = bcrypt($request->password);
+                $manager = Manager::updateOrCreate(['id' => $manager->id], $managerData);
+                return $this->successResponse($manager, Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (Exception $e) {
             return $this->errorResponse('Cập nhập thất bại', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -116,8 +151,12 @@ class ManagerController extends ApiController
     public function destroy(Manager $manager)
     {
         try {
-            $manager->delete();
-            return $this->successResponse('Xóa thành công', Response::HTTP_OK);
+            if ($this->account->can('delete', $manager)) {
+                $manager->delete();
+                return $this->successResponse('Xóa thành công', Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (Exception $e) {
             return $this->errorResponse('Xóa thất bai', Response::HTTP_INTERNAL_SERVER_ERROR);
         }

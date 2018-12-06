@@ -13,7 +13,9 @@ use App\Models\Manager;
 class ShopController extends ApiController
 {
     protected $uploadImageService;
-    
+
+    protected $account;
+
     /**
      * CategoryController constructor..
      *
@@ -22,6 +24,7 @@ class ShopController extends ApiController
     public function __construct(UploadImageService $uploadImageService)
     {
         $this->uploadImageService = $uploadImageService;
+        $this->account = auth('api')->user();
     }
  
     /**
@@ -32,7 +35,11 @@ class ShopController extends ApiController
     public function index()
     {
         $shops = Shop::with('provider')->orderBy('created_at', 'desc')->get();
-        return $this->showAll($shops, Response::HTTP_OK);
+        if ($this->account->can('view', $shops->first())) {
+            return $this->showAll($shops, Response::HTTP_OK);
+        } else {
+            return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+        }
     }
 
     /**
@@ -44,13 +51,17 @@ class ShopController extends ApiController
     public function store(CreateShopRequest $request)
     {
         try {
-            $data = $request->only(['name', 'provider_id', 'address', 'phone', 'active']);
-            if (accountLogin()->role == Manager::ROLE_PROVIDER) {
-                $data['provider_id'] = accountLogin()->id;
+            if ($this->account->can('create', Shop::class)) {
+                $data = $request->only(['name', 'provider_id', 'address', 'phone', 'active']);
+                if (accountLogin()->role == Manager::ROLE_PROVIDER) {
+                    $data['provider_id'] = accountLogin()->id;
+                }
+                $data['image'] = $this->uploadImageService->fileUpload($request, 'shops', 'image');
+                $shop = Shop::create($data);    
+                return $this->successResponse($shop->load('provider'), Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
             }
-            $data['image'] = $this->uploadImageService->fileUpload($request, 'shops', 'image');
-            $shop = Shop::create($data);    
-            return $this->successResponse($shop->load('provider'), Response::HTTP_OK);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when insert category.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -62,11 +73,14 @@ class ShopController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Shop $shop)
     {
         try {
-            $shop = Shop::findOrFail($id);
-            return $this->successResponse($shop->load('provider'), Response::HTTP_OK);
+            if ($this->account->can('view', $shop)) {
+                return $this->successResponse($shop->load('provider'), Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Shop not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
@@ -82,18 +96,22 @@ class ShopController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CreateShopRequest $request, $id)
+    public function update(CreateShopRequest $request, Shop $shop)
     {
         try {
-            if ($request->hasFile('image')) {
-                $data['image'] = $this->uploadImageService->fileUpload($request, 'shops', 'image');
+            if ($this->account->can('update', $shop)) {
+                if ($request->hasFile('image')) {
+                    $data['image'] = $this->uploadImageService->fileUpload($request, 'shops', 'image');
+                }
+                $data = $request->only(['name', 'provider_id', 'address', 'phone', 'active']);
+                if (accountLogin()->role == Manager::ROLE_PROVIDER) {
+                    $data['provider_id'] = accountLogin()->id;
+                }
+                $shop->update($data);
+                return $this->successResponse(Shop::with('provider')->findOrFail($id), Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
             }
-            $data = $request->only(['name', 'provider_id', 'address', 'phone', 'active']);
-            if (accountLogin()->role == Manager::ROLE_PROVIDER) {
-                $data['provider_id'] = accountLogin()->id;
-            }
-            Shop::findOrFail($id)->update($data);
-            return $this->successResponse(Shop::with('provider')->findOrFail($id), Response::HTTP_OK);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when insert shop.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -105,11 +123,15 @@ class ShopController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Shop $shop)
     {
         try {
-            $shop = Shop::findOrfail($id)->delete();
-            return $this->successResponse("Delete shop successfully.", Response::HTTP_OK);
+            if ($this->account->can('delete', $shop)) {
+                $shop->delete();
+                return $this->successResponse("Delete shop successfully.", Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("shop not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
