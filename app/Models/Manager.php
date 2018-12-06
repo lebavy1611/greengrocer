@@ -5,9 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\FilterTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Interfaces\StatisticInterface;
 
 
-class Manager extends Model
+class Manager extends Model implements StatisticInterface
 {
     use SoftDeletes;
 
@@ -57,5 +58,13 @@ class Manager extends Model
     public function roleResources()
     {
         return $this->hasManyThrough(RoleResource::class, Role::class);
+    }
+
+    public function count($conditions = []) 
+    {
+        if ($conditions) {
+            return Manager::where($conditions)->count();
+        }
+        return Manager::all()->count();
     }
 }
