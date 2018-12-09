@@ -25,6 +25,8 @@ class PromotionController extends ApiController
                 unset($promotions[$key]);
             }
         }
+
+        $promotions = $promotions->values();
         return $this->showAll($promotions, Response::HTTP_OK);
     }
 

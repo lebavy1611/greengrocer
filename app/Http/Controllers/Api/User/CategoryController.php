@@ -34,6 +34,7 @@ class CategoryController extends ApiController
                 unset($categories[$key]);
             }
         }
+        $categories = $categories->values();
 
         return $this->showAll($categories, Response::HTTP_OK);
     }
