@@ -132,10 +132,12 @@ class CategoryController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Category $category)
     {
         try {
-            Category::findOrfail($id)->delete();
+            $category->childrenProducts()->delete();
+            $category->parentsProducts()->delete();
+            $category->delete();
             return $this->successResponse("Delete category successfully.", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
