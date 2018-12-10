@@ -38,8 +38,9 @@ class CouponController extends ApiController
     {
         try {
             $data = $request->only([
-                'code', 'percents', 'start_date','end_date', 'times',
+                'percents', 'start_date','end_date', 'times',
             ]);
+            $data['code'] = getCode(8);
             $coupon = Coupon::create($data);
 
             return $this->successResponse($coupon, Response::HTTP_OK);
