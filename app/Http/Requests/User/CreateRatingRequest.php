@@ -40,15 +40,15 @@ class CreateRatingRequest extends ApiFormRequest
     {
 
         return [
-            'product_id.required'             => "Yêu cầu bạn nhập vào sản phâm",
+            'product_id.required'             => "Vui lòng mời bạn nhập vào sản phâm",
             'product_id.integer'              => "Product_id phải là số nguyên ",
 
-            'stars.required'             => "Yêu cầu bạn nhập vào parent_id của commnent",
+            'stars.required'             => "Vui lòng mời bạn nhập vào parent_id của commnent",
             'stars.integer'              => "Parent_id phải là số nguyên ",
             'stars.min'                 => "stars không được bé hơn 1",
             'stars.max'                 => "stars không được hơn hơn 5",
 
-            'content.required'             => "Yêu cầu bạn nhập vào nội dung comment",
+            'content.required'             => "Vui lòng mời bạn nhập vào nội dung comment",
             'content.string'               => "Nội dung phải là chuỗi kí ",
             'content.max'                  => "Nội dung không được quá 255 kí tự",
         ];

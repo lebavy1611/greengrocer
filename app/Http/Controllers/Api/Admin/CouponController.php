@@ -21,7 +21,7 @@ class CouponController extends ApiController
     {
         try {
             $coupons = Coupon::orderBy('created_at', 'desc')->get();
-            return $this->showAll($coupons, Response::HTTP_OK);
+            return $this->successResponse($coupons, Response::HTTP_OK);
         } catch (Exception $ex) {
             dd($ex->getMessage());
             return $this->errorResponse("Coupons can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -79,8 +79,8 @@ class CouponController extends ApiController
             $data = $request->only([
                 'code', 'percents', 'start_date','end_date', 'times',
             ]);
-            Coupon::findOrFail($id)->update($data);
-            return $this->successResponse("Update conpon successfully", Response::HTTP_OK);
+            $coupon = Coupon::findOrFail($id)->update($data);
+            return $this->successResponse($coupon, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Coupon not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {

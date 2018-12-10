@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\FilterTrait;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 class Order extends Model
 {
-    use FilterTrait;
+    use FilterTrait, SoftDeletes;
 
     const STATUS_PAYED = 1;             //da thanh toan
 

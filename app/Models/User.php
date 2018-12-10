@@ -57,16 +57,6 @@ class User extends Model
         return $this->hasOne(UserInfor::class);
     }
 
-    /**
-    * Get Infor of User
-    *
-    * @return \Illuminate\Database\Eloquent\Relations\HasOne
-    */
-    public function userRole()
-    {
-        return $this->belongsTo(UserRole::class, 'role_id', 'id');
-    }
-
     public $sortable = ['username'];
 
     /**

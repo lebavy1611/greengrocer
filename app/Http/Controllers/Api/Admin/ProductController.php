@@ -91,18 +91,8 @@ class ProductController extends ApiController
             $product = Product::with("category:id,name", "shop.provider", 'images')->findOrFail($id);
             $comments = Comment::with('user.userInfor')->where('product_id', $id)->get();
             $ratings = Rating::all()->where('product_id', $id);
-
-            $total = 0;
-            $stars = 0;
-            foreach ($ratings as $rating) {
-                $stars += $rating->stars;
-                $total +=1;
-            }
-            if($total != 0)
-            $stars = round($stars/$total);
-
-            $product['ratings']= array("avg"=>$stars ,"total"=>$total, "list"=> $ratings);
-
+            $stars = round($ratings->pluck('stars')->avg());
+            $product['ratings']= array("avg"=>$stars ,"total"=>count($ratings), "list"=> $ratings);
             $product['comments'] = $comments;
             return $this ->successResponse($product, Response::HTTP_OK);
         }catch (ModelNotFoundException $ex){
