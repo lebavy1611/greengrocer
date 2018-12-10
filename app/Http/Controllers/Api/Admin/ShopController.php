@@ -105,10 +105,11 @@ class ShopController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Shop $shop)
     {
         try {
-            $shop = Shop::findOrfail($id)->delete();
+            $shop->products()->delete();
+            $shop->delete();
             return $this->successResponse("Delete shop successfully.", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("shop not found.", Response::HTTP_NOT_FOUND);

@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Coupon;
+
 if (!function_exists('accountLogin')) {
     /**
      * Check if current logged in user is Admin
@@ -110,6 +112,44 @@ if (!function_exists('processParamAccount')) {
         array_push($account, $loginableType);
         array_push($accounts, $account);
         return $accounts;
+    }
+}
+
+if (!function_exists('getRandomString')) {
+    /**
+     * Random a string
+     *
+     * @param int $length String
+     *
+     * @return string
+     */
+    function getRandomString($length = 10) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+}
+
+if (!function_exists('getCode')) {
+    /**
+     * Random a string
+     *
+     * @param int $length String
+     *
+     * @return string
+     */
+    function getCode($length) {
+        while (true) {
+            $code = getRandomString(8);
+            $checkCode = Coupon::where(['code' => $code])->count();
+            if (!$checkCode) {
+                return $code;
+            }
+        }
     }
 }
 
