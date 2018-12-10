@@ -78,7 +78,7 @@ class CouponController extends ApiController
     {
         try {
             $data = $request->only([
-                'code', 'percents', 'start_date','end_date', 'times',
+                'percents', 'start_date','end_date', 'times',
             ]);
             $coupon = Coupon::findOrFail($id)->update($data);
             return $this->successResponse($coupon, Response::HTTP_OK);

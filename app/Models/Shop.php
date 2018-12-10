@@ -16,7 +16,7 @@ class Shop extends Model implements StatisticInterface
      * @var array
      */
     protected $fillable = [
-        'name', 'provider_id', 'address', 'phone', 'image', 'active'
+        'name', 'manager_id', 'address', 'phone', 'image', 'active'
     ];
 
     /**
@@ -26,7 +26,7 @@ class Shop extends Model implements StatisticInterface
      */
     public function provider()
     {
-        return $this->belongsTo(Manager::class, 'provider_id', 'id');
+        return $this->belongsTo(Manager::class, 'manager_id', 'id');
     }
 
     /**
