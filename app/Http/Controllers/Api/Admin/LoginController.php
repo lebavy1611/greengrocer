@@ -40,7 +40,7 @@ class LoginController extends ApiController
             if (!isAdminLogin()) return $this->errorResponse(config('define.login.unauthorised'), Response::HTTP_UNAUTHORIZED);
             $data['token'] =  $account->createToken('token')->accessToken;
             if ($account->loginable->role == Manager::ROLE_PROVIDER) {
-                $data['manager'] = $account->loginable->with('shop');
+                $data['manager'] = $account->loginable->load('shop');
             } else {
                 $data['manager'] = $account->loginable;
             }

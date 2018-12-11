@@ -66,7 +66,7 @@ class Manager extends Model
     */
     public function shop()
     {
-        return $this->hasOne(Shop::class, 'provider_id', 'id');
+        return $this->hasOne(Shop::class);
     }
 
 }
