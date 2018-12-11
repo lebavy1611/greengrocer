@@ -47,9 +47,9 @@ class Order extends Model implements StatisticInterface
     /**
      * Get the user that owns the phone.
      */
-    public function payment()
+    public function getPaymentStatusAttribute()
     {
-        return $this->belongsTo(PaymentMethod::class, 'payment_method_id', 'id');
+        return $this->attributes['payment_status'] == self::STATUS_PAYED ? 'Đã thanh toán' : 'Chưa thanh toán';
     }
 
     /**
@@ -87,4 +87,11 @@ class Order extends Model implements StatisticInterface
         return Order::all()->count();
     }
 
+    /**
+     * Get the user that owns the phone.
+     */
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id', 'id')->select('name');
+    }
 }

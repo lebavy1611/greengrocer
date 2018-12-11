@@ -19,6 +19,14 @@ class PromotionController extends ApiController
     public function index()
     {
         $promotions = Promotion::where('end_date', '>=', date("Y-m-d"))->orderBy('created_at', 'desc')->get();
+        foreach ($promotions as $key => $promotion) {
+            $promotion_detail = PromotionDetail::where('promotion_id', $promotion->id)->first();
+            if (empty($promotion_detail)) {
+                unset($promotions[$key]);
+            }
+        }
+
+        $promotions = $promotions->values();
         return $this->showAll($promotions, Response::HTTP_OK);
     }
 

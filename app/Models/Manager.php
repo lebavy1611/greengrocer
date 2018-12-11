@@ -67,4 +67,14 @@ class Manager extends Model implements StatisticInterface
         }
         return Manager::all()->count();
     }
+    /**
+    * 
+    *
+    * @return \Illuminate\Database\Eloquent\Relations\HasOne
+    */
+    public function shop()
+    {
+        return $this->hasOne(Shop::class);
+    }
+
 }
