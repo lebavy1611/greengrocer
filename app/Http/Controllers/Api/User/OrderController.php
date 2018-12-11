@@ -25,11 +25,11 @@ class OrderController extends ApiController
     {
         try {
             $user = accountLogin();
-            $order = Order::with(['user', 'payment:id,name', 'coupon:id,code,percents', 'processStatus:id,name', 'orderDetails.product'])
+            $order = Order::with(['user', 'coupon:id,code,percents', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])
                 ->where('customer_id', $user->id)->orderBy('created_at', 'desc')->paginate(config('paginate.number_orders'));
             return $this->formatPaginate($order);
         } catch (Exception $ex) {
-            return $this->errorResponse("Orders can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->errorResponse("Có lỗi khi hiện danh sách order", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
     /**
@@ -77,7 +77,7 @@ class OrderController extends ApiController
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (Exception $ex) {
             dd($ex->getMessage());
-            return $this->errorResponse("Occour error when insert order.", Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->errorResponse("Có lỗi xảy ra", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -91,13 +91,13 @@ class OrderController extends ApiController
     {
         try {
             accountLogin();
-            $order = Order::with(['user', 'payment:id,name', 'coupon:id,code,percents', 'processStatus:id,name', 'orderDetails.product'])->findOrFail($id);
+            $order = Order::with(['user', 'coupon:id,code,percents', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])->findOrFail($id);
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
-            return $this->errorResponse("Order not found.", Response::HTTP_NOT_FOUND);
+            return $this->errorResponse("Không có đơn hành cần tìm", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
             dd($ex->getMessage());
-            return $this->errorResponse("Occour error when show Order.", Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->errorResponse("Có lỗi xảy ra", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -118,11 +118,13 @@ class OrderController extends ApiController
                 if ($order->processing_status == Order::STATUS_PROCESSING) {
                     $order->update(['processing_status' => Order::CANCEL_STATUS_PROCESSING]);
                 }
+            } else {
+                return $this->errorResponse("Có lỗi xảy ra", Response::HTTP_INTERNAL_SERVER_ERROR);
             }
-            return $this->successResponse("Update order successfully", Response::HTTP_OK);
+            return $this->successResponse("Chỉnh sửa đơn hàng thành công", Response::HTTP_OK);
         } catch (Exception $ex) {
             dd($ex->getMessage());
-            return $this->errorResponse("Occour error when show Order.", Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->errorResponse("Có lỗi xảy ra", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 

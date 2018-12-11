@@ -27,7 +27,6 @@ class UpdateCouponRequest extends ApiFormRequest
     {
         $id = $this->route()->parameter('coupon');
         return [
-            'code'          => 'required|string|unique:coupons,code,'.Coupon::find($id)->code.',code|max:255',
             'percents'      => 'required|integer|min:0|max:100',
             'start_date'    => 'required|date_format:"Y-m-d"',
             'end_date'      => 'required|date_format:"Y-m-d"|after:start_date',
@@ -45,11 +44,6 @@ class UpdateCouponRequest extends ApiFormRequest
     {
 
         return [
-            'code.required'             => "Vui lòng mời bạn nhập vào mã giảm giá",
-            'code.string'               => "Mã giảm giá phải là chuỗi kí ",
-            'code.max'                  => "Mã giảm giá không được quá 255 kí tự",
-            'code.unique'               => "Mã giảm giá đã tồn tại.",
-
             'percents.required'         => "Vui lòng mời bạn nhập vào phần trăm khuyến mã",
             'percents.integer'          => "Phần trăm phải là số nguyên ",
             'percents.min'              => "Phần trăm khuyến mãi không được bé hơn 0",

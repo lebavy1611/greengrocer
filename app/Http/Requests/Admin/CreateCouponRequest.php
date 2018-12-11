@@ -24,7 +24,6 @@ class CreateCouponRequest extends ApiFormRequest
     public function rules()
     {
         return [
-            'code'          => 'required|string|unique:coupons|max:255',
             'percents'      => 'required|integer|min:0|max:100',
             'start_date'    => 'required|date_format:"Y-m-d"',
             'end_date'      => 'required|date_format:"Y-m-d"|after:start_date',

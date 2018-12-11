@@ -58,4 +58,15 @@ class Manager extends Model
     {
         return $this->hasManyThrough(RoleResource::class, Role::class);
     }
+
+    /**
+    * 
+    *
+    * @return \Illuminate\Database\Eloquent\Relations\HasOne
+    */
+    public function shop()
+    {
+        return $this->hasOne(Shop::class);
+    }
+
 }
