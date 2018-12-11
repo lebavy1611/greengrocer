@@ -7,8 +7,9 @@ use App\Models\UserInfor;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\FilterTrait;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Interfaces\StatisticInterface;
 
-class User extends Model
+class User extends Model implements StatisticInterface
 {
     use SoftDeletes, FilterTrait;
 
@@ -76,4 +77,11 @@ class User extends Model
         return $this->morphMany(Account::class, 'loginable')->select('id', 'email', 'loginable_id', 'loginable_type');
     }
 
+    public function count($conditions = []) 
+    {
+        if ($conditions) {
+            return User::where($conditions)->count();
+        }
+        return User::all()->count();
+    }
 }
