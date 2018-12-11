@@ -94,5 +94,4 @@ class Order extends Model implements StatisticInterface
     {
         return $this->belongsTo(PaymentMethod::class, 'payment_method_id', 'id')->select('name');
     }
-
 }
