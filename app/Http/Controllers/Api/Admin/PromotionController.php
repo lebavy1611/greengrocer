@@ -11,11 +11,12 @@ use Illuminate\Http\Request;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\UploadImageService;
+use App\Models\PromotionDetail;
 
 class PromotionController extends ApiController
 {
     protected $uploadImageService;
-    
+
     /**
      * CategoryController constructor..
      *
@@ -25,7 +26,7 @@ class PromotionController extends ApiController
     {
         $this->uploadImageService = $uploadImageService;
     }
- 
+
     /**
      * Display a listing of the resource.
      *
@@ -50,13 +51,23 @@ class PromotionController extends ApiController
     public function store(CreatePromotionRequest $request)
     {
         try {
-            
+
             $data = $request->only([
-                'name', 'start_date','end_date',
-                ]);
+                'name', 'start_date', 'end_date',
+            ]);
             $data['image'] = $this->uploadImageService->fileUpload($request, 'promotions', 'image');
             $promotion = Promotion::create($data);
-            return $this->successResponse($promotion, Response::HTTP_OK);
+            $products = $request->products;
+            $dataDetail = [];
+            foreach ($products as $product) {
+                $dataDetail[] = [
+                    'product_id' => $product['id'],
+                    'quantity' => $product['quantity'],
+                    'percents' => $product['percents']
+                ];
+            }
+            $promotion->promotionDetails()->createMany($dataDetail);
+            return $this->successResponse($promotion->load('promotionDetails'), Response::HTTP_OK);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when insert Promotion.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -72,7 +83,7 @@ class PromotionController extends ApiController
     {
         try {
             $promotion = Promotion::findOrFail($id);
-            return $this->successResponse($promotion, Response::HTTP_OK);
+            return $this->successResponse($promotion->load('promotionDetails.product'), Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Promotion not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
@@ -90,14 +101,25 @@ class PromotionController extends ApiController
     public function update(UpdatePromotionRequest $request, $id)
     {
         try {
-            $newImage = '';
             $data = $request->only([
-                'name', 'start_date','end_date', 'image',
+                'name', 'start_date', 'end_date', 'image',
             ]);
             if ($request->hasFile('image')) {
                 $data['image'] = $this->uploadImageService->fileUpload($request, 'promotions', 'image');
             }
-            Promotion::findOrFail($id)->update($data);
+            $promotion = Promotion::findOrFail($id);
+            $promotion->update($data);
+            $promotion->promotionDetails()->forceDelete();
+            $products = $request->products;
+            $dataDetail = [];
+            foreach ($products as $product) {
+                $dataDetail[] = [
+                    'product_id' => $product['id'],
+                    'quantity' => $product['quantity'],
+                    'percents' => $product['percents']
+                ];
+            }
+            $promotion->promotionDetails()->createMany($dataDetail);
             return $this->successResponse("Update promotion successfully", Response::HTTP_OK);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when edit Promotion.", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -110,10 +132,11 @@ class PromotionController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Promotion $promotion)
     {
         try {
-            Promotion::findOrFail($id)->delete();
+            $promotion->promotionDetails()->delete();
+            $promotion->delete();
             return $this->successResponse("Delete Promotion successfully", Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Promotion not found.", Response::HTTP_NOT_FOUND);
