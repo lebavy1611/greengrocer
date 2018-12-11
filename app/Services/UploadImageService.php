@@ -32,14 +32,14 @@ class UploadImageService
                 break;
                 
         }
-        if ($request->hasFile($image)) {
+        if ($request->hasFile($image)&&$request[$image] != null) {
             $image = $request->file($image);
             $newImage = Carbon::now()->format('YmdHis_u') . '.' . $image->getClientOriginalExtension();
             $pulicPath = public_path($destinationPath);
             $image->move($pulicPath, $newImage);
             return config('define.domain') . $destinationPath . $newImage;
         }
-        return config('define.product.no_image');;
+        return config('define.domain') . config('define.no_image');
     }
 
     public function multiFilesUpload($request, $pathSave, $model, $images = 'images')

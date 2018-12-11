@@ -28,6 +28,7 @@ class CreatePromotionRequest extends ApiFormRequest
             'image'         => 'image|mimes:jpeg,bmp,png',
             'start_date'    => 'required|date_format:"Y-m-d"',
             'end_date'      => 'required|date_format:"Y-m-d"|after:start_date',
+            'products'      => 'required',
         ];
     }
 
@@ -54,6 +55,7 @@ class CreatePromotionRequest extends ApiFormRequest
             'end_date.required'         => "Vui lòng mời bạn nhập vào ngày kết thúc khuyến mãi",
             'end_date.date_format'      => "Ngày kết thúc khuyến mãi phải đúng định dạng y-m-d",
             'end_date.after'            => "Ngày kết thúc khuyến mãi phải sau ngày bắt đầu khuyến mãi",
+            'products.required'         => "Vui lòng mời bạn chọn sản phẩm",
         ];
 
     }

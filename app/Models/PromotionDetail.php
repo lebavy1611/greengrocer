@@ -15,7 +15,7 @@ class PromotionDetail extends Model
      * @var array
      */
     protected $fillable = [
-        'product_id', 'promotion_id', 'quantity'
+        'product_id', 'promotion_id', 'quantity', 'percents'
     ];
 
     /**
