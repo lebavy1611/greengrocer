@@ -31,7 +31,7 @@ class UpdateCouponRequest extends ApiFormRequest
             'percents'      => 'required|integer|min:0|max:100',
             'start_date'    => 'required|date_format:"Y-m-d"',
             'end_date'      => 'required|date_format:"Y-m-d"|after:start_date',
-            'times'         => 'required|integer|min:1|max:5',
+            'times'         => 'required|integer|min:1',
         ];
     }
 
@@ -65,7 +65,6 @@ class UpdateCouponRequest extends ApiFormRequest
             'times.required'            => "Vui lòng mời bạn nhập vào số lần khuyến mãi",
             'times.integer'             => "Số lần khuyến mãi phải là số nguyên ",
             'times.min'                 => "Số lần khuyến mãi không được bé hơn 1",
-            'times.max'                 => "Số  khuyến mãi không được lớn hơn 5",
         ];
 
     }
