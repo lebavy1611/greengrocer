@@ -24,7 +24,7 @@ class CreateRatingRequest extends ApiFormRequest
     public function rules()
     {
         return [
-            'product_id'        => 'required|integer',
+            'product_id'        => 'required|integer|exists:products,id',
             'stars'             => 'required|integer|min:1|max:5',
             'content'           => 'required|string|max:255',
         ];
@@ -42,6 +42,7 @@ class CreateRatingRequest extends ApiFormRequest
         return [
             'product_id.required'             => "Vui lòng mời bạn nhập vào sản phâm",
             'product_id.integer'              => "Product_id phải là số nguyên ",
+            'product_id.exists '              => "Product_id không tồn tại ",
 
             'stars.required'             => "Vui lòng mời bạn nhập vào parent_id của commnent",
             'stars.integer'              => "Parent_id phải là số nguyên ",
