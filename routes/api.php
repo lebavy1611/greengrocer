@@ -48,7 +48,6 @@ Route::group(['middleware' => ['cors']], function () {
         Route::get('coupons', 'CouponController@index');
         Route::group(['middleware' => 'verify.user'], function () {
             Route::apiResource('orders', 'OrderController');
-            Route::post('orders/add', 'OrderController@add');
             Route::put('orders/{id}/cancel', 'OrderController@cancel');
             Route::apiResource('ratings', 'RatingController');
             Route::apiResource('comments', 'CommentController');
