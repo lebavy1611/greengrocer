@@ -21,7 +21,8 @@ class OrderController extends ApiController
     public function index(Request $request)
     {
         try {
-            $order = Order::with(['user','payment','coupon'])->orderFilter($request)->orderBy('created_at', 'desc')->paginate(config('paginate.number_orders'));
+            $order = Order::with(['user','coupon:id,code,percents', 'processStatus:id,name', 'paymentMethod:id,name'])
+                ->orderFilter($request)->orderBy('created_at', 'desc')->paginate(config('paginate.number_orders'));
             return $this->formatPaginate($order);
         } catch (Exception $ex) {
             dd($ex->getMessage());
@@ -39,13 +40,13 @@ class OrderController extends ApiController
     public function show($id)
     {
         try {
-            $order = Order::with(['user','payment','coupon','orderDetails.product:id,name,price'])->findOrFail($id);
+            $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])->findOrFail($id);
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
-            return $this->errorResponse("Order not found.", Response::HTTP_NOT_FOUND);
+            return $this->errorResponse("Không có đơn hành cần tìm", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
             dd($ex->getMessage());
-            return $this->errorResponse("Occour error when show Order.", Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->errorResponse("Có lỗi xảy ra", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
