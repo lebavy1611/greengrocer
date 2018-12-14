@@ -34,6 +34,7 @@ Route::group(['prefix' => 'admin', 'as' => 'api.admin.', 'namespace' => 'Api\Adm
         Route::apiResource('resources', 'ResourceController');
         Route::get('manager-logined', 'ManagerController@getManagerLogin')->name('getManagerLogined');
         Route::apiResource('statistics', 'StatisticController');
+        Route::apiResource('process-statuses', 'ProcessStatusController');
     });
 
 });

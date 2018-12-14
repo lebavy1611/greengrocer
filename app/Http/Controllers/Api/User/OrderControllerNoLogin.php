@@ -51,9 +51,11 @@ class OrderControllerNoLogin extends ApiController
                 OrderDetail::create([
                     'order_id' => $order->id,
                     'product_id' =>$product['id'],
-                    'quantity' => $product['quantity']
+                    'quantity' => $product['quantity'],
+                    'price' => Product::find($product['id'])->price
                 ]);
             }
+            if (!empty($data['coupon_id'])) Coupon::where('id', $data['coupon_id'])->decrement('times');
             $order->load('orderdetails');
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (Exception $ex) {
