@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::group(['prefix' => 'admin', 'as' => 'api.admin.', 'namespace' => 'Api\Admin', 'middleware' => ['cors']], function () {
+Route::group(['prefix' => 'admin', 'as' => 'api.admin.', 'namespace' => 'Api\Admin'], function () {
     Route::post('login', 'LoginController@login')->name('login');
     Route::group(['middleware' => ['verify.admin']], function () {
         Route::apiResource('categories', 'CategoryController');
@@ -36,7 +36,7 @@ Route::group(['prefix' => 'admin', 'as' => 'api.admin.', 'namespace' => 'Api\Adm
     });
 
 });
-Route::group(['as' => 'api.', 'namespace' => 'Api\User', 'middleware' => ['cors']], function () {
+Route::group(['as' => 'api.', 'namespace' => 'Api\User'], function () {
     Route::apiResource('categories', 'CategoryController');
     Route::post('login', 'LoginController@login');
     Route::post('register', 'LoginController@register');

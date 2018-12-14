@@ -151,39 +151,4 @@ class OrderController extends ApiController
             return $this->errorResponse("Occour error when show order.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
-    public function add(CreateOrderRequest $request)
-    {
-        try {
-            $user = accountLogin();
-            $data = $request->only([
-                'full_name',
-                'phone',
-                'address',
-                'note',
-                'payment_method_id',
-                'coupon_id',
-                'delivery_time'
-            ]);
-            $products = ($request->products);
-            $data['customer_id'] = $user->id;
-            $data['processing_status'] = Order::STATUS_PROCESSING;
-            $data['payment_status'] = ($data['payment_method_id'] != Order::PAYMENT_ON_DELIVERY) ? Order::STATUS_PAYED : Order::STATUS_NOT_PAYED;
-            $order = Order::create($data);
-
-            foreach ($products as $product) {
-                OrderDetail::create([
-                    'order_id' => $order->id,
-                    'product_id' =>$product['id'],
-                    'quantity' => $product['quantity']
-                ]);
-            }
-            if (!empty($data['coupon_id'])) Coupon::where('id', $data['coupon_id'])->decrement('times');
-            $order->load('orderdetails');
-            return $this->successResponse($order, Response::HTTP_OK);
-        } catch (Exception $ex) {
-            dd($ex->getMessage());
-            return $this->errorResponse("Có lỗi xảy ra", Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
 }
