@@ -26,15 +26,12 @@ class CreateProductRequest extends ApiFormRequest
     {
         return [
             'name'          => 'required|string|max:255',
-            'shop_id'       => 'required|integer|exists:shops',
-            'category_id'   => 'required|integer|exists:categories',
+            'shop_id'       => 'required|integer|exists:shops,id',
+            'category_id'   => 'required|integer|exists:categories,id',
             'describe'      => 'string|max:255',
             'price'         => 'required|integer',
             'origin'        => 'required|string|max:255',
             'quantity'      => 'required|integer',
-//            'imported_date' => 'required|date_format:"Y-m-d"',
-//            'expired_date'  => 'required|date_format:"Y-m-d"|after:imported_date',
-//            'active'         => 'required|integer|min:0|max:1',
         ];
     }
 
