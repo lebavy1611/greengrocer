@@ -47,6 +47,19 @@ class ProductController extends ApiController
         }
     }
 
+    public function indexPerPage(int $perPage)
+    {
+        try {
+            $products = Product::with('category.parent', 'shop.provider', 'images')
+                ->orderBy('created_at', 'desc')->paginate($perPage);
+            $products = $this->formatPaginate($products);
+            return $this->showAll($products, Response::HTTP_OK);
+        } catch (Exception $ex) {
+            dd($ex->getMessage());
+            return $this->errorResponse("Product can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -72,7 +85,7 @@ class ProductController extends ApiController
                 $imagesData = $this->uploadImageService->multiFilesUpload($request, 'products',  $product);
                 $product->images()->createMany($imagesData);
             }
-            return $this->successResponse($product->load('images'), Response::HTTP_OK);
+            return $this->successResponse($product->load('category.parent', 'shop.provider', 'images'), Response::HTTP_OK);
         } catch (Exception $ex) {
             dd($ex->getMessage());
             return $this->errorResponse("Có lỗi xảy ra.", Response::HTTP_INTERNAL_SERVER_ERROR);

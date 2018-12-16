@@ -23,9 +23,11 @@ Route::group(['prefix' => 'admin', 'as' => 'api.admin.', 'namespace' => 'Api\Adm
         Route::apiResource('users', 'UserController');
         Route::apiResource('shops', 'ShopController');
         Route::apiResource('products', 'ProductController');
+        Route::get('products/perpage/{perPage}', 'ProductController@indexPerPage');
         Route::apiResource('coupons', 'CouponController');
         Route::apiResource('payments', 'PaymentMethodController');
         Route::apiResource('orders', 'OrderController');
+        Route::get('orders/perpage/{perPage}', 'OrderController@indexPerPage');
         Route::apiResource('ratings', 'RatingController');
         Route::apiResource('comments', 'CommentController');
         Route::apiResource('promotions', 'PromotionController');
