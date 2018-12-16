@@ -72,7 +72,7 @@ class ProductController extends ApiController
                 $imagesData = $this->uploadImageService->multiFilesUpload($request, 'products',  $product);
                 $product->images()->createMany($imagesData);
             }
-            return $this->successResponse($product->load('images'), Response::HTTP_OK);
+            return $this->successResponse($product->load('category.parent', 'shop.provider', 'images'), Response::HTTP_OK);
         } catch (Exception $ex) {
             dd($ex->getMessage());
             return $this->errorResponse("Có lỗi xảy ra.", Response::HTTP_INTERNAL_SERVER_ERROR);

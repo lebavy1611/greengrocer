@@ -26,8 +26,8 @@ class CreateProductRequest extends ApiFormRequest
     {
         return [
             'name'          => 'required|string|max:255',
-            'shop_id'       => 'required|integer|exists:shops',
-            'category_id'   => 'required|integer|exists:categories',
+            'shop_id'       => 'required|integer',
+            'category_id'   => 'required|integer',
             'describe'      => 'string|max:255',
             'price'         => 'required|integer',
             'origin'        => 'required|string|max:255',
