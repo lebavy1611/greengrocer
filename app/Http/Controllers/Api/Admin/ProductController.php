@@ -47,6 +47,19 @@ class ProductController extends ApiController
         }
     }
 
+    public function indexPerPage(int $perPage)
+    {
+        try {
+            $products = Product::with('category.parent', 'shop.provider', 'images')
+                ->orderBy('created_at', 'desc')->paginate($perPage);
+            $products = $this->formatPaginate($products);
+            return $this->showAll($products, Response::HTTP_OK);
+        } catch (Exception $ex) {
+            dd($ex->getMessage());
+            return $this->errorResponse("Product can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *

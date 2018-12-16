@@ -30,6 +30,18 @@ class OrderController extends ApiController
         }
     }
 
+    public function indexPerPage(int $perPage)
+    {
+        try {
+            $order = Order::with(['user','coupon:id,code,percents', 'processStatus:id,name', 'paymentMethod:id,name'])
+                ->orderBy('created_at', 'desc')->paginate($perPage);
+            return $this->formatPaginate($order);
+        } catch (Exception $ex) {
+            dd($ex->getMessage());
+            return $this->errorResponse("Orders can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     /**
      * Display the specified resource.
