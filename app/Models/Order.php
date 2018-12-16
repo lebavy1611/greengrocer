@@ -86,7 +86,7 @@ class Order extends Model implements StatisticInterface
         }
         return Order::all()->count();
     }
-
+    
     /**
      * Get the user that owns the phone.
      */
