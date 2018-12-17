@@ -48,7 +48,13 @@ class CategoryController extends ApiController
     public function show($id)
     {
         try {
-            $category = Category::with('parentsProducts.images', 'childrenProducts.images')->findOrFail($id);
+            $category = Category::with([
+                'parentsProducts' => function($query) {
+                    $query->where('active', 1);
+                },
+                'childrenProducts' => function($query) {
+                    $query->where('active', 1);
+                }])->findOrFail($id);
             return $this->showOne($category, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
