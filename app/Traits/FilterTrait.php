@@ -18,7 +18,7 @@ trait FilterTrait
     public function scopeProductFilter($query, Request $request, $id = 0)
     {
 
-        if ($request->name) {
+        if ($request->keyword) {
             $query->where('products.name', 'like', '%' . $request->name . '%');
         }
 
@@ -52,9 +52,7 @@ trait FilterTrait
         }
 
         if ($request->price) {
-            $query->where(function ($q) use ($request) {
-                return $q->where('price', 'like', '%'.$request->price.'%');
-            });
+            $query->orderBy('price', $request->price);
         }
 
         return $query->select('products.*');
