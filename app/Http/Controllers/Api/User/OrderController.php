@@ -25,9 +25,10 @@ class OrderController extends ApiController
     public function index()
     {
         try {
+            $perpage = isset($request->perpage) ? $request->perpage : config('paginate.number_orders');
             $user = accountLogin();
             $order = Order::with(['user', 'coupon:id,code,percents', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])
-                ->where('customer_id', $user->id)->orderBy('created_at', 'desc')->paginate(config('paginate.number_orders'));
+                ->where('customer_id', $user->id)->orderBy('created_at', 'desc')->paginate($perpage);
             return $this->formatPaginate($order);
         } catch (Exception $ex) {
             return $this->errorResponse("Có lỗi khi hiện danh sách order", Response::HTTP_INTERNAL_SERVER_ERROR);
