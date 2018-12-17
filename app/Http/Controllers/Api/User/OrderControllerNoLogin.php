@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\Product;
 
 class OrderControllerNoLogin extends ApiController
 {
@@ -51,7 +52,8 @@ class OrderControllerNoLogin extends ApiController
                 OrderDetail::create([
                     'order_id' => $order->id,
                     'product_id' =>$product['id'],
-                    'quantity' => $product['quantity']
+                    'quantity' => $product['quantity'],
+                    'price' => Product::find($product['id'])->price
                 ]);
             }
             $order->load('orderdetails');
