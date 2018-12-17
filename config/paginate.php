@@ -1,10 +1,10 @@
 <?php
 return [
-    'number_users' => 5,
-    'number_categories' => 5,
-    'number_orders' => 5,
-    'number_products' => 5,
-    'number_orders' => 5,
-    'number_ratings' => 5,
-    'number_coupons' => 5,
+    'number_users' => 10,
+    'number_categories' => 10,
+    'number_orders' => 10,
+    'number_products' => 10,
+    'number_orders' => 10,
+    'number_ratings' => 10,
+    'number_coupons' => 10,
 ];

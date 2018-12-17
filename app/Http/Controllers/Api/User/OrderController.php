@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Coupon;
+use App\Models\Product;
 
 class OrderController extends ApiController
 {
@@ -69,7 +70,8 @@ class OrderController extends ApiController
                 OrderDetail::create([
                     'order_id' => $order->id,
                     'product_id' =>$product['id'],
-                    'quantity' => $product['quantity']
+                    'quantity' => $product['quantity'],
+                    'price' => Product::find($product['id'])->price
                 ]);
             }
             if (!empty($data['coupon_id'])) Coupon::where('id', $data['coupon_id'])->decrement('times');
