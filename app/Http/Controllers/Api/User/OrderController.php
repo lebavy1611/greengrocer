@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Coupon;
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class OrderController extends ApiController
 {
@@ -22,15 +23,16 @@ class OrderController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $perpage = isset($request->perpage) ? $request->perpage : config('paginate.number_orders');
+            $perpage = $request->perpage ? $request->perpage : config('paginate.number_orders');
             $user = accountLogin();
             $order = Order::with(['user', 'coupon:id,code,percents', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])
                 ->where('customer_id', $user->id)->orderBy('created_at', 'desc')->paginate($perpage);
             return $this->formatPaginate($order);
         } catch (Exception $ex) {
+            dd($ex->getMessage());
             return $this->errorResponse("Có lỗi khi hiện danh sách order", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
