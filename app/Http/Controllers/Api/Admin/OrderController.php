@@ -20,21 +20,10 @@ class OrderController extends ApiController
      */
     public function index(Request $request)
     {
+        $perPage = $request->perpage ? $request->perpage : config('paginate.number_orders');
         try {
             $order = Order::with(['user','coupon:id,code,percents', 'processStatus:id,name', 'paymentMethod:id,name'])
-                ->orderFilter($request)->orderBy('created_at', 'desc')->paginate(config('paginate.number_orders'));
-            return $this->formatPaginate($order);
-        } catch (Exception $ex) {
-            dd($ex->getMessage());
-            return $this->errorResponse("Orders can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public function indexPerPage(int $perPage)
-    {
-        try {
-            $order = Order::with(['user','coupon:id,code,percents', 'processStatus:id,name', 'paymentMethod:id,name'])
-                ->orderBy('created_at', 'desc')->paginate($perPage);
+                ->orderFilter($request)->orderBy('created_at', 'desc')->paginate($perPage);
             return $this->formatPaginate($order);
         } catch (Exception $ex) {
             dd($ex->getMessage());
@@ -77,7 +66,7 @@ class OrderController extends ApiController
                 $order->processing_status = $request->processing_status;
             }
             $order->payment_status = $request->payment_status;
-            $order->delivery_time = $request->delivery_time;
+//            $order->delivery_time = $request->delivery_time;
             $order->save();
 
             return $this->successResponse("Update order successfully", Response::HTTP_OK);
