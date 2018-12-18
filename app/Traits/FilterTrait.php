@@ -19,7 +19,7 @@ trait FilterTrait
     {
 
         if ($request->keyword) {
-            $query->where('products.name', 'like', '%' . $request->name . '%');
+            $query->where('products.name', 'like', '%' . $request->keyword . '%');
         }
 
         if ($request->category_id) {
