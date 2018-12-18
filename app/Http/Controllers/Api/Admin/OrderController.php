@@ -77,7 +77,7 @@ class OrderController extends ApiController
                 $order->processing_status = $request->processing_status;
             }
             $order->payment_status = $request->payment_status;
-            $order->delivery_time = $request->delivery_time;
+//            $order->delivery_time = $request->delivery_time;
             $order->save();
 
             return $this->successResponse("Update order successfully", Response::HTTP_OK);
