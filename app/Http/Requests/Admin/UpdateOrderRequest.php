@@ -27,7 +27,7 @@ class UpdateOrderRequest extends ApiFormRequest
         return [
             'processing_status'    => 'required|integer',
             'payment_status'       => 'required|integer|min:1|max:2',
-            'delivery_time'        => 'required|date_format:"Y-m-d"',
+//            'delivery_time'        => 'required|date_format:"Y-m-d"',
         ];
     }
 
@@ -48,9 +48,9 @@ class UpdateOrderRequest extends ApiFormRequest
             'payment_status.integer'              => "id trạng thái thanh toán phải là số nguyên ",
             'payment_status.min'                 => "Trạng thái thanh toán không được bé hơn 1",
             'payment_status.max'                 => "Trạng thái thanh toán không được hơn hơn 2",
-
-            'delivery_time.required'       => "Vui lòng mời bạn nhập vào ngày bắt đầu giao hàng",
-            'delivery_time.date_format'    => "Ngày bắt đầu khuyến mãi phải đúng định dạng y-m-d",
+//
+//            'delivery_time.required'       => "Vui lòng mời bạn nhập vào ngày bắt đầu giao hàng",
+//            'delivery_time.date_format'    => "Ngày bắt đầu khuyến mãi phải đúng định dạng y-m-d",
 
         ];
 
