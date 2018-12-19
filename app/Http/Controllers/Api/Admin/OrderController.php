@@ -41,7 +41,24 @@ class OrderController extends ApiController
     public function show($id)
     {
         try {
-            $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])->findOrFail($id);
+            $manager = accountLogin();
+            if (isProviderLogin()) {
+                \DB::enableQueryLog();
+                $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])->findOrFail($id);
+                //dd(\DB::getQueryLog());
+            } else {
+                $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])->findOrFail($id);
+            }
+            //dd($order['orderDetails']);
+            // => function($query) use($manager) {
+            //     $query->select('order_details.*', 'products.id', 'products.name', 'products.price')->join('products', function ($join) {
+            //         $join->on('order_details.product_id', '=', 'products.id');
+            //     })->join('orders', function ($join) {
+            //         $join->on('orders.id', '=', 'order_details.order_id');
+            //     })->join('shops', function ($join) {
+            //         $join->on('shops.id', '=', 'products.shop_id');
+            //     })->where('shops.manager_id', $manager->id);
+            // }
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Không có đơn hành cần tìm", Response::HTTP_NOT_FOUND);
