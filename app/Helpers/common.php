@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Coupon;
+use App\Models\Order;
 
 if (!function_exists('accountLogin')) {
     /**
@@ -15,6 +16,18 @@ if (!function_exists('accountLogin')) {
 }
 
 
+if (!function_exists('isManagerLogin')) {
+    /**
+     * Check if current logged in user is Admin
+     *
+     * @return boolean
+     */
+    function isManagerLogin()
+    {
+        return Auth::check() && Auth::user()->loginable_type == App\Models\Account::TYPE_ADMIN;
+    }
+}
+
 if (!function_exists('isAdminLogin')) {
     /**
      * Check if current logged in user is Admin
@@ -23,10 +36,33 @@ if (!function_exists('isAdminLogin')) {
      */
     function isAdminLogin()
     {
-        return Auth::check() && Auth::user()->loginable_type == App\Models\Account::TYPE_ADMIN;
+        return auth('api')->user()->loginable->role == App\Models\Manager::ROLE_ADMIN;
     }
 }
 
+if (!function_exists('isProviderLogin')) {
+    /**
+     * Check if current logged in user is Admin
+     *
+     * @return boolean
+     */
+    function isProviderLogin()
+    {
+        return auth('api')->user()->loginable->role == App\Models\Manager::ROLE_PROVIDER;
+    }
+}
+
+if (!function_exists('isModLogin')) {
+    /**
+     * Check if current logged in user is Admin
+     *
+     * @return boolean
+     */
+    function isModLogin()
+    {
+        return auth('api')->user()->loginable->role == App\Models\Manager::ROLE_MOD;
+    }
+}
 if (!function_exists('isUserLogin')) {
     /**
      * Check if current logged in user is Agent
@@ -142,7 +178,7 @@ if (!function_exists('getCode')) {
      *
      * @return string
      */
-    function getCode($length) {
+    function getCodeCoupon($length) {
         while (true) {
             $code = getRandomString(8);
             $checkCode = Coupon::where(['code' => $code])->count();
@@ -153,3 +189,21 @@ if (!function_exists('getCode')) {
     }
 }
 
+if (!function_exists('getCodeOrder')) {
+    /**
+     * Random a string
+     *
+     * @param int $length String
+     *
+     * @return string
+     */
+    function getCodeOrder($length) {
+        while (true) {
+            $code = getRandomString(8);
+            $checkCode = Order::where(['code' => $code])->count();
+            if (!$checkCode) {
+                return $code;
+            }
+        }
+    }
+}

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\Product;
 
 class OrderController extends ApiController
 {
@@ -41,7 +42,21 @@ class OrderController extends ApiController
     public function show($id)
     {
         try {
+            $manager = accountLogin();
             $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])->findOrFail($id);
+            $total = 0;
+            if (isProviderLogin()) {
+                $orderDetails = $order['orderDetails'];
+                foreach ($orderDetails as $key => $orderDetail) {
+                    if (Product::find($orderDetail->product_id)->shop->manager_id != $manager->id) {
+                        $orderDetails->forget($key);
+                    }
+                }
+            }
+            foreach ($orderDetails as $key => $orderDetail) {
+                $total += $orderDetail->price * $orderDetail->quantity;
+            }
+            $order['totalMoney'] = $total;
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Không có đơn hành cần tìm", Response::HTTP_NOT_FOUND);
