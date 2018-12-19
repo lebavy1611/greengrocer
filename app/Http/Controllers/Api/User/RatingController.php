@@ -27,15 +27,13 @@ class RatingController extends ApiController
         try {
 
             $user = accountLogin();
-
-            $data = $request->only([
-                'product_id',
-                'stars',
-                'content'
+            $rating = Rating::updateOrCreate([
+                'product_id' => $request['product_id'],
+                'customer_id' => $user->id
+            ],[
+                'stars' => $request['stars'],
+                'content' => $request['content']
             ]);
-            $data['customer_id'] = $user->id;
-
-            $rating = Rating::updateOrCreate($data);
             return $this->successResponse($rating, Response::HTTP_OK);
         } catch (Exception $ex) {
             dd($ex->getMessage());
