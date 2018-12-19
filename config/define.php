@@ -12,6 +12,7 @@ return [
     'limit_rows' => 4,
     'login' => [
       'unauthorised' => 'Unauthorized',
+      'fail' => 'Email hoặc password sai, xin vui lòng thử lại.',
       'success' => 'You have login successfully!'
     ],
     'limit_row_slide' => 8,

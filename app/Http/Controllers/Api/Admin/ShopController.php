@@ -44,9 +44,9 @@ class ShopController extends ApiController
     public function store(CreateShopRequest $request)
     {
         try {
-            $data = $request->only(['name', 'provider_id', 'address', 'phone', 'active']);
+            $data = $request->only(['name', 'manager_id', 'address', 'phone', 'active']);
             if (accountLogin()->role == Manager::ROLE_PROVIDER) {
-                $data['provider_id'] = accountLogin()->id;
+                $data['manager_id'] = accountLogin()->id;
             }
             $data['image'] = $this->uploadImageService->fileUpload($request, 'shops', 'image');
             $shop = Shop::create($data);    
