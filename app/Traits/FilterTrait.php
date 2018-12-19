@@ -19,12 +19,7 @@ trait FilterTrait
     {
 
         if ($request->keyword) {
-            $query->join('categories', function ($join) {
-                $join->on('categories.id', '=', 'products.catgory_id');
-            })->join('shop', function ($join) {
-                $join->on('users.id', '=', 'user_infors.user_id');
-            })->orWhere('orders.code', 'like', '%' . $request->keyword . '%')
-            ->orWhere('orders.full_name', 'like', '%' . $request->keyword . '%');
+            $query->where('products.name', 'like', '%' . $request->keyword . '%');
         }
 
         if ($request->category_id) {
