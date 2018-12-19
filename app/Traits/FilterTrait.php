@@ -62,7 +62,31 @@ trait FilterTrait
 
     public function scopeOrderFilter($query, Request $request)
     {
+        if ($request->keyword) {
+            $query->join('users', function ($join) {
+                $join->on('users.id', '=', 'orders.customer_id');
+            })->join('user_infors', function ($join) {
+                $join->on('users.id', '=', 'user_infors.user_id');
+            })->orWhere('orders.code', 'like', '%' . $request->keyword . '%')
+            ->orWhere('orders.full_name', 'like', '%' . $request->keyword . '%')
+            ->orWhere('orders.phone', 'like', '%' . $request->keyword . '%')
+            ->orWhere('orders.address', 'like', '%' . $request->keyword . '%')
+            ->orWhere('orders.note', 'like', '%' . $request->keyword . '%')
+            ->orWhere('user_infors.fullname', 'like', '%' . $request->keyword . '%')
+            ->orWhere('users.email', 'like', '%' . $request->keyword . '%')
+            ->orWhere('users.username', 'like', '%' . $request->keyword . '%')
+            ->orWhere('user_infors.address', 'like', '%' . $request->keyword . '%');
+        }
+        if ($request->shop_id) {
+            $query->join('order_details', function ($join) {
+                $join->on('orders.id', '=', 'order_details.order_id');
+            })->join('products', function ($join) {
+                $join->on('products.id', '=', 'order_details.product_id');
+            })->join('shops', function ($join) {
+                $join->on('shops.id', '=', 'products.shop_id');
+            })->where('shops.id', $request->shop_id);
 
+        }
         if ($request->customer_id) {
             $query->join('users', function ($join) {
                 $join->on('users.id', '=', 'orders.customer_id');
