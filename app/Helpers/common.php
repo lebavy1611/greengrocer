@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Coupon;
+use App\Models\Order;
 
 if (!function_exists('accountLogin')) {
     /**
@@ -142,7 +143,7 @@ if (!function_exists('getCode')) {
      *
      * @return string
      */
-    function getCode($length) {
+    function getCodeCoupon($length) {
         while (true) {
             $code = getRandomString(8);
             $checkCode = Coupon::where(['code' => $code])->count();
@@ -153,3 +154,21 @@ if (!function_exists('getCode')) {
     }
 }
 
+if (!function_exists('getCodeOrder')) {
+    /**
+     * Random a string
+     *
+     * @param int $length String
+     *
+     * @return string
+     */
+    function getCodeOrder($length) {
+        while (true) {
+            $code = getRandomString(8);
+            $checkCode = Order::where(['code' => $code])->count();
+            if (!$checkCode) {
+                return $code;
+            }
+        }
+    }
+}
