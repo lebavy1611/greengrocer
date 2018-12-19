@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\Product;
 
 class OrderController extends ApiController
 {
@@ -42,23 +43,20 @@ class OrderController extends ApiController
     {
         try {
             $manager = accountLogin();
+            $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])->findOrFail($id);
+            $total = 0;
             if (isProviderLogin()) {
-                \DB::enableQueryLog();
-                $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])->findOrFail($id);
-                //dd(\DB::getQueryLog());
-            } else {
-                $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])->findOrFail($id);
+                $orderDetails = $order['orderDetails'];
+                foreach ($orderDetails as $key => $orderDetail) {
+                    if (Product::find($orderDetail->product_id)->shop->manager_id != $manager->id) {
+                        $orderDetails->forget($key);
+                    }
+                }
             }
-            //dd($order['orderDetails']);
-            // => function($query) use($manager) {
-            //     $query->select('order_details.*', 'products.id', 'products.name', 'products.price')->join('products', function ($join) {
-            //         $join->on('order_details.product_id', '=', 'products.id');
-            //     })->join('orders', function ($join) {
-            //         $join->on('orders.id', '=', 'order_details.order_id');
-            //     })->join('shops', function ($join) {
-            //         $join->on('shops.id', '=', 'products.shop_id');
-            //     })->where('shops.manager_id', $manager->id);
-            // }
+            foreach ($orderDetails as $key => $orderDetail) {
+                $total += $orderDetail->price * $orderDetail->quantity;
+            }
+            $order['totalMoney'] = $total;
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Không có đơn hành cần tìm", Response::HTTP_NOT_FOUND);

@@ -35,7 +35,7 @@ class RatingController extends ApiController
             ]);
             $data['customer_id'] = $user->id;
 
-            $rating = Rating::create($data);
+            $rating = Rating::updateOrCreate($data);
             return $this->successResponse($rating, Response::HTTP_OK);
         } catch (Exception $ex) {
             dd($ex->getMessage());
