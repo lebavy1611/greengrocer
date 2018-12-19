@@ -25,7 +25,7 @@ class Order extends Model implements StatisticInterface
 
     protected $table = "orders";
     protected $fillable = [
-        'customer_id','full_name','phone', 'address','delivery_time','note','processing_status',
+        'code', 'customer_id','full_name','phone', 'address','delivery_time','note','processing_status',
         'payment_status','payment_method_id','coupon_id',
     ];
 
