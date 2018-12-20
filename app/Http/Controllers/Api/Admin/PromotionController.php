@@ -39,10 +39,14 @@ class PromotionController extends ApiController
     {
         try {
             $promotions = Promotion::get();
-            if ($this->account->can('view', $promotions->first())) {
-                return $this->showAll($promotions);
+            if ($promotions->count()) {
+                if ($this->account->can('view', $promotions->first())) {
+                    return $this->showAll($promotions);
+                } else {
+                    return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+                }
             } else {
-                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+                return $this->showAll($promotions);
             }
         } catch (Exception $ex) {
             return $this->errorResponse("Promotions can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);

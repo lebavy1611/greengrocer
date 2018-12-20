@@ -156,7 +156,7 @@ class CategoryController extends ApiController
      */
     public function destroy(Category $category)
     {
-        try {
+        //try {
             if ($this->account->can('delete', $category)) {
                 $category->childrenProducts()->delete();
                 $category->parentsProducts()->delete();
@@ -165,10 +165,10 @@ class CategoryController extends ApiController
             } else {
                 return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
             }
-        } catch (ModelNotFoundException $ex) {
-            return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
-        } catch (Exception $ex) {
-            return $this->errorResponse("Occour error when delete category.", Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        // } catch (ModelNotFoundException $ex) {
+        //     return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
+        // } catch (Exception $ex) {
+        //     return $this->errorResponse("Occour error when delete category.", Response::HTTP_INTERNAL_SERVER_ERROR);
+        // }
     }
 }
