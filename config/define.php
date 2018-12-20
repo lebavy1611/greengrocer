@@ -9,7 +9,7 @@ return [
       'images_path_products' => '/images/products/',
     ],
     'no_image' => '/images/no-image.jpg',
-    'limit_rows' => 4,
+    'limit_rows' => 10,
     'login' => [
       'unauthorised' => 'Unauthorized',
       'fail' => 'Email hoặc password sai, xin vui lòng thử lại.',

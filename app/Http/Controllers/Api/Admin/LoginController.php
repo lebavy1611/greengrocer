@@ -46,7 +46,7 @@ class LoginController extends ApiController
             }
             return $this->successResponse($data, Response::HTTP_OK);
         } else {
-            return $this->errorResponse(config('define.login.unauthorised'), Response::HTTP_UNAUTHORIZED);
+            return $this->errorResponse(config('define.login.fail'), Response::HTTP_UNAUTHORIZED);
         }
     }
 
