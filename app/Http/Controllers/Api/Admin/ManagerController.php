@@ -35,10 +35,14 @@ class ManagerController extends ApiController
     {
         try {
             $managers = Manager::with(['roleResources.resource:id,name', 'roleResources.role:id,name'])->managerFilter($request)->get();
-            if ($this->account->can('view', $managers->first())) {
-                return $this->showAll($managers);
+            if ($managers->count()) {
+                if ($this->account->can('view', $managers->first())) {
+                    return $this->showAll($managers);
+                } else {
+                    return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+                }
             } else {
-                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+                return $this->showAll($managers);
             }
         } catch (Exception $ex) {
             return $this->errorResponse("Danh sách trống!", Response::HTTP_INTERNAL_SERVER_ERROR);
