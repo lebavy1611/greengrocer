@@ -35,10 +35,14 @@ class ShopController extends ApiController
     public function index()
     {
         $shops = Shop::with('provider')->orderBy('created_at', 'desc')->get();
-        if ($this->account->can('view', $shops->first())) {
-            return $this->showAll($shops, Response::HTTP_OK);
+        if ($shops->count()) {
+            if ($this->account->can('view', $shops->first())) {
+                return $this->showAll($shops, Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } else {
-            return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            return $this->showAll($shops, Response::HTTP_OK);
         }
     }
 
