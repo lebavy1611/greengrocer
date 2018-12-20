@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Product;
+use App\Models\Manager;
 
 class OrderController extends ApiController
 {
@@ -39,6 +40,14 @@ class OrderController extends ApiController
             $orders = Order::with(['user','coupon:id,code,percents', 'processStatus:id,name', 'paymentMethod:id,name', 'orderDetails.product'])
                 ->orderFilter($request)->orderBy('created_at', 'desc')->get();
             $data = $orders->toArray();
+            if (accountLogin()->role == Manager::ROLE_PROVIDER) {
+                array_walk($data, function(&$order, $key) {
+                    dd($order);
+                    if ($order['']) {
+
+                    }
+                });
+            }
             array_walk($data, function(&$order, $key) {
                 $total = 0;
                 $orderDetails = collect($order['order_details']);
@@ -48,10 +57,14 @@ class OrderController extends ApiController
                 $order['total_money'] = $total;
                 unset($order['order_details']);
             });
-            if ($this->account->can('view', Order::all()->first())) {
-                return $this->paginate(collect($data));
+            if (count($data)) {
+                if ($this->account->can('view', Order::all()->first())) {
+                    return $this->showAll($this->formatPaginate($this->paginate(collect($data))), Response::HTTP_OK);
+                } else {
+                    return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+                }
             } else {
-                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+                return $this->showAll($this->formatPaginate($this->paginate(collect($data))), Response::HTTP_OK);
             }
         } catch (Exception $ex) {
             return $this->errorResponse("Orders can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -65,11 +78,11 @@ class OrderController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Order $order)
     {
-        try {
+        //try {
             $manager = accountLogin();
-            $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])->findOrFail($id);
+            $order = $order->load(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'orderDetails.product.images', 'orderDetails.product.shop', 'paymentMethod:id,name']);
             $total = 0;
             $orderDetails = $order['orderDetails'];
             foreach ($orderDetails as $key => $orderDetail) {
@@ -84,17 +97,25 @@ class OrderController extends ApiController
                 }
             }
             $order['total_money'] = $total;
+            $data = $orderDetails->toArray();
+            array_walk($data, function(&$orderDetail, $key) {
+                $images = collect($orderDetail['product']['images']);
+                $orderDetail['product']['images'] = $images->pluck('path')->toArray();
+            });
+            $order->unsetRelation('orderDetails');
+            $order['order_details'] = collect($data);
+
             if ($this->account->can('view', $order)) {
                 return $this->successResponse($order, Response::HTTP_OK);
             } else {
                 return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
             }
-        } catch (ModelNotFoundException $ex) {
-            return $this->errorResponse("Không có đơn hành cần tìm", Response::HTTP_NOT_FOUND);
-        } catch (Exception $ex) {
-            dd($ex->getMessage());
-            return $this->errorResponse("Có lỗi xảy ra", Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        // } catch (ModelNotFoundException $ex) {
+        //     return $this->errorResponse("Không có đơn hành cần tìm", Response::HTTP_NOT_FOUND);
+        // } catch (Exception $ex) {
+        //     dd($ex->getMessage());
+        //     return $this->errorResponse("Có lỗi xảy ra", Response::HTTP_INTERNAL_SERVER_ERROR);
+        // }
     }
 
 
@@ -113,17 +134,12 @@ class OrderController extends ApiController
                     $order->processing_status = $request->processing_status;
                 }
                 $order->payment_status = $request->payment_status;
-                $order->delivery_time = $request->delivery_time;
                 $order->save();
     
                 return $this->successResponse("Update order successfully", Response::HTTP_OK);
             } else {
                 return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
             }
-            $order->payment_status = $request->payment_status;
-//            $order->delivery_time = $request->delivery_time;
-            $order->save();
-
             return $this->successResponse("Update order successfully", Response::HTTP_OK);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when show Order.", Response::HTTP_INTERNAL_SERVER_ERROR);
