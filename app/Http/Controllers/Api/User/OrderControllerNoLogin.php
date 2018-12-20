@@ -43,6 +43,7 @@ class OrderControllerNoLogin extends ApiController
                 'delivery_time'
             ]);
             $products = ($request->products);
+            $data['code'] = getCodeOrder(8);
             $data['customer_id'] = null;
             $data['processing_status'] = Order::STATUS_PROCESSING;
             $data['payment_status'] = ($data['payment_method_id'] != Order::PAYMENT_ON_DELIVERY) ? Order::STATUS_PAYED : Order::STATUS_NOT_PAYED;
@@ -56,6 +57,7 @@ class OrderControllerNoLogin extends ApiController
                     'price' => Product::find($product['id'])->price
                 ]);
             }
+            if (!empty($data['coupon_id'])) Coupon::where('id', $data['coupon_id'])->decrement('times');
             $order->load('orderdetails');
             return $this->successResponse($order, Response::HTTP_OK);
         } catch (Exception $ex) {

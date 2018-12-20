@@ -64,6 +64,7 @@ class OrderController extends ApiController
                 'delivery_time'
             ]);
             $products = ($request->products);
+            $data['code'] = getCodeOrder(8);
             $data['customer_id'] = $user->id;
             $data['processing_status'] = Order::STATUS_PROCESSING;
             $data['payment_status'] = ($data['payment_method_id'] != Order::PAYMENT_ON_DELIVERY) ? Order::STATUS_PAYED : Order::STATUS_NOT_PAYED;

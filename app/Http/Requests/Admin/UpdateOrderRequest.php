@@ -43,6 +43,7 @@ class UpdateOrderRequest extends ApiFormRequest
         return [
             'processing_status.required'             => "Vui lòng mời bạn chọn để huỷ đơn hàng",
             'processing_status.integer'               => "Trạng thái huỷ đơn hàng phải là số nguyên",
+            'processing_status.exists'            => "Vui lòng chọn trạng thái xử lý hợp lệ",
 
             'payment_status.required'             => "Vui lòng mời bạn nhập vào trạng thái thanh toán",
             'payment_status.integer'              => "id trạng thái thanh toán phải là số nguyên ",
