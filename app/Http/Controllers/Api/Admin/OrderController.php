@@ -14,6 +14,19 @@ use App\Models\Product;
 
 class OrderController extends ApiController
 {
+
+    protected $account;
+
+    /**
+     * CategoryController constructor..
+     *
+     * @param UploadImageService   $uploadImageService   UploadImageService
+     */
+    public function __construct()
+    {
+        $this->account = auth('api')->user();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -35,9 +48,12 @@ class OrderController extends ApiController
                 $order['total_money'] = $total;
                 unset($order['order_details']);
             });
-            return $this->paginate(collect($data));
+            if ($this->account->can('view', Order::all()->first())) {
+                return $this->paginate(collect($data));
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (Exception $ex) {
-            dd($ex->getMessage());
             return $this->errorResponse("Orders can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -68,7 +84,11 @@ class OrderController extends ApiController
                 }
             }
             $order['total_money'] = $total;
-            return $this->successResponse($order, Response::HTTP_OK);
+            if ($this->account->can('view', $order)) {
+                return $this->successResponse($order, Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Không có đơn hành cần tìm", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
@@ -88,8 +108,17 @@ class OrderController extends ApiController
     public function update(UpdateOrderRequest $request, Order $order)
     {
         try {
-            if ($order->processing_status == Order::STATUS_PROCESSING) {
-                $order->processing_status = $request->processing_status;
+            if ($this->account->can('update', $order)) {
+                if ($order->processing_status == Order::STATUS_PROCESSING) {
+                    $order->processing_status = $request->processing_status;
+                }
+                $order->payment_status = $request->payment_status;
+                $order->delivery_time = $request->delivery_time;
+                $order->save();
+    
+                return $this->successResponse("Update order successfully", Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
             }
             $order->payment_status = $request->payment_status;
 //            $order->delivery_time = $request->delivery_time;
@@ -113,13 +142,17 @@ class OrderController extends ApiController
     public function destroy(Order $order)
     {
         try {
-            $order->orderDetails()->delete();
-            $order->delete();
-            return $this->successResponse("Delete order successfully", Response::HTTP_OK);
+            if ($this->account->can('delete', $order)) {
+                $order->orderDetails()->delete();
+                $order->delete();
+                return $this->successResponse("Delete order successfully", Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
+            
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Order not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
-            dd($ex->getMessage());
             return $this->errorResponse("Occour error when show order.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

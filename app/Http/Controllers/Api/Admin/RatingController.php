@@ -23,7 +23,11 @@ class RatingController extends ApiController
             $rating = Rating::with(['user','product'])->where('customer_id', $customer_id)
                 ->orderBy('created_at', 'desc')
                 ->paginate(config('paginate.number_ratings'));
-            return $this->formatPaginate($rating);
+            if ($this->account->can('view', Rating::all()->first())) {
+                return $this->formatPaginate($rating);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (Exception $ex) {
             dd($ex->getMessage());
             return $this->errorResponse("Ratings can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -40,12 +44,17 @@ class RatingController extends ApiController
     public function show($id)
     {
         try {
-            $rating = Rating::with(['user','product.category:id,name', 'product.shop:id,name'])->findOrFail($id);
+            $rating = Rating::with(['user','product.rating:id,name', 'product.shop:id,name'])->findOrFail($id);
+            if ($this->account->can('view', $rating)) {
+                return $this->formatPaginate($rating);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
             return $this->successResponse($rating, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
-            return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
+            return $this->errorResponse("Rating not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
-            return $this->errorResponse("Occour error when show category.", Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->errorResponse("Occour error when show rating.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -55,15 +64,19 @@ class RatingController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Rating $rating)
     {
         try {
-            Rating::findOrfail($id)->delete();
-            return $this->successResponse("Delete category successfully.", Response::HTTP_OK);
+            if ($this->account->can('delete', $rating)) {
+                $rating->delete();
+                return $this->successResponse("Delete rating successfully.", Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (ModelNotFoundException $ex) {
-            return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
+            return $this->errorResponse("Rating not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
-            return $this->errorResponse("Occour error when delete category.", Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->errorResponse("Occour error when delete rating.", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

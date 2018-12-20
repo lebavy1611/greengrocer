@@ -16,7 +16,9 @@ use App\Services\UploadImageService;
 class UserController extends ApiController
 {
     protected $uploadImageService;
-    
+
+    protected $account;
+
     /**
      * CategoryController constructor..
      *
@@ -25,6 +27,7 @@ class UserController extends ApiController
     public function __construct(UploadImageService $uploadImageService)
     {
         $this->uploadImageService = $uploadImageService;
+        $this->account = auth('api')->user();
     }
     
     /**
@@ -34,9 +37,13 @@ class UserController extends ApiController
      */
     public function index(Request $request)
     {
-            $users = User::with('userInfor')->paginate(config('define.limit_rows'));
+        $users = User::with('userInfor')->paginate(config('define.limit_rows'));
+        if ($this->account->can('view', User::all()->first())) {
             $users = $this->formatPaginate($users);
             return $this->showAll($users, Response::HTTP_OK);
+        } else {
+            return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+        }
     }
 
 
@@ -49,22 +56,26 @@ class UserController extends ApiController
     public function store(CreateUserRequest $request)
     {
         try {
-            $userData = [
-                'username' => $request->username,
-                'email' => $request->email,
-                'password' => bcrypt($request->password),
-            ];
-            $user = User::create($userData);
-            $userInfoData = [
-                'fullname' => $request->fullname,
-                'address' => $request->address,
-                'phone' => $request->phone,
-                'gender' => $request->gender,
-                'birthday' => $request->birthday,
-            ];
-            $userInfoData['avatar'] = $this->uploadImageService->fileUpload($request, 'users', 'avatar');
-            $user->userInfor()->create($userInfoData);
-            return $this->successResponse('Create a new user successfully', Response::HTTP_OK);
+            if ($this->account->can('create', User::class)) {
+                $userData = [
+                    'username' => $request->username,
+                    'email' => $request->email,
+                    'password' => bcrypt($request->password),
+                ];
+                $user = User::create($userData);
+                $userInfoData = [
+                    'fullname' => $request->fullname,
+                    'address' => $request->address,
+                    'phone' => $request->phone,
+                    'gender' => $request->gender,
+                    'birthday' => $request->birthday,
+                ];
+                $userInfoData['avatar'] = $this->uploadImageService->fileUpload($request, 'users', 'avatar');
+                $user->userInfor()->create($userInfoData);
+                return $this->successResponse('Create a new user successfully', Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (Exception $e) {
             return $this->errorResponse('Create a new user failed', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -80,7 +91,11 @@ class UserController extends ApiController
     {
         try {
             $user = User::findOrFail($id)->load('userInfor');
-            return $this->successResponse($user, Response::HTTP_OK);
+            if ($this->account->can('view', $user)) {
+                return $this->successResponse($user, Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("User not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
@@ -98,20 +113,24 @@ class UserController extends ApiController
     public function update(UpdateUserRequest $request, User $user)
     {
         try {
-            if ($request->password) $userData['password'] = bcrypt($request->password);
-            User::updateOrCreate(['id' => $user->id], $userData);
-            $userInfoData = [
-                'fullname' => $request->fullname,
-                'address' => $request->address,
-                'phone' => $request->phone,
-                'gender' => $request->gender,
-                'birthday' => $request->birthday,
-            ];
-            if ($request->hasFile('avatar')) {
-                $userInfoData['avatar'] = $this->uploadImageService->fileUpload($request, 'users', 'avatar');
+            if ($this->account->can('update', $user)) {
+                if ($request->password) $userData['password'] = bcrypt($request->password);
+                User::updateOrCreate(['id' => $user->id], $userData);
+                $userInfoData = [
+                    'fullname' => $request->fullname,
+                    'address' => $request->address,
+                    'phone' => $request->phone,
+                    'gender' => $request->gender,
+                    'birthday' => $request->birthday,
+                ];
+                if ($request->hasFile('avatar')) {
+                    $userInfoData['avatar'] = $this->uploadImageService->fileUpload($request, 'users', 'avatar');
+                }
+                UserInfor::updateOrCreate(['user_id' => $user->id], $userInfoData);
+                return $this->successResponse('Update user successfully', Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
             }
-            UserInfor::updateOrCreate(['user_id' => $user->id], $userInfoData);
-            return $this->successResponse('Update user successfully', Response::HTTP_OK);
         } catch (Exception $e) {
             return $this->errorResponse('Update user failed', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -126,9 +145,13 @@ class UserController extends ApiController
     public function destroy(User $user)
     {
         try {
-            $user->userInfor()->delete();
-            $user->delete();
-            return $this->successResponse('Delete a new user successfully.', Response::HTTP_OK);
+            if ($this->account->can('delete', $user)) {
+                $user->userInfor()->delete();
+                $user->delete();
+                return $this->successResponse('Delete a new user successfully.', Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
         } catch (Exception $e) {
             return $this->errorResponse('Delete a new user failed.', Response::HTTP_INTERNAL_SERVER_ERROR);
         }

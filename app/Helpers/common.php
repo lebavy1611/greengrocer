@@ -2,6 +2,9 @@
 
 use App\Models\Coupon;
 use App\Models\Order;
+use App\Models\RoleResource;
+use App\Models\Role;
+use App\Models\Resource;
 
 if (!function_exists('accountLogin')) {
     /**
@@ -207,3 +210,18 @@ if (!function_exists('getCodeOrder')) {
         }
     }
 }
+if (!function_exists('getRoleResource')) {
+    /**
+     * Get Id Company
+     *
+     * @return int
+     */
+    function getRoleResource($resource)
+    {
+        return RoleResource::where([
+            ['role_id', Role::where('manager_id', accountLogin()->id)->first()->id],
+            ['resource_id', Resource::where('name', '=', $resource)->first()->id]
+        ])->first();
+    }
+}
+
