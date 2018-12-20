@@ -48,10 +48,14 @@ class OrderController extends ApiController
                 $order['total_money'] = $total;
                 unset($order['order_details']);
             });
-            if ($this->account->can('view', Order::all()->first())) {
-                return $this->paginate(collect($data));
+            if (count($data)) {
+                if ($this->account->can('view', Order::all()->first())) {
+                    return $this->paginate(collect($data));
+                } else {
+                    return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+                }
             } else {
-                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+                return $this->paginate(collect($data));
             }
         } catch (Exception $ex) {
             return $this->errorResponse("Orders can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -67,9 +71,9 @@ class OrderController extends ApiController
      */
     public function show($id)
     {
-        try {
+        //try {
             $manager = accountLogin();
-            $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])->findOrFail($id);
+            $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'orderDetails.product.images', 'paymentMethod:id,name'])->findOrFail($id);
             $total = 0;
             $orderDetails = $order['orderDetails'];
             foreach ($orderDetails as $key => $orderDetail) {
@@ -84,17 +88,25 @@ class OrderController extends ApiController
                 }
             }
             $order['total_money'] = $total;
+            $data = $orderDetails->toArray();
+            array_walk($data, function(&$orderDetail, $key) {
+                $images = collect($orderDetail['product']['images']);
+                $orderDetail['product']['images'] = $images->pluck('path')->toArray();
+            });
+            $order->unsetRelation('orderDetails');
+            $order['order_details'] = collect($data);
+
             if ($this->account->can('view', $order)) {
                 return $this->successResponse($order, Response::HTTP_OK);
             } else {
                 return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
             }
-        } catch (ModelNotFoundException $ex) {
-            return $this->errorResponse("Không có đơn hành cần tìm", Response::HTTP_NOT_FOUND);
-        } catch (Exception $ex) {
-            dd($ex->getMessage());
-            return $this->errorResponse("Có lỗi xảy ra", Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        // } catch (ModelNotFoundException $ex) {
+        //     return $this->errorResponse("Không có đơn hành cần tìm", Response::HTTP_NOT_FOUND);
+        // } catch (Exception $ex) {
+        //     dd($ex->getMessage());
+        //     return $this->errorResponse("Có lỗi xảy ra", Response::HTTP_INTERNAL_SERVER_ERROR);
+        // }
     }
 
 

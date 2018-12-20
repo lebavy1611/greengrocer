@@ -50,7 +50,7 @@ return [
       [
         "resource_id" => 21,
         "can_view" => 1,
-        "can_add" => 1,
+        "can_add" => 0,
         "can_edit" => 1,
         "can_del" => 1
       ],
