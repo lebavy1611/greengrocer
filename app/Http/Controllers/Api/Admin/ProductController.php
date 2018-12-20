@@ -64,7 +64,7 @@ class ProductController extends ApiController
     {
         try {
             if ($this->account->can('create', Product::class)) {
-                $$data = $request->only([
+                $data = $request->only([
                     'name', 'shop_id', 'category_id','describe', 'price',
                     'origin','quantity','number_expired'
                 ]);
