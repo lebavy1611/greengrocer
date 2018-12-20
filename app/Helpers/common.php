@@ -1,10 +1,7 @@
 <?php
 
-<<<<<<< HEAD
 use App\Models\Coupon;
 use App\Models\Order;
-=======
->>>>>>> 1a41fc494e4e18bbca228bd91d4ad34077f527d2
 use App\Models\RoleResource;
 use App\Models\Role;
 use App\Models\Resource;
@@ -157,7 +154,6 @@ if (!function_exists('processParamAccount')) {
     }
 }
 
-<<<<<<< HEAD
 if (!function_exists('getRandomString')) {
     /**
      * Random a string
@@ -214,8 +210,6 @@ if (!function_exists('getCodeOrder')) {
         }
     }
 }
-=======
->>>>>>> 1a41fc494e4e18bbca228bd91d4ad34077f527d2
 if (!function_exists('getRoleResource')) {
     /**
      * Get Id Company
