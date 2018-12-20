@@ -33,6 +33,20 @@ class ProductController extends ApiController
             $collection = collect($product['images']);
             $product['images'] = $collection->pluck('path')->toArray();
         });
+        // $ratings = Rating::with('user:users.id,user_infors.fullname')->where('product_id', $id)->get();
+        // $images = $product['images']->pluck('path')->toArray();
+        // unset($product['images']);
+        // $product['images'] = $images;
+        // $total = 0;
+        // $stars = 0;
+        // if (count($ratings)) {
+        //     foreach ($ratings as $rating) {
+        //         $stars += $rating->stars;
+        //         $total +=1;
+        //     }
+        //     $stars = round($stars/$total);
+        // }
+        // $product['ratings']= array("avg"=>$stars ,"total"=>$total, "list"=> $ratings);
         $products['data'] = $data;
         return $this->showAll($products, Response::HTTP_OK);
     }

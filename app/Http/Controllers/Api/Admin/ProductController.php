@@ -44,10 +44,14 @@ class ProductController extends ApiController
             $products = Product::with('category.parent', 'shop.provider', 'images')->productFilter($request)
                 ->orderBy('created_at', 'desc')->paginate($perPage);
             $products = $this->formatPaginate($products);
-            if ($this->account->can('view', Product::all()->first())) {
-                return $this->showAll($products, Response::HTTP_OK);
+            if (count($products['data'])) {
+                if ($this->account->can('view', Product::all()->first())) {
+                    return $this->showAll($products, Response::HTTP_OK);
+                } else {
+                    return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+                }
             } else {
-                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+                return $this->showAll($products, Response::HTTP_OK);                
             }
         } catch (Exception $ex) {
             return $this->errorResponse("Product can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -64,7 +68,7 @@ class ProductController extends ApiController
     {
         try {
             if ($this->account->can('create', Product::class)) {
-                $$data = $request->only([
+                $data = $request->only([
                     'name', 'shop_id', 'category_id','describe', 'price',
                     'origin','quantity','number_expired'
                 ]);
