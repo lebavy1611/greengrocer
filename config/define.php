@@ -19,7 +19,7 @@ return [
     'order' => [
       'limit_rows' => 5,
     ],
-    'no_authorization' => 'You don\'t have authorization with this action.',
+    'no_authorization' => 'Xin lỗi! Bạn chưa được cấp quyền cho thao tác này.',
     'admin_role_resources' => [
       ["resource_id"=> 1],
       ["resource_id"=> 11],
