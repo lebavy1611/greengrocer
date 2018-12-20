@@ -1,6 +1,6 @@
 <?php
 return [
-    'domain' => 'http://greengrocer.herokuapp.com',
+    'domain' => 'https://greengrocer.herokuapp.com',
     'images_path_shops' => '/images/shops/',
     'images_path_categories' => '/images/categories/',
     'images_path_users' => '/images/users/',
@@ -50,7 +50,7 @@ return [
       [
         "resource_id" => 21,
         "can_view" => 1,
-        "can_add" => 1,
+        "can_add" => 0,
         "can_edit" => 1,
         "can_del" => 1
       ],

@@ -38,11 +38,16 @@ class UserController extends ApiController
     public function index(Request $request)
     {
         $users = User::with('userInfor')->paginate(config('define.limit_rows'));
-        if ($this->account->can('view', User::all()->first())) {
+        if (count($users['data'])) {
+            if ($this->account->can('view', User::all()->first())) {
+                $users = $this->formatPaginate($users);
+                return $this->showAll($users, Response::HTTP_OK);
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+            }
+        } else {
             $users = $this->formatPaginate($users);
             return $this->showAll($users, Response::HTTP_OK);
-        } else {
-            return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
         }
     }
 

@@ -34,10 +34,14 @@ class CouponController extends ApiController
     {
         try {
             $coupons = Coupon::orderBy('created_at', 'desc')->get();
-            if ($this->account->can('view', $coupons->first())) {
+            if ($coupons->count()) {
+                if ($this->account->can('view', $coupons->first())) {
+                    return $this->successResponse($coupons, Response::HTTP_OK);
+                } else {
+                    return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
+                }
+            } else{
                 return $this->successResponse($coupons, Response::HTTP_OK);
-            } else {
-                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
             }
         } catch (Exception $ex) {
             dd($ex->getMessage());
