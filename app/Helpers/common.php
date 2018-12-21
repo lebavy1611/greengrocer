@@ -237,11 +237,11 @@ if (!function_exists('checkOrderBelongsProvider')) {
     {
         $orderDetails = $order['order_details'];
         foreach ($orderDetails as $key => $orderDetail) {
-            # code...
             if (accountLogin()->id == Manager::find(Shop::find($orderDetail['product']['shop_id'])->manager_id)->id) {
-                return true;
+                continue;
+            } else {
+                return false;
             }
-            return false;
         }
     }
 }
