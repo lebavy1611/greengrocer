@@ -36,36 +36,36 @@ class OrderController extends ApiController
     public function index(Request $request)
     {
         $perPage = $request->perpage ? $request->perpage : config('paginate.number_orders');
-        try {
+        //try {
             $orders = Order::with(['user','coupon:id,code,percents', 'processStatus:id,name', 'paymentMethod:id,name', 'orderDetails.product'])
                 ->orderFilter($request)->orderBy('created_at', 'desc')->get();
             $data = $orders->toArray();
+            $count = 0;
+            $dataTemp = $data;
             if (accountLogin()->role == Manager::ROLE_PROVIDER) {
-                array_walk($data, function(&$order, $key) {
-                    dd(checkOrderBelongsProvider($order));
-                });
+                $dataTemp = getOrdersBelongsProvider($data);
             }
-            array_walk($data, function(&$order, $key) {
+            array_walk($dataTemp, function(&$order, $key) {
                 $total = 0;
                 $orderDetails = collect($order['order_details']);
                 foreach ($orderDetails as $key => $orderDetail) {
                     $total += $orderDetail['price'] * $orderDetail['quantity'];
                 }
                 $order['total_money'] = $total;
-                unset($order['order_details']);
+                // unset($order['order_details']);
             });
-            if (count($data)) {
+            if (count($dataTemp)) {
                 if ($this->account->can('view', Order::all()->first())) {
-                    return $this->showAll($this->formatPaginate($this->paginate(collect($data))), Response::HTTP_OK);
+                    return $this->showAll($this->formatPaginate($this->paginate(collect($dataTemp))), Response::HTTP_OK);
                 } else {
                     return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
                 }
             } else {
-                return $this->showAll($this->formatPaginate($this->paginate(collect($data))), Response::HTTP_OK);
+                return $this->showAll($this->formatPaginate($this->paginate(collect($dataTemp))), Response::HTTP_OK);
             }
-        } catch (Exception $ex) {
-            return $this->errorResponse("Orders can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        // } catch (Exception $ex) {
+        //     return $this->errorResponse("Orders can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
+        // }
     }
 
 
@@ -83,22 +83,26 @@ class OrderController extends ApiController
             $total = 0;
             $orderDetails = $order['orderDetails'];
             foreach ($orderDetails as $key => $orderDetail) {
-                if (isProviderLogin()) {
-                    if (Product::find($orderDetail->product_id)->shop->manager_id != $manager->id) {
-                        $orderDetails->forget($key);
-                    } else {
-                        $total += $orderDetail->price * $orderDetail->quantity;
-                    }
-                } else {
+                // if (isProviderLogin()) {
+                //     if (Product::find($orderDetail->product_id)->shop->manager_id != $manager->id) {
+                //         $orderDetails->forget($key);
+                //     } else {
+                //         $total += $orderDetail->price * $orderDetail->quantity;
+                //     }
+                // } else {
+                //     $total += $orderDetail->price * $orderDetail->quantity;                        
+                // }
                     $total += $orderDetail->price * $orderDetail->quantity;                        
-                }
+
             }
             $order['total_money'] = $total;
             $data = $orderDetails->toArray();
-            array_walk($data, function(&$orderDetail, $key) {
+            array_walk($data, function(&$orderDetail) {
                 $images = collect($orderDetail['product']['images']);
                 $orderDetail['product']['images'] = $images->pluck('path')->toArray();
+                //array_push($array, $orderDetail);
             });
+            //dd($array);
             $order->unsetRelation('orderDetails');
             $order['order_details'] = collect($data);
 
