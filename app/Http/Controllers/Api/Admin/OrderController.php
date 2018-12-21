@@ -88,6 +88,13 @@ class OrderController extends ApiController
                 }
             }
             $order['total_money'] = $total;
+            array_walk($orderDetails, function(&$orderDetail, $key) {
+                $images = collect($orderDetail['product']['images']);
+                $orderDetail['product']['images'] = $images->pluck('path')->toArray();
+            });
+            $order->unsetRelation('orderDetails');
+            $order['order_details'] = collect($orderDetails);
+
             if ($this->account->can('view', $order)) {
                 return $this->successResponse($order, Response::HTTP_OK);
             } else {

@@ -93,7 +93,10 @@ class CategoryController extends ApiController
     public function show($id)
     {
         try {
-            $category = Category::with('children')->findOrFail($id);
+            $category = Category::with([
+                'parentsProducts',
+                'childrenProducts'])->findOrFail($id);
+            return $this->showOne($category, Response::HTTP_OK);
             if ($this->account->can('view', $category)) {
                 return $this->successResponse($category, Response::HTTP_OK);
             } else {
