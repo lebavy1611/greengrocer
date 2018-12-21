@@ -42,10 +42,7 @@ class OrderController extends ApiController
             $data = $orders->toArray();
             if (accountLogin()->role == Manager::ROLE_PROVIDER) {
                 array_walk($data, function(&$order, $key) {
-                    dd($order);
-                    if ($order['']) {
-
-                    }
+                    dd(checkOrderBelongsProvider($order));
                 });
             }
             array_walk($data, function(&$order, $key) {

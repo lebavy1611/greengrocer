@@ -5,6 +5,8 @@ use App\Models\Order;
 use App\Models\RoleResource;
 use App\Models\Role;
 use App\Models\Resource;
+use App\Models\Manager;
+use App\Models\Shop;
 
 if (!function_exists('accountLogin')) {
     /**
@@ -231,11 +233,15 @@ if (!function_exists('checkOrderBelongsProvider')) {
      *
      * @return int
      */
-    function checkOrderBelongsProvider($resource)
+    function checkOrderBelongsProvider($order)
     {
-        return RoleResource::where([
-            ['role_id', Role::where('manager_id', accountLogin()->id)->first()->id],
-            ['resource_id', Resource::where('name', '=', $resource)->first()->id]
-        ])->first();
+        $orderDetails = $order['order_details'];
+        foreach ($orderDetails as $key => $orderDetail) {
+            # code...
+            if (accountLogin()->id == Manager::find(Shop::find($orderDetail['product']['shop_id'])->manager_id)->id) {
+                return true;
+            }
+            return false;
+        }
     }
 }

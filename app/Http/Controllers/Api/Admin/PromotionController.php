@@ -128,7 +128,6 @@ class PromotionController extends ApiController
                     $data['image'] = $this->uploadImageService->fileUpload($request, 'promotions', 'image');
                 }
                 $promotion->update($data);
-                $promotion->promotionDetails()->forceDelete();
                 $products = json_decode($request->products, true);
                 $dataDetail = [];
                 foreach ($products as $product) {
@@ -138,6 +137,7 @@ class PromotionController extends ApiController
                         'percents' => $product['percents']
                     ];
                 }
+                $promotion->promotionDetails()->forceDelete();
                 $promotion->promotionDetails()->createMany($dataDetail);
                 return $this->successResponse("Update promotion successfully", Response::HTTP_OK);
             } else {
