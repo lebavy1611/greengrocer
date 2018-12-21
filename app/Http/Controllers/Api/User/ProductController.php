@@ -39,7 +39,7 @@ class ProductController extends ApiController
             $collection = collect($product['images']);
             $product['images'] = $collection->pluck('path')->toArray();
         });
-        return $this->paginate(collect($data));
+        return $this->showAll($this->formatPaginate($this->paginate(collect($data))), Response::HTTP_OK);
     }
 
     /**

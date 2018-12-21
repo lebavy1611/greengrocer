@@ -50,12 +50,13 @@ class OrderController extends ApiController
             });
             if (count($data)) {
                 if ($this->account->can('view', Order::all()->first())) {
-                    return $this->paginate(collect($data));
+                    return $this->showAll($this->formatPaginate($this->paginate(collect($data))), Response::HTTP_OK);
+
                 } else {
                     return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
                 }
             } else {
-                return $this->paginate(collect($data));
+                return $this->showAll($this->formatPaginate($this->paginate(collect($data))), Response::HTTP_OK);
             }
         } catch (Exception $ex) {
             return $this->errorResponse("Orders can not be show.", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -73,7 +74,7 @@ class OrderController extends ApiController
     {
         //try {
             $manager = accountLogin();
-            $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'orderDetails.product.images', 'paymentMethod:id,name'])->findOrFail($id);
+            $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'orderDetails.product.images', 'orderDetails.product.shop', 'paymentMethod:id,name'])->findOrFail($id);
             $total = 0;
             $orderDetails = $order['orderDetails'];
             foreach ($orderDetails as $key => $orderDetail) {
