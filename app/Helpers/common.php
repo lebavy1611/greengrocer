@@ -5,6 +5,8 @@ use App\Models\Order;
 use App\Models\RoleResource;
 use App\Models\Role;
 use App\Models\Resource;
+use App\Models\Manager;
+use App\Models\Shop;
 
 if (!function_exists('accountLogin')) {
     /**
@@ -225,3 +227,21 @@ if (!function_exists('getRoleResource')) {
     }
 }
 
+if (!function_exists('checkOrderBelongsProvider')) {
+    /**
+     * Get Id Company
+     *
+     * @return int
+     */
+    function checkOrderBelongsProvider($order)
+    {
+        $orderDetails = $order['order_details'];
+        foreach ($orderDetails as $key => $orderDetail) {
+            if (accountLogin()->id == Manager::find(Shop::find($orderDetail['product']['shop_id'])->manager_id)->id) {
+                continue;
+            } else {
+                return false;
+            }
+        }
+    }
+}
