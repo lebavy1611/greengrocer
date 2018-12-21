@@ -73,7 +73,7 @@ class OrderController extends ApiController
     {
         //try {
             $manager = accountLogin();
-            $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])->findOrFail($id);
+            $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'orderDetails.product.images', 'paymentMethod:id,name'])->findOrFail($id);
             $total = 0;
             $orderDetails = $order['orderDetails'];
             foreach ($orderDetails as $key => $orderDetail) {
@@ -88,12 +88,13 @@ class OrderController extends ApiController
                 }
             }
             $order['total_money'] = $total;
-            array_walk($orderDetails, function(&$orderDetail, $key) {
+            $data = $orderDetails->toArray();
+            array_walk($data, function(&$orderDetail, $key) {
                 $images = collect($orderDetail['product']['images']);
                 $orderDetail['product']['images'] = $images->pluck('path')->toArray();
             });
             $order->unsetRelation('orderDetails');
-            $order['order_details'] = collect($orderDetails);
+            $order['order_details'] = collect($data);
 
             if ($this->account->can('view', $order)) {
                 return $this->successResponse($order, Response::HTTP_OK);

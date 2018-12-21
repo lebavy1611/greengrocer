@@ -28,9 +28,24 @@ class OrderController extends ApiController
         try {
             $perpage = $request->perpage ? $request->perpage : config('paginate.number_orders');
             $user = accountLogin();
-            $order = Order::with(['user', 'coupon:id,code,percents', 'processStatus:id,name', 'orderDetails.product', 'paymentMethod:id,name'])
-                ->where('customer_id', $user->id)->orderBy('created_at', 'desc')->paginate($perpage);
-            return $this->formatPaginate($order);
+            $orders = Order::with(['user', 'coupon:id,code,percents', 'processStatus:id,name', 'orderDetails.product', 'orderDetails.product.images', 'paymentMethod:id,name'])
+                ->where('customer_id', $user->id)->orderBy('created_at', 'desc')->get();
+            $data = $orders->toArray();
+            array_walk($data, function(&$order, $key) {
+                $orderDetails = $order['order_details'];
+                array_walk($orderDetails, function(&$orderDetail, $key) {
+                    $images = collect($orderDetail['product']['images']);
+                    $orderDetail['product']['images'] = $images->pluck('path')->toArray();
+                });
+                $total = 0;
+                foreach ($orderDetails as $key => $orderDetail) {
+                    $total += $orderDetail['price'] * $orderDetail['quantity'];
+                }
+                unset($order['orderDetails']);
+                $order['order_details'] = collect($orderDetails);
+                $order['total_money'] = $total;
+            });
+            return $this->paginate(collect($data));
         } catch (Exception $ex) {
             dd($ex->getMessage());
             return $this->errorResponse("Có lỗi khi hiện danh sách order", Response::HTTP_INTERNAL_SERVER_ERROR);

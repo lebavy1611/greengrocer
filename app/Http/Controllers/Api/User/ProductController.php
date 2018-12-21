@@ -26,29 +26,20 @@ class ProductController extends ApiController
     {
         $number_products = isset($request->number_products) ? $request->number_products : config('paginate.number_products');
         $products = Product::with('shop.provider','category.parent', 'images')->productFilter($request)
-            ->where('active', 1)->orderBy('created_at', 'desc')->paginate($number_products);
-        $products = $this->formatPaginate($products);
-        $data = $products['data'];
+            ->where('active', 1)->orderBy('created_at', 'desc')->get();
+        foreach ($products as $key => $product) {
+            if ($product->ratings->count()) {
+                $product['avg_ratings'] = $product->ratings->sum('stars') / $product->ratings->count();
+            } else {
+                $product['avg_ratings'] = 0;
+            }
+        }
+        $data = $products->toArray();
         array_walk($data, function(&$product, $key) {
             $collection = collect($product['images']);
             $product['images'] = $collection->pluck('path')->toArray();
         });
-        // $ratings = Rating::with('user:users.id,user_infors.fullname')->where('product_id', $id)->get();
-        // $images = $product['images']->pluck('path')->toArray();
-        // unset($product['images']);
-        // $product['images'] = $images;
-        // $total = 0;
-        // $stars = 0;
-        // if (count($ratings)) {
-        //     foreach ($ratings as $rating) {
-        //         $stars += $rating->stars;
-        //         $total +=1;
-        //     }
-        //     $stars = round($stars/$total);
-        // }
-        // $product['ratings']= array("avg"=>$stars ,"total"=>$total, "list"=> $ratings);
-        $products['data'] = $data;
-        return $this->showAll($products, Response::HTTP_OK);
+        return $this->paginate(collect($data));
     }
 
     /**
