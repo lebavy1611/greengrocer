@@ -26,7 +26,6 @@ class CreateCommentRequest extends ApiFormRequest
     {
         return [
             'product_id'        => 'required|integer|exists:products,id',
-            'parent_id'         => 'integer|exists:comments',
             'content'           => 'required|string|max:255',
         ];
     }
@@ -44,10 +43,6 @@ class CreateCommentRequest extends ApiFormRequest
             'product_id.required'             => "Vui lòng mời bạn nhập vào sản phâm",
             'product_id.integer'              => "Product_id phải là số nguyên ",
             'product_id.exists '              => "Product_id không tồn tại ",
-
-            'parent_id.required'             => "Vui lòng mời bạn nhập vào parent_id của commnent",
-            'parent_id.integer'              => "Parent_id phải là số nguyên ",
-            'parent_id.exists '              => "Parent_id không tồn tại ",
 
             'content.required'             => "Vui lòng mời bạn nhập vào nội dung comment",
             'content.string'               => "Nội dung phải là chuỗi kí ",

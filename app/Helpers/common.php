@@ -225,3 +225,17 @@ if (!function_exists('getRoleResource')) {
     }
 }
 
+if (!function_exists('checkOrderBelongsProvider')) {
+    /**
+     * Get Id Company
+     *
+     * @return int
+     */
+    function checkOrderBelongsProvider($resource)
+    {
+        return RoleResource::where([
+            ['role_id', Role::where('manager_id', accountLogin()->id)->first()->id],
+            ['resource_id', Resource::where('name', '=', $resource)->first()->id]
+        ])->first();
+    }
+}
