@@ -61,7 +61,7 @@ class PromotionController extends ApiController
      */
     public function store(CreatePromotionRequest $request)
     {
-        try {
+        //try {
             if ($this->account->can('create', Promotion::class)) {
                 $data = $request->only([
                     'name', 'start_date', 'end_date',
@@ -82,9 +82,9 @@ class PromotionController extends ApiController
             } else {
                 return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
             }
-        } catch (Exception $ex) {
-            return $this->errorResponse("Occour error when insert Promotion.", Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        // } catch (Exception $ex) {
+        //     return $this->errorResponse("Occour error when insert Promotion.", Response::HTTP_INTERNAL_SERVER_ERROR);
+        // }
     }
 
     /**

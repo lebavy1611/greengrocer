@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Product;
+use App\Models\Manager;
 
 class OrderController extends ApiController
 {
@@ -39,6 +40,14 @@ class OrderController extends ApiController
             $orders = Order::with(['user','coupon:id,code,percents', 'processStatus:id,name', 'paymentMethod:id,name', 'orderDetails.product'])
                 ->orderFilter($request)->orderBy('created_at', 'desc')->get();
             $data = $orders->toArray();
+            if (accountLogin()->role == Manager::ROLE_PROVIDER) {
+                array_walk($data, function(&$order, $key) {
+                    dd($order);
+                    if ($order['']) {
+
+                    }
+                });
+            }
             array_walk($data, function(&$order, $key) {
                 $total = 0;
                 $orderDetails = collect($order['order_details']);
