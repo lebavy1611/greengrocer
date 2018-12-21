@@ -68,7 +68,7 @@ class PromotionController extends ApiController
                 ]);
                 $data['image'] = $this->uploadImageService->fileUpload($request, 'promotions', 'image');
                 $promotion = Promotion::create($data);
-                $products = $request->products;
+                $products = json_decode($request->products, true);
                 $dataDetail = [];
                 foreach ($products as $product) {
                     $dataDetail[] = [

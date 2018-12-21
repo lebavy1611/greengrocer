@@ -26,7 +26,7 @@ class CreateCommentRequest extends ApiFormRequest
     {
         return [
             'product_id'        => 'required|integer|exists:products,id',
-            'parent_id'         => 'required|integer|exists:comments',
+            'parent_id'         => 'integer|exists:comments',
             'content'           => 'required|string|max:255',
         ];
     }
