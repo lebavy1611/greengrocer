@@ -69,11 +69,11 @@ class OrderController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Order $order)
     {
         //try {
             $manager = accountLogin();
-            $order = Order::with(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'orderDetails.product.images', 'orderDetails.product.shop', 'paymentMethod:id,name'])->findOrFail($id);
+            $order = $order->load(['user', 'coupon', 'processStatus:id,name', 'orderDetails.product', 'orderDetails.product.images', 'orderDetails.product.shop', 'paymentMethod:id,name']);
             $total = 0;
             $orderDetails = $order['orderDetails'];
             foreach ($orderDetails as $key => $orderDetail) {

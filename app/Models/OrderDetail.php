@@ -25,6 +25,7 @@ class OrderDetail extends Model
             'products.id',
             'products.name',
             'products.price',
+            'products.shop_id'
         ]);
     }
 }
