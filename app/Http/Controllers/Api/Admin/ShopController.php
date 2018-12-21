@@ -55,13 +55,11 @@ class ShopController extends ApiController
     public function store(CreateShopRequest $request)
     {
         try {
-            $data = $request->only(['name', 'manager_id', 'address', 'phone', 'active']);
-            if (accountLogin()->role == Manager::ROLE_PROVIDER) {
-                $data['manager_id'] = accountLogin()->id;
+            if (accountLogin()->role != Manager::ROLE_PROVIDER) {
                 if ($this->account->can('create', Shop::class)) {
-                    $data = $request->only(['name', 'provider_id', 'address', 'phone', 'active']);
+                    $data = $request->only(['name', 'manager_id', 'address', 'phone', 'active']);
                     if (accountLogin()->role == Manager::ROLE_PROVIDER) {
-                        $data['provider_id'] = accountLogin()->id;
+                        $data['manager_id'] = accountLogin()->id;
                     }
                     $data['image'] = $this->uploadImageService->fileUpload($request, 'shops', 'image');
                     $shop = Shop::create($data);    
@@ -69,6 +67,8 @@ class ShopController extends ApiController
                 } else {
                     return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
                 }
+            } else {
+                return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
             }
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when insert category.", Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -111,9 +111,9 @@ class ShopController extends ApiController
                 if ($request->hasFile('image')) {
                     $data['image'] = $this->uploadImageService->fileUpload($request, 'shops', 'image');
                 }
-                $data = $request->only(['name', 'provider_id', 'address', 'phone', 'active']);
+                $data = $request->only(['name', 'manager_id', 'address', 'phone', 'active']);
                 if (accountLogin()->role == Manager::ROLE_PROVIDER) {
-                    $data['provider_id'] = accountLogin()->id;
+                    $data['manager_id'] = accountLogin()->id;
                 }
                 $shop->update($data);
                 return $this->successResponse(Shop::with('provider')->findOrFail($id), Response::HTTP_OK);
