@@ -38,7 +38,7 @@ class PromotionController extends ApiController
     public function index()
     {
         try {
-            $promotions = Promotion::get();
+            $promotions = Promotion::with('promotionDetails.product')->get();
             if ($promotions->count()) {
                 if ($this->account->can('view', $promotions->first())) {
                     return $this->showAll($promotions);
@@ -119,7 +119,7 @@ class PromotionController extends ApiController
      */
     public function update(UpdatePromotionRequest $request, Promotion $promotion)
     {
-        try {
+        //try {
             if ($this->account->can('update', $promotion)) {
                 $data = $request->only([
                     'name', 'start_date', 'end_date', 'image',
@@ -127,10 +127,8 @@ class PromotionController extends ApiController
                 if ($request->hasFile('image')) {
                     $data['image'] = $this->uploadImageService->fileUpload($request, 'promotions', 'image');
                 }
-                $promotion = Promotion::findOrFail($id);
                 $promotion->update($data);
-                $promotion->promotionDetails()->forceDelete();
-                $products = $request->products;
+                $products = json_decode($request->products, true);
                 $dataDetail = [];
                 foreach ($products as $product) {
                     $dataDetail[] = [
@@ -139,14 +137,15 @@ class PromotionController extends ApiController
                         'percents' => $product['percents']
                     ];
                 }
+                $promotion->promotionDetails()->forceDelete();
                 $promotion->promotionDetails()->createMany($dataDetail);
                 return $this->successResponse("Update promotion successfully", Response::HTTP_OK);
             } else {
                 return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
             }
-        } catch (Exception $ex) {
-            return $this->errorResponse("Occour error when edit Promotion.", Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        // } catch (Exception $ex) {
+        //     return $this->errorResponse("Occour error when edit Promotion.", Response::HTTP_INTERNAL_SERVER_ERROR);
+        // }
     }
 
     /**
