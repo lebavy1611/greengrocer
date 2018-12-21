@@ -37,8 +37,9 @@ class UserController extends ApiController
      */
     public function index(Request $request)
     {
-        $users = User::with('userInfor')->paginate(config('define.limit_rows'));
-        if (count($users['data'])) {
+        $perPage = $request->perpage ? $request->perpage : config('paginate.number_users');
+        $users = User::with('userInfor')->orderBy('created_at', 'desc')->paginate($perPage);
+        if (count($users)) {
             if ($this->account->can('view', User::all()->first())) {
                 $users = $this->formatPaginate($users);
                 return $this->showAll($users, Response::HTTP_OK);
