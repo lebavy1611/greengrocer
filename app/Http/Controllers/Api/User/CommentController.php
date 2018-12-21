@@ -32,7 +32,6 @@ class CommentController extends ApiController
             $user = accountLogin();
             $data = $request->only([
                 'product_id',
-                'parent_id',
                 'content'
             ]);
 
