@@ -61,14 +61,14 @@ class PromotionController extends ApiController
      */
     public function store(CreatePromotionRequest $request)
     {
-        try {
+        //try {
             if ($this->account->can('create', Promotion::class)) {
                 $data = $request->only([
                     'name', 'start_date', 'end_date',
                 ]);
                 $data['image'] = $this->uploadImageService->fileUpload($request, 'promotions', 'image');
                 $promotion = Promotion::create($data);
-                $products = $request->products;
+                $products = json_decode($request->products);
                 $dataDetail = [];
                 foreach ($products as $product) {
                     $dataDetail[] = [
@@ -82,9 +82,9 @@ class PromotionController extends ApiController
             } else {
                 return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
             }
-        } catch (Exception $ex) {
-            return $this->errorResponse("Occour error when insert Promotion.", Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        // } catch (Exception $ex) {
+        //     return $this->errorResponse("Occour error when insert Promotion.", Response::HTTP_INTERNAL_SERVER_ERROR);
+        // }
     }
 
     /**
