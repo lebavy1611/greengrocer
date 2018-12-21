@@ -41,6 +41,11 @@ class ProductController extends ApiController
     {
         $perPage = $request->perpage ? $request->perpage : config('paginate.number_products');
         try {
+            if ($request->all == 'true') {
+                $products = Product::with('category.parent', 'shop.provider', 'images')->productFilter($request)
+                    ->orderBy('created_at', 'desc')->get();
+                return $this->showAll($products, Response::HTTP_OK);
+            }
             $products = Product::with('category.parent', 'shop.provider', 'images')->productFilter($request)
                 ->orderBy('created_at', 'desc')->paginate($perPage);
             $products = $this->formatPaginate($products);

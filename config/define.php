@@ -1,6 +1,6 @@
 <?php
 return [
-    'domain' => 'http://greengrocer.herokuapp.com',
+    'domain' => 'https://greengrocer.herokuapp.com',
     'images_path_shops' => '/images/shops/',
     'images_path_categories' => '/images/categories/',
     'images_path_users' => '/images/users/',

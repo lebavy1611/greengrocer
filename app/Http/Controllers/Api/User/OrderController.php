@@ -46,7 +46,6 @@ class OrderController extends ApiController
                 $order['total_money'] = $total;
             });
             return $this->showAll($this->formatPaginate($this->paginate(collect($data))), Response::HTTP_OK);
-
         } catch (Exception $ex) {
             dd($ex->getMessage());
             return $this->errorResponse("Có lỗi khi hiện danh sách order", Response::HTTP_INTERNAL_SERVER_ERROR);

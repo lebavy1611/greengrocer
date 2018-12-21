@@ -51,7 +51,6 @@ class OrderController extends ApiController
             if (count($data)) {
                 if ($this->account->can('view', Order::all()->first())) {
                     return $this->showAll($this->formatPaginate($this->paginate(collect($data))), Response::HTTP_OK);
-
                 } else {
                     return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
                 }
@@ -126,17 +125,12 @@ class OrderController extends ApiController
                     $order->processing_status = $request->processing_status;
                 }
                 $order->payment_status = $request->payment_status;
-                $order->delivery_time = $request->delivery_time;
                 $order->save();
     
                 return $this->successResponse("Update order successfully", Response::HTTP_OK);
             } else {
                 return $this->errorResponse(config('define.no_authorization'), Response::HTTP_UNAUTHORIZED);
             }
-            $order->payment_status = $request->payment_status;
-//            $order->delivery_time = $request->delivery_time;
-            $order->save();
-
             return $this->successResponse("Update order successfully", Response::HTTP_OK);
         } catch (Exception $ex) {
             return $this->errorResponse("Occour error when show Order.", Response::HTTP_INTERNAL_SERVER_ERROR);
