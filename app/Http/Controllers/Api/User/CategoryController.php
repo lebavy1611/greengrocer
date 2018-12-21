@@ -49,10 +49,10 @@ class CategoryController extends ApiController
     {
         try {
             $category = Category::with([
-                'parentsProducts' => function($query) {
+                'parentsProducts.images' => function($query) {
                     $query->where('active', 1);
                 },
-                'childrenProducts' => function($query) {
+                'childrenProducts.images' => function($query) {
                     $query->where('active', 1);
                 }])->findOrFail($id);
             return $this->showOne($category, Response::HTTP_OK);
