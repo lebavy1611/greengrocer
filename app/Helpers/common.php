@@ -5,6 +5,8 @@ use App\Models\Order;
 use App\Models\RoleResource;
 use App\Models\Role;
 use App\Models\Resource;
+use App\Models\Manager;
+use App\Models\Shop;
 
 if (!function_exists('accountLogin')) {
     /**
@@ -225,3 +227,59 @@ if (!function_exists('getRoleResource')) {
     }
 }
 
+if (!function_exists('checkOrderBelongsProvider')) {
+    /**
+     * Get Id Company
+     *
+     * @return int
+     */
+    function checkOrderBelongsProvider($order)
+    {
+        $orderDetails = $order['order_details'];
+        $count = 0;
+        foreach ($orderDetails as $key => $orderDetail) {
+            if (accountLogin()->id == Manager::find(Shop::find($orderDetail['product']['shop_id'])->manager_id)->id) {
+                continue;
+            } else {
+                $count++;
+            }
+        }
+        if ($count == count($orderDetails)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+
+if (!function_exists('getOrdersBelongsProvider')) {
+    /**
+     * Get Id Company
+     *
+     * @return int
+     */
+    function getOrdersBelongsProvider($data)
+    {
+        $dataTemp = $data;
+        foreach ($dataTemp as $key => $order) {
+            $orderDetails = $order['order_details'];
+            $count = 0;
+            $orderDetailsTemp = $orderDetails;
+            foreach ($orderDetailsTemp as $key2 => $orderDetail) {
+                // dd(accountLogin()->id);
+                // dd(Manager::find(Shop::find($orderDetail['product']['shop_id'])->manager_id)->id);
+                if (accountLogin()->id == Manager::find(Shop::find($orderDetail['product']['shop_id'])->manager_id)->id) {
+                    continue;
+                } else {
+                    unset($orderDetails[$key2]);
+                    $count++;
+                }
+            }
+            if ($count == count($orderDetailsTemp)) {
+                unset($data[$key]);
+            }
+            $order['order_details'] = $orderDetails;
+        }
+        return $data;
+    }
+}

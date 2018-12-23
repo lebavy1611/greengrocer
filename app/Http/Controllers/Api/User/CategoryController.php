@@ -49,13 +49,22 @@ class CategoryController extends ApiController
     {
         try {
             $category = Category::with([
-                'parentsProducts' => function($query) {
-                    $query->where('active', 1);
-                },
-                'childrenProducts' => function($query) {
-                    $query->where('active', 1);
-                }])->findOrFail($id);
-            return $this->showOne($category, Response::HTTP_OK);
+                'parentsProducts.images',
+                'childrenProducts.images'])->findOrFail($id);
+            $dataParents = $category->parentsProducts->toArray();
+            array_walk($dataParents, function(&$dataParent, $key) {
+                $collection = collect($dataParent['images']);
+                $dataParent['images'] = $collection->pluck('path')->toArray();
+            });
+            $dataChildren = $category->childrenProducts->toArray();
+            array_walk($dataChildren, function(&$dataChild, $key) {
+                $collection = collect($dataChild['images']);
+                $dataChild['images'] = $collection->pluck('path')->toArray();
+            });
+            $categoryData = Category::findOrFail($id);
+            $categoryData['parents_products'] = $dataParents;
+            $categoryData['children_products'] = $dataChildren;
+            return $this->showOne($categoryData, Response::HTTP_OK);
         } catch (ModelNotFoundException $ex) {
             return $this->errorResponse("Catelory not found.", Response::HTTP_NOT_FOUND);
         } catch (Exception $ex) {
